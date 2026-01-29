@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* Chrome, Safari, Edge, Opera */
+.bodyMain{
+  overflow-x: hidden;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+  visibility: visible;
+}
+.splide__pagination {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  margin-top: 16px;
+  position: absolute;
+  top: 101%; 
+  left: 50%;
+  transform: translateX(-50%);
+}
+.splide__pagination__page {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #ccc;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.splide__pagination__page.is-active {
+  background-color: #9A2143;
+}
+
+
+
+
+.preferenceList::-webkit-scrollbar {
+  width: 4px;   
+ 
+  appearance: auto;            /* width of the entire scrollbar */
+}
+.storyPosts{
+  display:none;
+}
+.preferenceList::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+.preferenceList::-webkit-scrollbar-thumb {
+  background: #c0c0c0; 
+}
+
+/* Handle on hover */
+.preferenceList::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+  
+}
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+/* global.css or a custom CSS module */
+.rbc-slot-selection {
+  background-color: rgba(154, 33, 67, 0.4) !important; /* your brand color */
+  border: 1px solid #9A2143 !important;
+}
+
+.rbc-selected-cell {
+  background-color: rgba(154, 33, 67, 0.2) !important;
+}
+.rbc-today{
+  background-color: #C94C73 !important;
+}
