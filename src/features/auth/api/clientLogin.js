@@ -3,7 +3,7 @@ import { create } from "@/app/action";
 import { tryCatchWrapper } from "@/lib/functionResolver";
 import { useAuthStore } from "@/store/store";
 const loginClient = tryCatchWrapper(async ({ data, router, client }) => {
-    let loginResponse = await axiosInstance.post(`/${client}/login`, data,
+    let loginResponse = await axiosInstance.post(`auth/${client}/login`, data,
         {
             headers: {
                 "Content-Type": "application/json"

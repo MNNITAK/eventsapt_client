@@ -2,7 +2,7 @@ import { create } from "@/app/action";
 import { axiosInstance } from "@/axios/axios";
 const signup=async({cred,router})=>{
     try {
-        let response = await axiosInstance.post('/vendor/signup', cred, {
+        let response = await axiosInstance.post('auth/vendor/signup', cred, {
             headers: {
                 "Content-Type": "application/json"
             }

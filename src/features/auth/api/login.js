@@ -2,7 +2,7 @@ import { create } from "@/app/action";
 import { axiosInstance } from "@/axios/axios";
 const loginUser=async({data,router,client})=>{
     try {
-        let resp=await axiosInstance.post(`/${client}/login`,data,
+        let resp=await axiosInstance.post(`auth/${client}/login`,data,
             {
                 headers: {
                     "Content-Type": "application/json"

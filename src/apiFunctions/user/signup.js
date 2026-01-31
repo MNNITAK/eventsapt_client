@@ -1,8 +1,9 @@
 import { create, getCookies } from "@/app/action";
 import { axiosInstance } from "@/axios/axios";
+
 const signup=async({cred})=>{
     try {
-        let response = await axiosInstance.post('/user/signup', cred, {
+        let response = await axiosInstance.post('auth/user/signup', cred, {
             headers: {
                 "Content-Type": "application/json"
             }
@@ -14,11 +15,12 @@ const signup=async({cred})=>{
         throw error       
     }
 }
+
 const updatePreference=async({cred})=>{
     const refreshToken=await getCookies()
     //console.log(cred);
     try {
-        let resp=await axiosInstance.post('/user/updatePreferences',cred,{
+        let resp=await axiosInstance.post('auth/user/updatePreferences',cred,{
             headers: {
                 "wedoraCredentials":refreshToken
             }
