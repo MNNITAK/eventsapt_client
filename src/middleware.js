@@ -1,46 +1,55 @@
 import { cookies } from "next/headers";
 import { NextResponse } from 'next/server';
+
+// Middleware temporarily disabled
 export async function middleware(request) {
-  const clientRefreshToken = request.cookies.get("refreshToken")?.value;
-  const publicUrl = process.env.NEXT_PUBLIC_FRNT;
-  const url = request.nextUrl;
-  if (!publicUrl) {
-    throw new Error("Missing frontendUrl env");
-  }
-  const redirectLoginUrl = new URL("/authPage/user", publicUrl);
-  if (!clientRefreshToken) {
-    return NextResponse.redirect(redirectLoginUrl);
-  }
-  try {
-    let clientAuthTokenCheck = await fetch(`${process.env.backend_api}/cmn/checkClientAuth`, {
-      cache: "no-cache",
-      headers: {
-        "wedoraCredentials": clientRefreshToken
-      }
-    })
-    clientAuthTokenCheck = await clientAuthTokenCheck.json();
-    if (clientAuthTokenCheck.statusCode >= 400) {
-      return NextResponse.redirect(redirectLoginUrl);
-    } else if (clientAuthTokenCheck.statusCode >= 200 && clientAuthTokenCheck.statusCode < 300) {
-      const typeClient = clientAuthTokenCheck?.data?.typeClient;
-      const redirectHomeURL = new URL(`/home/${encodeURIComponent(typeClient)}?tab=home`, process.env.NEXT_PUBLIC_FRNT);
-      if (url.pathname === "/") {
-        return NextResponse.redirect(redirectHomeURL);
-      }
-      const segments = url.pathname.split("/");
-      if (segments[1] === "home" && segments[2] !== typeClient) {
-        return NextResponse.redirect(redirectHomeURL);
-      }
-
-      // Otherwise continue as normal
-      return NextResponse.next();
-    }
-
-  } catch (error) {
-    const redirectErrorPage = new URL("/unavailable", publicUrl);
-    return NextResponse.redirect(redirectErrorPage);
-  }
+  return NextResponse.next();
 }
+
+// Commented out middleware logic
+// export async function middleware(request) {
+//   const clientRefreshToken = request.cookies.get("refreshToken")?.value;
+//   const publicUrl = process.env.NEXT_PUBLIC_FRNT;
+//   const url = request.nextUrl;
+//   if (!publicUrl) {
+//     throw new Error("Missing frontendUrl env");
+//   }
+//   const redirectLoginUrl = new URL("/authPage/user", publicUrl);
+//   if (!clientRefreshToken) {
+//     return NextResponse.redirect(redirectLoginUrl);
+//   }
+//   try {
+//     let clientAuthTokenCheck = await fetch(`${process.env.NEX}/cmn/checkClientAuth`, {
+//       cache: "no-cache",
+//       headers: {
+//         "wedoraCredentials": clientRefreshToken
+//       }
+//     })
+//     clientAuthTokenCheck = await clientAuthTokenCheck.json();
+//     if (clientAuthTokenCheck.statusCode >= 400) {
+//       return NextResponse.redirect(redirectLoginUrl);
+//     } else if (clientAuthTokenCheck.statusCode >= 200 && clientAuthTokenCheck.statusCode < 300) {
+//       const typeClient = clientAuthTokenCheck?.data?.typeClient;
+//       const redirectHomeURL = new URL(`/home/${encodeURIComponent(typeClient)}?tab=home`, process.env.NEXT_PUBLIC_FRNT);
+//       if (url.pathname === "/") {
+//         return NextResponse.redirect(redirectHomeURL);
+//       }
+//       const segments = url.pathname.split("/");
+//       if (segments[1] === "home" && segments[2] !== typeClient) {
+//         return NextResponse.redirect(redirectHomeURL);
+//       }
+
+//       // Otherwise continue as normal
+//       return NextResponse.next();
+//     }
+
+//   } catch (error) {
+//     console.error("Middleware error:", error.message);
+//     console.error("Error details:", error);
+//     const redirectErrorPage = new URL("/unavailable", publicUrl);
+//     return NextResponse.redirect(redirectErrorPage);
+//   }
+// }
 
 // export async function middleware(request) {
 //   const cookieStore = await cookies()
