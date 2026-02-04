@@ -1,6 +1,7 @@
 import { create } from "@/app/action";
 import { axiosInstance } from "@/axios/axios";
 const loginUser=async({data,router,client})=>{
+    console.log("hellllooo");
     try {
         let resp=await axiosInstance.post(`auth/${client}/login`,data,
             {
@@ -8,7 +9,8 @@ const loginUser=async({data,router,client})=>{
                     "Content-Type": "application/json"
                 }
             }
-        )      
+        ) 
+    
         await create(resp?.data)
         if(resp.status==203){
             router.push(`/home/${client}?tab=home`)
