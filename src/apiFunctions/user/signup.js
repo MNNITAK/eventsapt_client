@@ -1,34 +1,26 @@
 import { create, getCookies } from "@/app/action";
-import { axiosInstance } from "@/axios/axios";
+import { signupUser, updateUserPreferences } from "@/api/authClient";
 
 const signup=async({cred})=>{
     try {
-        let response = await axiosInstance.post('auth/user/signup', cred, {
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })  
-         await create(response?.data)
-        return response
+        let response = await signupUser(cred);
+        await create(response);
+        return response;
     } catch (error) {
         //console.log(error);
-        throw error       
+        throw error;       
     }
 }
 
 const updatePreference=async({cred})=>{
-    const refreshToken=await getCookies()
+    const refreshToken=await getCookies();
     //console.log(cred);
     try {
-        let resp=await axiosInstance.post('auth/user/updatePreferences',cred,{
-            headers: {
-                "wedoraCredentials":refreshToken
-            }
-        })
-        return resp
+        let resp = await updateUserPreferences(refreshToken, cred);
+        return resp;
     } catch (error) {
         //console.log(error);
-        return error
+        return error;
     }
 }
 export {signup,updatePreference}

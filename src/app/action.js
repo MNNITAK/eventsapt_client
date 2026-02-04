@@ -10,7 +10,7 @@ export async function create(data) {
   }
  cookieStore.set({
     name:"refreshToken",
-    value:data?.data?.refreshToken,
+    value:data?.refreshToken,
     httpOnly:true,
     secure:true,
     sameSite:"none",
@@ -19,7 +19,7 @@ export async function create(data) {
  
  cookieStore.set({
     name:"accessToken",
-    value:data?.data?.accessToken,
+    value:data?.accessToken,
     httpOnly:true,
     secure:true,
     sameSite:"none",
