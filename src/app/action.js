@@ -14,9 +14,19 @@ export async function create(data) {
     httpOnly:true,
     secure:true,
     sameSite:"none",
-    maxAge:60*60
+    maxAge:7 * 24 * 60 * 60 //
+ })
+ 
+ cookieStore.set({
+    name:"accessToken",
+    value:data?.data?.accessToken,
+    httpOnly:true,
+    secure:true,
+    sameSite:"none",
+    maxAge:60 * 60 // 1 hour for access token
  })
 }
+
 export const getCookies = async () => {
   const cookieStore = await cookies()
   const refreshToken = cookieStore.get('refreshToken')?.value
