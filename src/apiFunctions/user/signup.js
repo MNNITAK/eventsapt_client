@@ -1,8 +1,10 @@
 import { create, getCookies } from "@/app/action";
+import router from "next/router";
 import { signupUser, updateUserPreferences } from "@/api/authClient";
 
 const signup=async({cred})=>{
     try {
+        
         let response = await signupUser(cred);
         await create(response);
         return response;

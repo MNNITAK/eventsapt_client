@@ -16,7 +16,6 @@ export async function create(data) {
     sameSite:"none",
     maxAge:7 * 24 * 60 * 60 //
  })
- 
  cookieStore.set({
     name:"accessToken",
     value:data?.accessToken,

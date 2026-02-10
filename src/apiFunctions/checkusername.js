@@ -1,13 +1,10 @@
-import { axiosInstance } from "@/axios/axios.js";
-export const checkusername=async(username)=>{
+import { checkUsernameAvailability } from "@/api/authClient";
+
+export const checkusername = async(username) => {
     try {
-        let resp=await axiosInstance.post(`/user/usernameAvalaiblity`,{username:username},{
-            headers:{
-                "Authorization":`Bearer ${process.env.openapikey}`
-            }
-        });
-        return resp
+        let resp = await checkUsernameAvailability(username);
+        return { status: resp.statusCode, data: resp };
     } catch (error) {
-        throw error
+        throw error;
     }  
 }
