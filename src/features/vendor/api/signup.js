@@ -4,15 +4,12 @@ const signup=async({cred,router})=>{
     try {
         let response = await signupVendor(cred);
         await create(response);  
-        if(response?.statusCode==201){
-            router.push("/home/vendor?clientType=vendor");
-        }         
+        router.push("/vendor-dashboard");          
         return response;
     } catch (error) {        
-        if(error.response?.data?.statusCode==409){
-            router.push("/login?usertype=vendor");
-        }
-       throw error;        
+     router.push("/login?usertype=vendor"); 
+     throw error;        
     }
 }
 export {signup}
+

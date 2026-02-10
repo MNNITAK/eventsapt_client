@@ -11,9 +11,8 @@ const loginUser=async({data,router})=>{
         )
         //console.log(resp);        
         await create(resp?.data)
-        if(resp.status==203){
-            router.push("/home")
-        }
+        console.log("vendor Login Response:", resp);
+        router.push("/vendor-dashboard")
         return resp
     } catch (error) {
         //console.log(error);
