@@ -16,12 +16,18 @@ const loginClient = async (params) => {
             loginResponse = await loginVendor(data.userid, data.password);
         }
         
-        console.log("Login Response:", loginResponse);
-        await create(loginResponse);
+        console.log("Login Response:", loginResponse?.data);
+        await create(loginResponse?.data);
         const { setUser } = useAuthStore.getState();
         setUser(loginResponse);
         if (loginResponse.statusCode == 203) {
-            router.push(`/home/${client}?tab=home`);
+            if(client=='user'){
+                 router.push(`/home/${client}?tab=home`);
+            }
+            else{
+                    router.push(`/vendor-dashboard`);
+            }
+
         }
         return loginResponse;
     } catch (error) {
