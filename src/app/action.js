@@ -29,5 +29,6 @@ export async function create(data) {
 export const getCookies = async () => {
   const cookieStore = await cookies()
   const refreshToken = cookieStore.get('refreshToken')?.value
+  const accessToken = cookieStore.get('accessToken')?.value
   return refreshToken || ""
 }

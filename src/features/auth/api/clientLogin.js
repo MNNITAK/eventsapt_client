@@ -16,7 +16,7 @@ const loginClient = async (params) => {
             loginResponse = await loginVendor(data.userid, data.password);
         }
         
-        console.log("Login Response:", loginResponse?.data);
+        console.log("Login Response:", loginResponse);
         await create(loginResponse?.data);
         const { setUser } = useAuthStore.getState();
         setUser(loginResponse);

@@ -2,7 +2,11 @@ import { FaHome } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
 import { MdSlowMotionVideo } from "react-icons/md";
 import { TbReplaceFilled } from "react-icons/tb";
-const NavigatorList = [
+import { MdDashboard } from "react-icons/md";
+import { TbNeedleThread } from "react-icons/tb";
+import { FaCalendarDay } from "react-icons/fa";
+import { IoMdSettings } from "react-icons/io";
+const primaryList = [
     {
         tag:"Home",
         link:"/",
@@ -14,14 +18,37 @@ const NavigatorList = [
         icon:<IoSearch />
     },
     {
-        tag:"Shorts",
+        tag:"Reels",
         link:"/shorts",
         icon:<MdSlowMotionVideo />
+    }
+];
+const secodaryList = [
+    {
+        tag:"Dashboard",
+        link:"/user-dashboard",
+        icon:<MdDashboard />
     },
     {
         tag:"Bookings",
-        link:"/booking",
+        link:"/user-bookings",
         icon:<TbReplaceFilled />
+    },{
+        tag:"Threads",
+        link:"/user-threads",
+        icon:<TbNeedleThread />
+    },{
+        tag:"Calendar",
+        link:"/user-calender",
+        icon:<FaCalendarDay />
+    }
+
+]
+const tertiaryList = [
+    {
+        tag:"Settings",
+        link:"/user-settings",
+        icon:<IoMdSettings />
     }
 ]
-export {NavigatorList}
+export {primaryList,secodaryList,tertiaryList}
