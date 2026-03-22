@@ -27,7 +27,6 @@ const loginClient = async (params) => {
             else{
                     router.push(`/vendor-dashboard`);
             }
-
         }
         return loginResponse;
     } catch (error) {
@@ -37,3 +36,4 @@ const loginClient = async (params) => {
 }
 
 export { loginClient }
+
