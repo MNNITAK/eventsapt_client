@@ -1,0 +1,233 @@
+'use client'
+import { useState, useRef } from "react"
+import { FaRegHeart, FaHeart } from "react-icons/fa"
+import { FaRegBookmark, FaBookmark } from "react-icons/fa6"
+import { FaRegComment } from "react-icons/fa"
+import { TbShare3 } from "react-icons/tb"
+import { MdLocationOn } from "react-icons/md"
+import { BsThreeDots } from "react-icons/bs"
+import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5"
+import { axiosInstance } from "@/axios/axios.js"
+import { getCookies } from "@/app/action.js"
+
+const PostCard = ({ item }) => {
+    const [liked, setLiked] = useState(false)
+    const [saved, setSaved] = useState(false)
+    const [likeCount, setLikeCount] = useState(item?.interactions?.likeCount || 0)
+    const [currentSlide, setCurrentSlide] = useState(0)
+
+    // touch swipe tracking
+    const touchStartX = useRef(null)
+
+    const media = item?.media || []
+    const hasMultiple = media.length > 1
+    const current = media[currentSlide] || media[0]
+
+    const prev = () => setCurrentSlide((s) => (s - 1 + media.length) % media.length)
+    const next = () => setCurrentSlide((s) => (s + 1) % media.length)
+
+    const onTouchStart = (e) => { touchStartX.current = e.touches[0].clientX }
+    const onTouchEnd = (e) => {
+        if (touchStartX.current === null) return
+        const diff = touchStartX.current - e.changedTouches[0].clientX
+        if (Math.abs(diff) > 40) diff > 0 ? next() : prev()
+        touchStartX.current = null
+    }
+
+    const handleLike = async () => {
+        try {
+            const token = await getCookies()
+            setLiked((p) => !p)
+            setLikeCount((p) => liked ? p - 1 : p + 1)
+            await axiosInstance.post(`/posts/${item._id}/like`, {}, { headers: { wedoraCredentials: token } })
+        } catch {
+            setLiked((p) => !p)
+            setLikeCount((p) => liked ? p + 1 : p - 1)
+        }
+    }
+
+    const handleSave = async () => {
+        try {
+            const token = await getCookies()
+            setSaved((p) => !p)
+            await axiosInstance.post(`/posts/${item._id}/save`, {}, { headers: { wedoraCredentials: token } })
+        } catch {
+            setSaved((p) => !p)
+        }
+    }
+
+    const handleDoubleTap = () => { if (!liked) handleLike() }
+
+    return (
+        <div className="w-full rounded-3xl bg-white shadow-md mb-5 overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow duration-300">
+
+            {/* ── Header ─────────────────────────────────────────── */}
+            <div className="flex items-center justify-between px-4 py-3">
+                <div className="flex items-center gap-3">
+                    {/* Avatar with gradient ring */}
+                    <div className="p-[2px] rounded-full bg-gradient-to-tr from-[#C94C73] to-[#f5a3bb]">
+                        <div className="w-9 h-9 rounded-full bg-[#fff0f4] flex items-center justify-center">
+                            <span className="text-[#C94C73] font-bold text-sm">
+                                {item?.authorBusinessName?.[0]?.toUpperCase() || "W"}
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <p className="font-semibold text-sm leading-tight text-gray-800">
+                            {item?.authorBusinessName || "Wedding Vendor"}
+                        </p>
+                        {item?.location?.city && (
+                            <p className="text-[11px] text-gray-400 flex items-center gap-0.5 mt-0.5">
+                                <MdLocationOn className="text-[#C94C73] text-xs" />
+                                {item.location.city}{item.location.state ? `, ${item.location.state}` : ""}
+                            </p>
+                        )}
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    {item?.eventType && item.eventType !== "wedding vendor" && (
+                        <span className="text-[10px] bg-[#fff0f4] text-[#C94C73] font-semibold px-2.5 py-1 rounded-full border border-[#f5c8d6]">
+                            {item.eventType}
+                        </span>
+                    )}
+                    <BsThreeDots className="text-gray-400 cursor-pointer hover:text-gray-700 transition-colors" />
+                </div>
+            </div>
+
+            {/* ── Media carousel ─────────────────────────────────── */}
+            <div
+                className="w-full aspect-[4/3] bg-gray-50 relative overflow-hidden select-none"
+                onTouchStart={onTouchStart}
+                onTouchEnd={onTouchEnd}
+                onDoubleClick={handleDoubleTap}
+            >
+                {/* Slide animation wrapper
+                    Each slide is 100% of the outer container.
+                    The track overflows hidden and translateX moves by
+                    exactly one container-width per slide. */}
+                <div
+                    className="flex h-full transition-transform duration-300 ease-in-out"
+                    style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                >
+                    {media.map((m, i) => (
+                        <div key={i} className="h-full flex-shrink-0 w-full">
+                            {m.mediaType === "video" ? (
+                                <video src={m.url} className="w-full h-full object-cover" muted playsInline loop
+                                    onMouseEnter={(e) => e.target.play()} onMouseLeave={(e) => e.target.pause()} />
+                            ) : (
+                                <img src={m.url} alt={item?.caption || "Post"} className="w-full h-full object-cover" />
+                            )}
+                        </div>
+                    ))}
+                </div>
+
+                {/* Left arrow */}
+                {hasMultiple && currentSlide > 0 && (
+                    <button
+                        onClick={(e) => { e.stopPropagation(); prev() }}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-all shadow-md"
+                    >
+                        <IoChevronBackOutline size={16} />
+                    </button>
+                )}
+
+                {/* Right arrow */}
+                {hasMultiple && currentSlide < media.length - 1 && (
+                    <button
+                        onClick={(e) => { e.stopPropagation(); next() }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-all shadow-md"
+                    >
+                        <IoChevronForwardOutline size={16} />
+                    </button>
+                )}
+
+                {/* Dots */}
+                {hasMultiple && (
+                    <div className="absolute bottom-3 left-0 w-full flex justify-center gap-1.5">
+                        {media.map((_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setCurrentSlide(i)}
+                                className={`rounded-full transition-all duration-200 ${
+                                    i === currentSlide
+                                        ? "w-4 h-1.5 bg-white"
+                                        : "w-1.5 h-1.5 bg-white/50"
+                                }`}
+                            />
+                        ))}
+                    </div>
+                )}
+
+                {/* Slide counter pill (top-right) */}
+                {hasMultiple && (
+                    <span className="absolute top-3 right-3 text-[11px] bg-black/50 backdrop-blur-sm text-white px-2 py-0.5 rounded-full">
+                        {currentSlide + 1}/{media.length}
+                    </span>
+                )}
+
+                {/* No media fallback */}
+                {media.length === 0 && (
+                    <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm">
+                        No media available
+                    </div>
+                )}
+            </div>
+
+            {/* ── Actions row ────────────────────────────────────── */}
+            <div className="px-4 pt-3 pb-1 flex items-center justify-between">
+                <div className="flex items-center gap-5">
+                    {/* Like with bounce animation */}
+                    <button
+                        onClick={handleLike}
+                        className="flex items-center gap-1.5 group"
+                    >
+                        {liked
+                            ? <FaHeart className="text-[#C94C73] text-xl scale-110 transition-transform" />
+                            : <FaRegHeart className="text-gray-600 text-xl group-hover:text-[#C94C73] transition-colors" />}
+                        <span className="text-xs text-gray-500 font-medium">{likeCount}</span>
+                    </button>
+
+                    <button className="flex items-center gap-1.5 group">
+                        <FaRegComment className="text-gray-600 text-xl group-hover:text-[#C94C73] transition-colors" />
+                        <span className="text-xs text-gray-500 font-medium">{item?.interactions?.commentCount || 0}</span>
+                    </button>
+
+                    <button className="flex items-center gap-1.5 group">
+                        <TbShare3 className="text-gray-600 text-xl group-hover:text-[#C94C73] transition-colors" />
+                        <span className="text-xs text-gray-500 font-medium">{item?.interactions?.shareCount || 0}</span>
+                    </button>
+                </div>
+
+                <button onClick={handleSave} className="group">
+                    {saved
+                        ? <FaBookmark className="text-[#C94C73] text-xl scale-110 transition-transform" />
+                        : <FaRegBookmark className="text-gray-600 text-xl group-hover:text-[#C94C73] transition-colors" />}
+                </button>
+            </div>
+
+            {/* ── Caption ────────────────────────────────────────── */}
+            {item?.caption && (
+                <div className="px-4 pb-2">
+                    <p className="text-sm text-gray-700 leading-relaxed line-clamp-3">
+                        <span className="font-semibold text-gray-900 mr-1">{item?.authorBusinessName}</span>
+                        {item.caption}
+                    </p>
+                </div>
+            )}
+
+            {/* ── Tags ───────────────────────────────────────────── */}
+            {item?.tags?.length > 0 && (
+                <div className="px-4 pb-4 flex flex-wrap gap-1.5">
+                    {item.tags.slice(0, 5).map((tag, i) => (
+                        <span key={i} className="text-[11px] text-[#C94C73] cursor-pointer hover:underline">
+                            #{tag}
+                        </span>
+                    ))}
+                </div>
+            )}
+        </div>
+    )
+}
+
+export { PostCard }
