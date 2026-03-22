@@ -7,7 +7,7 @@ export default async function HomePageLayout({ children,params, searchParams }) 
   return <>
     <>
     <main className="w-[100%] flex">
-    <div className='w-[20%] sm:hidden md:block border-r-2 flex flex-col justify-between  border-green-500 h-screen'>
+    <div className='w-[20%] sm:hidden md:block border-r-2 flex flex-col justify-between shadow-lg h-screen'>
           <NavBar user={navParams.clientType} />
           <SideBarMain client={navParams.clientType}  />
      </div>
