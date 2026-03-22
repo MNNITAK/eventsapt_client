@@ -6,14 +6,14 @@ import Link from "next/link";
 import { TbMessageChatbot } from "react-icons/tb";
 function NavBar({user}) {
   return (
-    <div className="flex justify-between p-2 py-4 items-center md:border-0">
-        <nav className="flex md:ml-2 ml-2 justify-around items-center">
-        <Logo/>
+    <div className="flex h-[10vh]  justify-between py-4 items-center md:border-0">
+        <nav className="flex justify-around items-center">
+        <span className="scale-75"><Logo/></span>
         <SelectPage/>
         </nav>
-        <div className="text-[20px] font-bold flex ">
+        <div className="text-[17px] font-bold flex mr-4">
             <Link href={`/chatpen/${user}?cs=0`}><FiBell className="mr-2"/></Link>
-            <Link href={`/chatpen/${user}?cs=0`}><TbNotification className="mr-4"/></Link>
+            <Link href={`/chatpen/${user}?cs=0`}><TbNotification className="mr-2"/></Link>
             <Link href={`/chatbot`}><TbMessageChatbot/></Link>
         </div>
     </div>

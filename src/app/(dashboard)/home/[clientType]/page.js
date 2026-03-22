@@ -12,8 +12,6 @@ import { CoupleProfile } from "@/features/couple/components/CoupleProfile"
 async function page({ params, searchParams }) {
   const clientParam = await params;
   const searchprm = await searchParams
-  //console.log(clientParam);
-  let rsp = await profileFetch()
   return (
     <>
       <div id="mainPost" className='flex md:flex-row w-[100%]  h-[85vh] md:h-[100vh] overflow-y-auto flex-col'>
