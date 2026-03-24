@@ -213,7 +213,7 @@ import {
   enqueueInsight,
   scheduleFlush,
   flushOnExit,
-} from "@/utils/insightBuffer";
+} from "../utils/insightsBuffer.js";
 
 const PROGRESS_INTERVAL_MS = 5000;
 const COMPLETION_THRESHOLD = 0.95;

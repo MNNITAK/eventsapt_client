@@ -42,17 +42,18 @@ export const flushInsights = async () => {
   if (!queue.length) return;
 
   try {
-    const res = await fetch("/api/v1/insights/bulk", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ events: queue }),
-      keepalive: true,
-    });
+    // const res = await fetch("/api/v1/insights/bulk", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   credentials: "include",
+    //   body: JSON.stringify({ events: queue }),
+    //   keepalive: true,
+    // });
 
-    if (res.ok) {
-      clearBufferedInsights();
-    }
+    // if (res.ok) {
+    //   clearBufferedInsights();
+    // }
+    console.log(queue);
   } catch {
     // keep buffer for next attempt
   }
@@ -74,6 +75,6 @@ export const flushOnExit = () => {
     { type: "application/json" }
   );
 
-  navigator.sendBeacon("/api/v1/insights/bulk", blob);
+  //navigator.sendBeacon("/api/v1/insights/bulk", blob);
   clearBufferedInsights();
 };
