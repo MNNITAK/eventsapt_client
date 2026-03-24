@@ -6,8 +6,11 @@ import { BsThreeDots, BsPlayFill, BsPauseFill } from "react-icons/bs"
 import { MdLocationOn, MdMusicNote } from "react-icons/md"
 import { TbShare3 } from "react-icons/tb"
 import { HiVolumeUp, HiVolumeOff } from "react-icons/hi"
+import { FaRegComment } from "react-icons/fa"
 import { axiosInstance } from "@/axios/axios.js"
 import { getCookies } from "@/app/action.js"
+import { useRouter, useSearchParams } from "next/navigation"
+import { CommentsDrawer } from "./CommentsDrawer"
 
 const formatDuration = (s) => {
     if (!s) return ""
@@ -24,9 +27,25 @@ const ReelCard = ({ item }) => {
     const [muted, setMuted] = useState(false)     // audio on by default
     const [progress, setProgress] = useState(0)    // 0-100
 
+    const [showComments, setShowComments] = useState(false)
+
     const videoRef = useRef(null)
     const containerRef = useRef(null)
-    const mutedRef = useRef(false)  // always holds the latest muted value for the observer closure
+    const mutedRef = useRef(false)
+
+    const router = useRouter()
+    const searchParams = useSearchParams()
+
+    const goToVendorProfile = () => {
+        const vid = item?.vendorId || item?.vendor?._id || item?.vendor
+        const name = item?.authorBusinessName
+        if (!vid && !name) return
+        const params = new URLSearchParams(searchParams.toString())
+        params.set("tab", "profile")
+        if (vid) params.set("vendorId", String(vid))
+        if (name) params.set("vendorName", name)
+        router.push(`?${params.toString()}`)
+    }  // always holds the latest muted value for the observer closure
 
     const video = item?.video || {}
     const audio = item?.audio?.track
@@ -129,6 +148,14 @@ const ReelCard = ({ item }) => {
     }
 
     return (
+        <>
+        <CommentsDrawer
+            open={showComments}
+            onClose={() => setShowComments(false)}
+            itemId={item?._id}
+            contentType="reel"
+            initialCount={item?.interactions?.commentCount || 0}
+        />
         <div className="w-full rounded-3xl bg-black mb-5 overflow-hidden shadow-xl border border-gray-900">
 
             {/* ── Header (dark style for reels) ──────────────────── */}
@@ -142,9 +169,9 @@ const ReelCard = ({ item }) => {
                         </div>
                     </div>
                     <div>
-                        <p className="font-semibold text-sm text-white leading-tight">
+                        <button onClick={goToVendorProfile} className="font-semibold text-sm text-white leading-tight hover:text-[#f5a3bb] transition-colors text-left">
                             {item?.authorBusinessName || "Wedding Vendor"}
-                        </p>
+                        </button>
                         {item?.location?.city && (
                             <p className="text-[11px] text-gray-400 flex items-center gap-0.5 mt-0.5">
                                 <MdLocationOn className="text-[#C94C73] text-xs" />
@@ -224,6 +251,14 @@ const ReelCard = ({ item }) => {
                     </button>
 
                     <button
+                        onClick={(e) => { e.stopPropagation(); setShowComments(true) }}
+                        className="flex flex-col items-center gap-1"
+                    >
+                        <FaRegComment className="text-white text-2xl drop-shadow-lg" />
+                        <span className="text-white text-[10px] font-medium drop-shadow">{item?.interactions?.commentCount || 0}</span>
+                    </button>
+
+                    <button
                         onClick={(e) => { e.stopPropagation() }}
                         className="flex flex-col items-center gap-1"
                     >
@@ -292,6 +327,7 @@ const ReelCard = ({ item }) => {
                 </div>
             )}
         </div>
+        </>
     )
 }
 

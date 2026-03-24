@@ -7,7 +7,7 @@ import { StorySection } from "@/features/feed/components/StorySection"
 import { Posts } from "@/features/feed/components/Posts"
 import { Search } from "@/shared/components/desktop/Search.js"
 import { profileFetch } from "@/apiFunctions/profile"
-import { VendorProfile } from "@/features/vendor/components/Vendorprofile"
+import { VendorPublicProfile } from "@/features/vendor/components/VendorPublicProfile"
 import { CoupleProfile } from "@/features/couple/components/CoupleProfile"
 async function page({ params, searchParams }) {
   const clientParam = await params;
@@ -26,24 +26,21 @@ async function page({ params, searchParams }) {
           </div>
         </div>
         {
-          searchprm?.tab == "home" || searchprm?.tab == "search" ? <div className="w-[100%] flex">
-            <div className='md:w-[68%]  flex flex-col items-center relative md:items-start h-[100%] w-[100vw]'>
-              <div className="w-[100%] hidden md:block">
-                <div className="w-[100%]  flex justify-center"><StorySection /></div>
+          searchprm?.tab == 'profile' ? (
+            <div className="w-[100%] h-[100%] overflow-y-auto">
+              <VendorPublicProfile />
+            </div>
+          ) : searchprm?.tab == "home" || searchprm?.tab == "search" ? (
+            <div className="w-[100%] flex">
+              <div className='md:w-[68%] flex flex-col items-center relative md:items-start h-[100%] w-[100vw]'>
+                <div className="w-[100%] hidden md:block">
+                  <div className="w-[100%] flex justify-center"><StorySection /></div>
+                </div>
+                <Posts id_={"mainPost"} />
               </div>
-              <Posts id_={"mainPost"} />
+              {searchprm?.tab == "search" && <div className="w-[32%]"><Search/></div>}
             </div>
-            {
-              searchprm?.tab == "search" && <div className="w-[32%]"><Search/></div>
-            }
-          </div> :
-            <div className='md:w-[68%]  flex flex-col items-center relative md:items-start h-[100%] w-[100vw]'>
-            </div>
-        }
-        {
-          searchprm?.tab == 'profile' && <div className="w-[100%]">
-            <VendorProfile />
-          </div>
+          ) : null
         }
         {/* <div className="hidden md:block w-[32%] h-[100%] border-2">
             <div className="w-[100%] h-[100%] flex items-center justify-center">

@@ -9,12 +9,19 @@ import { BsThreeDots } from "react-icons/bs"
 import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5"
 import { axiosInstance } from "@/axios/axios.js"
 import { getCookies } from "@/app/action.js"
+import { useRouter, useSearchParams } from "next/navigation"
+import { CommentsDrawer } from "./CommentsDrawer"
 
 const PostCard = ({ item }) => {
     const [liked, setLiked] = useState(false)
     const [saved, setSaved] = useState(false)
     const [likeCount, setLikeCount] = useState(item?.interactions?.likeCount || 0)
+    const [commentCount, setCommentCount] = useState(item?.interactions?.commentCount || 0)
     const [currentSlide, setCurrentSlide] = useState(0)
+    const [showComments, setShowComments] = useState(false)
+
+    const router = useRouter()
+    const searchParams = useSearchParams()
 
     // touch swipe tracking
     const touchStartX = useRef(null)
@@ -58,24 +65,43 @@ const PostCard = ({ item }) => {
 
     const handleDoubleTap = () => { if (!liked) handleLike() }
 
+    const goToVendorProfile = () => {
+        const vid = item?.vendorId || item?.vendor?._id || item?.vendor
+        const name = item?.authorBusinessName
+        if (!vid && !name) return
+        const params = new URLSearchParams(searchParams.toString())
+        params.set("tab", "profile")
+        if (vid) params.set("vendorId", String(vid))
+        if (name) params.set("vendorName", name)
+        router.push(`?${params.toString()}`)
+    }
+
     return (
+        <>
+        <CommentsDrawer
+            open={showComments}
+            onClose={() => setShowComments(false)}
+            itemId={item?._id}
+            contentType="post"
+            initialCount={commentCount}
+        />
         <div className="w-full rounded-3xl bg-white shadow-md mb-5 overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow duration-300">
 
             {/* ── Header ─────────────────────────────────────────── */}
             <div className="flex items-center justify-between px-4 py-3">
                 <div className="flex items-center gap-3">
-                    {/* Avatar with gradient ring */}
-                    <div className="p-[2px] rounded-full bg-gradient-to-tr from-[#C94C73] to-[#f5a3bb]">
+                    {/* Avatar with gradient ring — clickable */}
+                    <button onClick={goToVendorProfile} className="p-[2px] rounded-full bg-gradient-to-tr from-[#C94C73] to-[#f5a3bb]">
                         <div className="w-9 h-9 rounded-full bg-[#fff0f4] flex items-center justify-center">
                             <span className="text-[#C94C73] font-bold text-sm">
                                 {item?.authorBusinessName?.[0]?.toUpperCase() || "W"}
                             </span>
                         </div>
-                    </div>
+                    </button>
                     <div>
-                        <p className="font-semibold text-sm leading-tight text-gray-800">
+                        <button onClick={goToVendorProfile} className="font-semibold text-sm leading-tight text-gray-800 hover:text-[#C94C73] transition-colors text-left">
                             {item?.authorBusinessName || "Wedding Vendor"}
-                        </p>
+                        </button>
                         {item?.location?.city && (
                             <p className="text-[11px] text-gray-400 flex items-center gap-0.5 mt-0.5">
                                 <MdLocationOn className="text-[#C94C73] text-xs" />
@@ -188,9 +214,9 @@ const PostCard = ({ item }) => {
                         <span className="text-xs text-gray-500 font-medium">{likeCount}</span>
                     </button>
 
-                    <button className="flex items-center gap-1.5 group">
+                    <button onClick={() => setShowComments(true)} className="flex items-center gap-1.5 group">
                         <FaRegComment className="text-gray-600 text-xl group-hover:text-[#C94C73] transition-colors" />
-                        <span className="text-xs text-gray-500 font-medium">{item?.interactions?.commentCount || 0}</span>
+                        <span className="text-xs text-gray-500 font-medium">{commentCount}</span>
                     </button>
 
                     <button className="flex items-center gap-1.5 group">
@@ -227,6 +253,7 @@ const PostCard = ({ item }) => {
                 </div>
             )}
         </div>
+        </>
     )
 }
 
