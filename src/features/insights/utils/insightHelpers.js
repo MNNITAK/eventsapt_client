@@ -83,3 +83,53 @@ export const CHART_COLORS_DARK = {
   amber: "#fbbf24",
   blue: "#60a5fa",
 };
+
+// ─── Insight event type constants ─────────────────────────────────────────────
+// Single source of truth for every event name used across useTrackEvents,
+// insightBuffer, and the backend /api/v1/insights/bulk handler.
+// Never use raw strings — always import from here.
+
+export const REEL_EVENTS = {
+  // Playback
+  PLAY:             "play",            // first play of this reel in this session
+  REPLAY:           "replay",          // user replayed from near beginning
+  WATCH_PROGRESS:   "watch_progress",  // periodic watch time delta (every 5s + on pause)
+  COMPLETION:       "completion",      // watched >= 95% of duration
+
+  // Visibility
+  VIEW_FOLLOWER:    "view_follower",     // reel in viewport 1s+, viewer is a follower
+  VIEW_NONFOLLOWER: "view_nonfollower",  // reel in viewport 1s+, viewer is not a follower
+
+  // User actions — each maps to a field on reelInteractionSchema
+  LIKE:             "like",
+  UNLIKE:           "unlike",
+  SAVE:             "save",
+  UNSAVE:           "unsave",
+  SHARE:            "share",
+  COMMENT:          "comment",          // a comment was posted
+  COMMENT_DELETE:   "comment_delete",   // a comment was deleted
+
+  // Growth
+  NEW_FOLLOW:       "new_follow",       // user followed the author from this reel
+};
+
+export const POST_EVENTS = {
+  // Visibility
+  VIEW_FOLLOWER:    "view_follower",
+  VIEW_NONFOLLOWER: "view_nonfollower",
+  REACH:            "reach",            // first unique view = accountsReached +1
+
+  // Dwell (posts have no video — dwell replaces watch time)
+  DWELL_TIME:       "dwell_time",       // seconds spent with post in viewport
+
+  // User actions — each maps to a field on interactionSchema
+  LIKE:             "like",
+  UNLIKE:           "unlike",
+  SAVE:             "save",
+  UNSAVE:           "unsave",
+  COMMENT:          "comment",
+  COMMENT_DELETE:   "comment_delete",
+
+  // Growth
+  NEW_FOLLOW:       "new_follow",
+};
