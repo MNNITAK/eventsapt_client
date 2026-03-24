@@ -11,6 +11,7 @@ import { axiosInstance } from "@/axios/axios.js"
 import { getCookies } from "@/app/action.js"
 import { useRouter, useSearchParams } from "next/navigation"
 import { CommentsDrawer } from "./CommentsDrawer"
+import { useTrackReel } from "@/features/insights/hooks/useTrackEvents.js"
 
 const formatDuration = (s) => {
     if (!s) return ""
@@ -20,13 +21,17 @@ const formatDuration = (s) => {
 }
 
 const ReelCard = ({ item }) => {
+
+    const { insightVideoRef,
+     insightContainerRef,
+     trackLike, trackSave, trackShare, trackComment, trackFollow } = useTrackReel({reelId:item._id,isFollower:false})
+
     const [liked, setLiked] = useState(false)
     const [saved, setSaved] = useState(false)
     const [likeCount, setLikeCount] = useState(item?.interactions?.likeCount || 0)
     const [playing, setPlaying] = useState(false)
     const [muted, setMuted] = useState(false)     // audio on by default
     const [progress, setProgress] = useState(0)    // 0-100
-
     const [showComments, setShowComments] = useState(false)
 
     const videoRef = useRef(null)
@@ -47,15 +52,29 @@ const ReelCard = ({ item }) => {
         router.push(`?${params.toString()}`)
     }  // always holds the latest muted value for the observer closure
 
+
     const video = item?.video || {}
     const audio = item?.audio?.track
 
+    // combiene refs of insight generator and video element
     // ── Stable callback ref — useCallback prevents React from calling this
     // on every re-render (new function identity would reset muted each time)
     const setVideoRef = useCallback((node) => {
         videoRef.current = node
         if (node) node.muted = mutedRef.current
     }, [])
+    const setInsightVideoRef = (element) => {
+        videoRef.current = element;
+        insightVideoRef.current = element;
+    }
+    const setInsightContainerRef = (element) => {
+        containerRef.current = element;
+        insightContainerRef.current = element;
+    }
+    const combinedVideoRefFunction = (element) => {
+        setVideoRef(element);
+        setInsightVideoRef(element)
+    }
 
     // ── Sync muted toggle to video DOM node ───────────────────────────────
     useEffect(() => {
@@ -191,12 +210,12 @@ const ReelCard = ({ item }) => {
 
             {/* ── Video container ────────────────────────────────── */}
             <div
-                ref={containerRef}
+                ref={setInsightContainerRef}
                 className="w-full aspect-[9/16] md:aspect-[4/5] bg-black relative overflow-hidden"
             >
                 {video.url ? (
                     <video
-                        ref={setVideoRef}
+                        ref={combinedVideoRefFunction}
                         src={video.url}
                         poster={video.thumbnail}
                         className="w-full h-full object-cover"
@@ -231,7 +250,7 @@ const ReelCard = ({ item }) => {
                 {/* ── Right-side action overlay ── */}
                 <div className="absolute right-3 bottom-20 flex flex-col gap-5 items-center">
                     <button
-                        onClick={(e) => { e.stopPropagation(); handleLike() }}
+                        onClick={(e) => { e.stopPropagation(); handleLike(); trackLike(liked) }}
                         className="flex flex-col items-center gap-1"
                     >
                         {liked
@@ -241,7 +260,7 @@ const ReelCard = ({ item }) => {
                     </button>
 
                     <button
-                        onClick={(e) => { e.stopPropagation(); handleSave() }}
+                        onClick={(e) => { e.stopPropagation(); handleSave(); trackSave(saved) }}
                         className="flex flex-col items-center gap-1"
                     >
                         {saved
@@ -251,6 +270,7 @@ const ReelCard = ({ item }) => {
                     </button>
 
                     <button
+
                         onClick={(e) => { e.stopPropagation(); setShowComments(true) }}
                         className="flex flex-col items-center gap-1"
                     >
@@ -259,7 +279,7 @@ const ReelCard = ({ item }) => {
                     </button>
 
                     <button
-                        onClick={(e) => { e.stopPropagation() }}
+                        onClick={(e) => { e.stopPropagation(); trackShare() }}
                         className="flex flex-col items-center gap-1"
                     >
                         <TbShare3 className="text-white text-2xl drop-shadow-lg" />

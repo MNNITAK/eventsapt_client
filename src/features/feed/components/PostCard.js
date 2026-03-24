@@ -11,8 +11,11 @@ import { axiosInstance } from "@/axios/axios.js"
 import { getCookies } from "@/app/action.js"
 import { useRouter, useSearchParams } from "next/navigation"
 import { CommentsDrawer } from "./CommentsDrawer"
+import { useTrackPost } from "@/features/insights/hooks/useTrackEvents.js"
 
 const PostCard = ({ item }) => {
+    const {  insightContainerRef,
+     trackLike, trackSave, trackComment, trackFollow } = useTrackPost({postId:item._id,isFollower:false})
     const [liked, setLiked] = useState(false)
     const [saved, setSaved] = useState(false)
     const [likeCount, setLikeCount] = useState(item?.interactions?.likeCount || 0)
@@ -123,6 +126,7 @@ const PostCard = ({ item }) => {
 
             {/* ── Media carousel ─────────────────────────────────── */}
             <div
+                ref={insightContainerRef}
                 className="w-full aspect-[4/3] bg-gray-50 relative overflow-hidden select-none"
                 onTouchStart={onTouchStart}
                 onTouchEnd={onTouchEnd}
@@ -205,7 +209,7 @@ const PostCard = ({ item }) => {
                 <div className="flex items-center gap-5">
                     {/* Like with bounce animation */}
                     <button
-                        onClick={handleLike}
+                        onClick={()=> {handleLike();trackLike(liked)}}
                         className="flex items-center gap-1.5 group"
                     >
                         {liked
@@ -225,7 +229,7 @@ const PostCard = ({ item }) => {
                     </button>
                 </div>
 
-                <button onClick={handleSave} className="group">
+                <button onClick={()=> {handleSave(); trackSave(saved)}} className="group">
                     {saved
                         ? <FaBookmark className="text-[#C94C73] text-xl scale-110 transition-transform" />
                         : <FaRegBookmark className="text-gray-600 text-xl group-hover:text-[#C94C73] transition-colors" />}
