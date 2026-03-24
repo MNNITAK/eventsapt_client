@@ -225,7 +225,7 @@ const ReelCard = ({ item }) => {
                 {/* ── Right-side action overlay ── */}
                 <div className="absolute right-3 bottom-20 flex flex-col gap-5 items-center">
                     <button
-                        onClick={(e) => { e.stopPropagation(); handleLike() }}
+                        onClick={(e) => { e.stopPropagation(); handleLike(); trackLike(liked) }}
                         className="flex flex-col items-center gap-1"
                     >
                         {liked
@@ -235,7 +235,7 @@ const ReelCard = ({ item }) => {
                     </button>
 
                     <button
-                        onClick={(e) => { e.stopPropagation(); handleSave() }}
+                        onClick={(e) => { e.stopPropagation(); handleSave(); trackSave(saved) }}
                         className="flex flex-col items-center gap-1"
                     >
                         {saved
@@ -245,7 +245,7 @@ const ReelCard = ({ item }) => {
                     </button>
 
                     <button
-                        onClick={(e) => { e.stopPropagation() }}
+                        onClick={(e) => { e.stopPropagation(); trackShare() }}
                         className="flex flex-col items-center gap-1"
                     >
                         <TbShare3 className="text-white text-2xl drop-shadow-lg" />
