@@ -13,7 +13,7 @@ export const fetchFeed = async ({ pageParam = 1 }) => {
         const token = await getCookies()
         const page = pageParam || 1
 
-        const resp = await axiosInstance.get(`/feed`, {
+        const resp = await axiosInstance.get(`/content/feed`, {
             params: { page, limit: 20 },
             headers: {
                 wedoraCredentials: token,

@@ -8,6 +8,7 @@ import { TbShare3 } from "react-icons/tb"
 import { HiVolumeUp, HiVolumeOff } from "react-icons/hi"
 import { axiosInstance } from "@/axios/axios.js"
 import { getCookies } from "@/app/action.js"
+import { useTrackReel } from "@/features/insights"
 
 const formatDuration = (s) => {
     if (!s) return ""
@@ -17,6 +18,9 @@ const formatDuration = (s) => {
 }
 
 const ReelCard = ({ item }) => {
+
+    const { insightVideoRef,insightContainerRef } = useTrackReel({reelId:item._id,isFollower:false})
+
     const [liked, setLiked] = useState(false)
     const [saved, setSaved] = useState(false)
     const [likeCount, setLikeCount] = useState(item?.interactions?.likeCount || 0)
@@ -24,19 +28,34 @@ const ReelCard = ({ item }) => {
     const [muted, setMuted] = useState(false)     // audio on by default
     const [progress, setProgress] = useState(0)    // 0-100
 
-    const videoRef = useRef(null)
-    const containerRef = useRef(null)
+    const videoRef = useRef(null);
+    
+    const containerRef = useRef(null);
+    
     const mutedRef = useRef(false)  // always holds the latest muted value for the observer closure
 
     const video = item?.video || {}
     const audio = item?.audio?.track
 
+    // combiene refs of insight generator and video element
     // ── Stable callback ref — useCallback prevents React from calling this
     // on every re-render (new function identity would reset muted each time)
     const setVideoRef = useCallback((node) => {
         videoRef.current = node
         if (node) node.muted = mutedRef.current
     }, [])
+    const setInsightVideoRef = (element) => {
+        videoRef.current = element;
+        insightVideoRef.current = element;
+    }
+    const setInsightContainerRef = (element) => {
+        containerRef.current = element;
+        insightContainerRef.current = element;
+    }
+    const combinedVideoRefFunction = (element) => {
+        setVideoRef(element);
+        setInsightVideoRef(element)
+    }
 
     // ── Sync muted toggle to video DOM node ───────────────────────────────
     useEffect(() => {
@@ -164,12 +183,12 @@ const ReelCard = ({ item }) => {
 
             {/* ── Video container ────────────────────────────────── */}
             <div
-                ref={containerRef}
+                ref={setInsightContainerRef}
                 className="w-full aspect-[9/16] md:aspect-[4/5] bg-black relative overflow-hidden"
             >
                 {video.url ? (
                     <video
-                        ref={setVideoRef}
+                        ref={combinedVideoRefFunction}
                         src={video.url}
                         poster={video.thumbnail}
                         className="w-full h-full object-cover"
