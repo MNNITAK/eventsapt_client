@@ -49,7 +49,7 @@ const PostCard = ({ item }) => {
             const token = await getCookies()
             setLiked((p) => !p)
             setLikeCount((p) => liked ? p - 1 : p + 1)
-            await axiosInstance.post(`/posts/${item._id}/like`, {}, { headers: { wedoraCredentials: token } })
+            await axiosInstance.post(`/v1/posts/${item._id}/like`, {}, { headers: { wedoraCredentials: token } })
         } catch {
             setLiked((p) => !p)
             setLikeCount((p) => liked ? p + 1 : p - 1)
@@ -60,7 +60,7 @@ const PostCard = ({ item }) => {
         try {
             const token = await getCookies()
             setSaved((p) => !p)
-            await axiosInstance.post(`/posts/${item._id}/save`, {}, { headers: { wedoraCredentials: token } })
+            await axiosInstance.post(`/v1/posts/${item._id}/save`, {}, { headers: { wedoraCredentials: token } })
         } catch {
             setSaved((p) => !p)
         }

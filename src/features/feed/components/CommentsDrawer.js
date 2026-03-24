@@ -20,7 +20,7 @@ const CommentsDrawer = ({ open, onClose, itemId, contentType = "post", initialCo
     useEffect(() => {
         if (!open || !itemId) return
         setLoading(true)
-        axiosInstance.get(`/${endpoint}/${itemId}`)
+        axiosInstance.get(`/v1/${endpoint}/${itemId}`)
             .then((res) => {
                 const doc = res.data?.data
                 setComments(doc?.interactions?.comments || [])
@@ -40,7 +40,7 @@ const CommentsDrawer = ({ open, onClose, itemId, contentType = "post", initialCo
         try {
             const token = await getCookies()
             const res = await axiosInstance.post(
-                `/${endpoint}/${itemId}/comments`,
+                `/v1/${endpoint}/${itemId}/comments`,
                 { content: text.trim() },
                 { headers: { wedoraCredentials: token } }
             )
@@ -62,7 +62,7 @@ const CommentsDrawer = ({ open, onClose, itemId, contentType = "post", initialCo
     const handleDelete = async (commentId) => {
         try {
             const token = await getCookies()
-            await axiosInstance.delete(`/${endpoint}/${itemId}/comments/${commentId}`, {
+            await axiosInstance.delete(`/v1/${endpoint}/${itemId}/comments/${commentId}`, {
                 headers: { wedoraCredentials: token },
             })
             setComments((prev) => prev.filter((c) => c._id !== commentId))

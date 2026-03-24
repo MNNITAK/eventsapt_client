@@ -102,7 +102,7 @@ const ReelCard = ({ item }) => {
                         v.play().then(() => setPlaying(true)).catch(() => {})
                     })
                     getCookies().then((token) => {
-                        axiosInstance.post(`/reels/${item._id}/play`, {}, {
+                        axiosInstance.post(`/v1/reels/${item._id}/play`, {}, {
                             headers: { wedoraCredentials: token }
                         }).catch(() => {})
                     })
@@ -149,7 +149,7 @@ const ReelCard = ({ item }) => {
             const token = await getCookies()
             setLiked((p) => !p)
             setLikeCount((p) => liked ? p - 1 : p + 1)
-            await axiosInstance.post(`/reels/${item._id}/like`, {}, { headers: { wedoraCredentials: token } })
+            await axiosInstance.post(`/v1/reels/${item._id}/like`, {}, { headers: { wedoraCredentials: token } })
         } catch {
             setLiked((p) => !p)
             setLikeCount((p) => liked ? p + 1 : p - 1)
@@ -160,7 +160,7 @@ const ReelCard = ({ item }) => {
         try {
             const token = await getCookies()
             setSaved((p) => !p)
-            await axiosInstance.post(`/reels/${item._id}/save`, {}, { headers: { wedoraCredentials: token } })
+            await axiosInstance.post(`/v1/reels/${item._id}/save`, {}, { headers: { wedoraCredentials: token } })
         } catch {
             setSaved((p) => !p)
         }

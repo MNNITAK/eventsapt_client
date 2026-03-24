@@ -25,12 +25,12 @@ export const fetchPublicVendorProfile = async (vendorId) => {
 }
 
 export const fetchVendorPosts = async (vendorId) => {
-    const { data } = await axiosInstance.get(`/posts/vendor/${vendorId}`)
+    const { data } = await axiosInstance.get(`/v1/posts/vendor/${vendorId}`)
     return data?.data?.posts || data?.data || []
 }
 
 export const fetchVendorReels = async (vendorId) => {
-    const { data } = await axiosInstance.get(`/reels/vendor/${vendorId}`)
+    const { data } = await axiosInstance.get(`/v1/reels/vendor/${vendorId}`)
     return data?.data?.reels || data?.data || []
 }
 
