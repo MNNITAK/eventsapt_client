@@ -6,12 +6,12 @@ export default async function HomePageLayout({ children,params, searchParams }) 
   const tbparams=await searchParams
   return <>
     <>
-    <main className="w-[100%] flex">
-    <div className='w-[20%] sm:hidden md:block border-r-2 flex flex-col justify-between shadow-lg h-screen'>
+    <main className="w-[100%] flex min-h-screen bg-[#0e0e0e]">
+    <div className='w-[20%] sm:hidden md:flex flex-col bg-gradient-to-b from-[#0e0e0e] to-[#131313] border-r border-[#1f1f1f] h-screen sticky top-0 overflow-y-auto'>
           <NavBar user={navParams.clientType} />
           <SideBarMain client={navParams.clientType}  />
      </div>
-    <main className="w-[100%] md:w-[80%] ">
+    <main className="w-[100%] md:w-[80%] bg-[#0e0e0e]">
       {children}
     </main>
     </main>

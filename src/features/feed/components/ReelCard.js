@@ -175,14 +175,14 @@ const ReelCard = ({ item }) => {
             contentType="reel"
             initialCount={item?.interactions?.commentCount || 0}
         />
-        <div className="w-full rounded-3xl bg-black mb-5 overflow-hidden shadow-xl border border-gray-900">
+        <div className="w-full rounded-[32px] bg-[#1a1919] mb-5 overflow-hidden shadow-[0px_0px_40px_0px_rgba(0,0,0,0.3)] border border-[#2a2828]">
 
             {/* ── Header (dark style for reels) ──────────────────── */}
             <div className="flex items-center justify-between px-4 py-3">
                 <div className="flex items-center gap-3">
-                    <div className="p-[2px] rounded-full bg-gradient-to-tr from-[#C94C73] to-[#f5a3bb]">
-                        <div className="w-9 h-9 rounded-full bg-gray-900 flex items-center justify-center">
-                            <span className="text-[#f5a3bb] font-bold text-sm">
+                    <div className="p-[2px] rounded-full bg-gradient-to-tr from-[#ff89ac] to-[#a68cff]">
+                        <div className="w-9 h-9 rounded-full bg-[#111] flex items-center justify-center">
+                            <span className="text-[#ff89ac] font-bold text-sm">
                                 {item?.authorBusinessName?.[0]?.toUpperCase() || "W"}
                             </span>
                         </div>
@@ -201,7 +201,7 @@ const ReelCard = ({ item }) => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <span className="text-[10px] bg-[#C94C73]/20 text-[#f5a3bb] font-semibold px-2.5 py-1 rounded-full border border-[#C94C73]/30">
+                    <span className="text-[10px] bg-[#ff89ac]/10 text-[#ff89ac] font-semibold px-2.5 py-1 rounded-full border border-[#ff89ac]/20">
                         Reel
                     </span>
                     <BsThreeDots className="text-gray-400 cursor-pointer hover:text-white transition-colors" />
@@ -330,7 +330,7 @@ const ReelCard = ({ item }) => {
                     onClick={(e) => { e.stopPropagation(); scrub(e) }}
                 >
                     <div
-                        className="h-full bg-[#C94C73] transition-none"
+                        className="h-full bg-[#ff89ac] transition-none"
                         style={{ width: `${progress}%` }}
                     />
                 </div>

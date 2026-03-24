@@ -1,22 +1,37 @@
 import Logo from "@/shared/common/logo"
-import SelectPage from "./SelectPage";
 import { FiBell } from "react-icons/fi";
-import { TbNotification } from "react-icons/tb";
-import Link from "next/link";
 import { TbMessageChatbot } from "react-icons/tb";
-function NavBar({user}) {
+import Link from "next/link";
+
+function NavBar({ user }) {
   return (
-    <div className="flex h-[10vh]  justify-between py-4 items-center md:border-0">
-        <nav className="flex justify-around items-center">
-        <span className="scale-75"><Logo/></span>
-        <SelectPage/>
-        </nav>
-        <div className="text-[17px] font-bold flex mr-4">
-            <Link href={`/chatpen/${user}?cs=0`}><FiBell className="mr-2"/></Link>
-            <Link href={`/chatpen/${user}?cs=0`}><TbNotification className="mr-2"/></Link>
-            <Link href={`/chatbot`}><TbMessageChatbot/></Link>
-        </div>
+    <div className="flex items-center justify-between px-5 py-4 border-b border-[#1f1f1f] md:border-b-0 md:py-6">
+      {/* Brand / Logo */}
+      <div className="scale-75 origin-left md:scale-100">
+        <Logo />
+      </div>
+
+      {/* Action icons — visible on mobile only; desktop puts these elsewhere */}
+      <div className="flex items-center gap-4 text-[#adaaaa] md:hidden">
+        <Link href={`/chatpen/${user}?cs=0`}>
+          <FiBell className="text-xl hover:text-white transition-colors" />
+        </Link>
+        <Link href={`/chatbot`}>
+          <TbMessageChatbot className="text-xl hover:text-white transition-colors" />
+        </Link>
+      </div>
+
+      {/* Desktop: notification icons shown above sidebar nav */}
+      <div className="hidden md:flex items-center gap-3 text-[#adaaaa]">
+        <Link href={`/chatpen/${user}?cs=0`}>
+          <FiBell className="text-lg hover:text-white transition-colors" />
+        </Link>
+        <Link href={`/chatbot`}>
+          <TbMessageChatbot className="text-lg hover:text-white transition-colors" />
+        </Link>
+      </div>
     </div>
   )
 }
+
 export { NavBar }

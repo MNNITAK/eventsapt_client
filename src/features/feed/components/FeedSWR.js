@@ -6,22 +6,24 @@ import { ReelCard } from "./ReelCard"
 
 // Skeleton card shown while loading
 const FeedSkeleton = () => (
-    <div className="w-full rounded-2xl border border-gray-100 mb-4 overflow-hidden animate-pulse">
-        <div className="flex items-center gap-2 px-3 py-2">
-            <div className="w-9 h-9 rounded-full bg-gray-200" />
-            <div className="flex flex-col gap-1">
-                <div className="h-3 w-28 bg-gray-200 rounded" />
-                <div className="h-2 w-16 bg-gray-100 rounded" />
+    <div className="w-full rounded-[32px] border border-[#2a2828] bg-[#1a1919] mb-5 overflow-hidden animate-pulse">
+        <div className="flex items-center gap-3 px-4 py-3">
+            <div className="w-9 h-9 rounded-full bg-[#2a2828] flex-shrink-0" />
+            <div className="flex flex-col gap-1.5 flex-1">
+                <div className="h-3 w-28 bg-[#2a2828] rounded-full" />
+                <div className="h-2 w-20 bg-[#222] rounded-full" />
             </div>
+            <div className="h-7 w-16 bg-[#2a2828] rounded-full" />
         </div>
-        <div className="w-full aspect-[4/3] bg-gray-200" />
-        <div className="px-3 py-2 flex gap-4">
-            <div className="h-4 w-8 bg-gray-200 rounded" />
-            <div className="h-4 w-8 bg-gray-200 rounded" />
+        <div className="w-full aspect-[4/3] bg-[#222]" />
+        <div className="px-4 py-3 flex gap-5">
+            <div className="h-4 w-10 bg-[#2a2828] rounded-full" />
+            <div className="h-4 w-10 bg-[#2a2828] rounded-full" />
+            <div className="h-4 w-10 bg-[#2a2828] rounded-full" />
         </div>
-        <div className="px-3 pb-3">
-            <div className="h-3 w-3/4 bg-gray-100 rounded mb-1" />
-            <div className="h-3 w-1/2 bg-gray-100 rounded" />
+        <div className="px-4 pb-4">
+            <div className="h-3 w-3/4 bg-[#2a2828] rounded-full mb-2" />
+            <div className="h-3 w-1/2 bg-[#222] rounded-full" />
         </div>
     </div>
 )
@@ -46,9 +48,9 @@ const FeedSWR = () => {
 
     if (isError || items.length === 0) {
         return (
-            <div className="w-full flex flex-col items-center justify-center py-16 text-gray-400">
-                <p className="text-lg font-medium">No posts yet</p>
-                <p className="text-sm mt-1">Check back soon for wedding inspiration</p>
+            <div className="w-full flex flex-col items-center justify-center py-16">
+                <p className="text-lg font-medium text-[#adaaaa]">No posts yet</p>
+                <p className="text-sm mt-1 text-[#52525b]">Check back soon for wedding inspiration</p>
             </div>
         )
     }
@@ -66,7 +68,7 @@ const FeedSWR = () => {
 
             {isFetchingNextPage && (
                 <div className="w-full flex justify-center py-4">
-                    <div className="w-6 h-6 border-2 border-[#C94C73] border-t-transparent rounded-full animate-spin" />
+                    <div className="w-6 h-6 border-2 border-[#ff89ac] border-t-transparent rounded-full animate-spin" />
                 </div>
             )}
         </div>
