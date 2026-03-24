@@ -183,7 +183,7 @@ const PostCard = ({ item }) => {
                 <div className="flex items-center gap-5">
                     {/* Like with bounce animation */}
                     <button
-                        onClick={handleLike}
+                        onClick={()=> {handleLike();trackLike(liked)}}
                         className="flex items-center gap-1.5 group"
                     >
                         {liked
@@ -203,7 +203,7 @@ const PostCard = ({ item }) => {
                     </button>
                 </div>
 
-                <button onClick={handleSave} className="group">
+                <button onClick={()=> {handleSave(); trackSave(saved)}} className="group">
                     {saved
                         ? <FaBookmark className="text-[#C94C73] text-xl scale-110 transition-transform" />
                         : <FaRegBookmark className="text-gray-600 text-xl group-hover:text-[#C94C73] transition-colors" />}
