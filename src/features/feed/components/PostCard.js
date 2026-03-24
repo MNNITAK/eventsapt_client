@@ -12,7 +12,8 @@ import { getCookies } from "@/app/action.js"
 import { useTrackPost } from "@/features/insights/hooks/useTrackEvents.js"
 
 const PostCard = ({ item }) => {
-    const { insightContainerRef } = useTrackPost({postId:item._id,isFollower:false})
+    const {  insightContainerRef,
+     trackLike, trackSave, trackComment, trackFollow } = useTrackPost({postId:item._id,isFollower:false})
     const [liked, setLiked] = useState(false)
     const [saved, setSaved] = useState(false)
     const [likeCount, setLikeCount] = useState(item?.interactions?.likeCount || 0)
