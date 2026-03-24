@@ -6,7 +6,7 @@ import {
   scheduleFlush,
   flushOnExit,
 } from "../utils/insightsBuffer.js";
-import { VALID_REEL_EVENTS, VALID_POST_EVENTS } from "../utils/insightHelpers.js";
+import { REEL_EVENTS, POST_EVENTS } from "../utils/insightHelpers.js";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -21,8 +21,8 @@ const POST_IO_THRESHOLD    = 0.5;    // 50% of post visible = in view
 // Prevents silent data corruption from typos or unknown events.
 
 const enqueue = (item) => {
-  const validSet = item.type === "reel" ? VALID_REEL_EVENTS : VALID_POST_EVENTS;
-  if (!validSet.has(item.event)) {
+  const validSet = item.type === "reel" ? REEL_EVENTS : POST_EVENTS;
+  if (!Object.values(validSet).includes(item.event)) {
     if (process.env.NODE_ENV === "development") {
       console.warn(
         `[insights] Unknown event "${item.event}" for type "${item.type}" — skipped.`
