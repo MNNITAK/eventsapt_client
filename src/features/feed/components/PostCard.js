@@ -9,8 +9,10 @@ import { BsThreeDots } from "react-icons/bs"
 import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5"
 import { axiosInstance } from "@/axios/axios.js"
 import { getCookies } from "@/app/action.js"
+import { useTrackPost } from "@/features/insights.js"
 
 const PostCard = ({ item }) => {
+    const { insightContainerRef } = useTrackPost({postId:item._id,isFollower:false})
     const [liked, setLiked] = useState(false)
     const [saved, setSaved] = useState(false)
     const [likeCount, setLikeCount] = useState(item?.interactions?.likeCount || 0)
@@ -97,6 +99,7 @@ const PostCard = ({ item }) => {
 
             {/* ── Media carousel ─────────────────────────────────── */}
             <div
+                ref={insightContainerRef}
                 className="w-full aspect-[4/3] bg-gray-50 relative overflow-hidden select-none"
                 onTouchStart={onTouchStart}
                 onTouchEnd={onTouchEnd}
