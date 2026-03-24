@@ -30,7 +30,7 @@ function SideBarMain({tabParams,client}) {
             {
                primaryList.map((item,pos)=>{
                 return (
-                  <div onClick={()=>{router.replace(`/home/user?tab=${item.tag.toLowerCase()}`)}} className={`font-semibold mt-[1px] mb-[1px] p-3 w-[100%] rounded-2xl transition-all duration-100 cursor-pointer flex items-center gap-2 ${item.tag.toLowerCase()==tabParams?.tab?"text-[white]  bg-[#9a2143] ":" hover:bg-[#f7d5e0] hover:text-[black]"}`} key={pos}>
+                  <div onClick={()=>{router.replace(`/home/user?tab=${item.tag.toLowerCase()}`)}} className={`font-semibold mt-[1px] mb-[1px] p-3 w-[100%] rounded-2xl transition-all duration-100 cursor-pointer flex items-center gap-2 ${item.tag.toLowerCase()==tabParams?.tab?"text-[white] shadow-lg  bg-[#9a2143] ":" hover:bg-[#f7d5e0] hover:text-[black]"}`} key={pos}>
                     <span className='text-[1.2rem]'>{item.icon}</span>
                     <p className='font-medium text-[1.1rem]'>{item.tag}</p>
                   </div>
@@ -42,7 +42,7 @@ function SideBarMain({tabParams,client}) {
             {
                secodaryList.map((item,pos)=>{
                 return (
-                  <div onClick={()=>{router.replace(`/home/user?tab=${item.tag.toLowerCase()}`)}} className={`font-semibold mt-[1px] mb-[1px] p-3 w-[100%] rounded-2xl transition-all duration-100 cursor-pointer flex items-center gap-2 ${item.tag.toLowerCase()==tabParams?.tab?"text-[white]  bg-[#9a2143] ":" hover:bg-[#f7d5e0] hover:text-[black]"}`} key={pos}>
+                  <div onClick={()=>{router.replace(`/home/user?tab=${item.tag.toLowerCase()}`)}} className={`font-semibold mt-[1px] mb-[1px] p-3 w-[100%] rounded-2xl transition-all duration-100 cursor-pointer flex items-center gap-2 ${item.tag.toLowerCase()==tabParams?.tab?"text-[white] shadow-lg  bg-[#9a2143] ":" hover:bg-[#f7d5e0] hover:text-[black]"}`} key={pos}>
                     <span className='text-[1.2rem]'>{item.icon}</span>
                     <p className='font-medium text-[1.1rem]'>{item.tag}</p>
                   </div>
@@ -54,7 +54,7 @@ function SideBarMain({tabParams,client}) {
             {
                tertiaryList.map((item,pos)=>{
                 return (
-                  <div onClick={()=>{router.replace(`/home/user?tab=${item.tag.toLowerCase()}`)}} className={`font-semibold mt-[1px] mb-[1px] p-3 w-[100%] rounded-2xl transition-all duration-100 cursor-pointer flex items-center gap-2 ${item.tag.toLowerCase()==tabParams?.tab?"text-[white]  bg-[#9a2143] ":" hover:bg-[#f7d5e0] hover:text-[black]"}`} key={pos}>
+                  <div onClick={()=>{router.replace(`/home/user?tab=${item.tag.toLowerCase()}`)}} className={`font-semibold mt-[1px] mb-[1px] p-3 w-[100%] rounded-2xl transition-all duration-100 cursor-pointer flex items-center gap-2 ${item.tag.toLowerCase()==tabParams?.tab?"text-[white] shadow-lg  bg-[#9a2143] ":" hover:bg-[#f7d5e0] hover:text-[black]"}`} key={pos}>
                     <span className='text-[1.2rem]'>{item.icon}</span>
                     <p className='font-medium text-[1.1rem]'>{item.tag}</p>
                   </div>
@@ -63,7 +63,7 @@ function SideBarMain({tabParams,client}) {
             } 
         </div>
         <div className='w-[100%]'><LogoutButton/></div>
-        <Link href={client=="user" ? `/profile/${client}` : `/profile/${client}/1`}  className='flex w-[95%] border-t-2 border-gray-500 pt-3 cursor-pointer items-center m-4'>
+        <Link href={client=="user" ? `/user-profile` : `/profile/${client}/1`}  className='flex w-[95%] border-t-2 border-gray-500 pt-3 cursor-pointer items-center m-4'>
             <Image className='mr-2' alt='profile' src={ICO} width={30} height={30} />
             <p>Profile</p>
         </Link>
