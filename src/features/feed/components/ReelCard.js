@@ -19,7 +19,9 @@ const formatDuration = (s) => {
 
 const ReelCard = ({ item }) => {
 
-    const { insightVideoRef,insightContainerRef } = useTrackReel({reelId:item._id,isFollower:false})
+    const { insightVideoRef,
+     insightContainerRef,
+     trackLike, trackSave, trackShare, trackComment, trackFollow } = useTrackReel({reelId:item._id,isFollower:false})
 
     const [liked, setLiked] = useState(false)
     const [saved, setSaved] = useState(false)
