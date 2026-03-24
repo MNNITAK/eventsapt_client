@@ -9,7 +9,7 @@ import { BsThreeDots } from "react-icons/bs"
 import { IoChevronBackOutline, IoChevronForwardOutline } from "react-icons/io5"
 import { axiosInstance } from "@/axios/axios.js"
 import { getCookies } from "@/app/action.js"
-import { useTrackPost } from "@/features/insights.js"
+import { useTrackPost } from "@/features/insights/hooks/useTrackEvents.js"
 
 const PostCard = ({ item }) => {
     const { insightContainerRef } = useTrackPost({postId:item._id,isFollower:false})

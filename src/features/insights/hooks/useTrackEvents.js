@@ -381,29 +381,67 @@ export function useTrackReel({ reelId, isFollower = false }) {
 export function useTrackPost({ postId, isFollower = false }) {
   const insightContainerRef = useRef(null);
 
+  const state = useRef({
+    hasTrackedView: false,
+    viewTimer: null,
+    startTime: null,
+    totalTime: 0,
+  });
+
   useEffect(() => {
     const container = insightContainerRef.current;
     if (!container || !postId) return;
 
-    let hasTracked = false;
-    let timer = null;
+    const s = state.current;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          timer = setTimeout(() => {
-            if (!hasTracked) {
-              hasTracked = true;
+          // Start view timer (1s rule)
+          s.viewTimer = setTimeout(() => {
+            if (!s.hasTrackedView) {
+              s.hasTrackedView = true;
+
               enqueueInsight({
                 type: "post",
                 postId,
                 event: isFollower ? "view_follower" : "view_nonfollower",
               });
+
+              // accountsReached = first valid view
+              enqueueInsight({
+                type: "post",
+                postId,
+                event: "reach",
+              });
+
               scheduleFlush();
             }
-          }, VIEW_THRESHOLD_MS);
+          }, 1000);
+
+          // Start dwell tracking
+          s.startTime = Date.now();
         } else {
-          clearTimeout(timer);
+          clearTimeout(s.viewTimer);
+
+          // Stop dwell tracking
+          if (s.startTime) {
+            const delta = (Date.now() - s.startTime) / 1000;
+            s.totalTime += delta;
+
+            enqueueInsight({
+              type: "post",
+              postId,
+              event: "dwell_time",
+              meta: {
+                seconds: delta,
+                total: s.totalTime,
+              },
+            });
+
+            scheduleFlush();
+            s.startTime = null;
+          }
         }
       },
       { threshold: 0.5 }
@@ -413,25 +451,47 @@ export function useTrackPost({ postId, isFollower = false }) {
 
     return () => {
       observer.disconnect();
-      clearTimeout(timer);
+      clearTimeout(s.viewTimer);
     };
   }, [postId, isFollower]);
 
+  // Flush remaining time on tab close / background
   useEffect(() => {
+    const s = state.current;
+
+    const handleExit = () => {
+      if (s.startTime) {
+        const delta = (Date.now() - s.startTime) / 1000;
+        s.totalTime += delta;
+
+        enqueueInsight({
+          type: "post",
+          postId,
+          event: "dwell_time",
+          meta: {
+            seconds: delta,
+            total: s.totalTime,
+          },
+        });
+      }
+
+      flushOnExit();
+    };
+
     const onVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
-        flushOnExit();
+        handleExit();
       }
     };
 
-    window.addEventListener("beforeunload", flushOnExit);
+    window.addEventListener("beforeunload", handleExit);
     document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
-      window.removeEventListener("beforeunload", flushOnExit);
+      window.removeEventListener("beforeunload", handleExit);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, []);
+  }, [postId]);
 
   return { insightContainerRef };
 }

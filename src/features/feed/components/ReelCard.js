@@ -8,7 +8,7 @@ import { TbShare3 } from "react-icons/tb"
 import { HiVolumeUp, HiVolumeOff } from "react-icons/hi"
 import { axiosInstance } from "@/axios/axios.js"
 import { getCookies } from "@/app/action.js"
-import { useTrackReel } from "@/features/insights"
+import { useTrackReel } from "@/features/insights/hooks/useTrackEvents.js"
 
 const formatDuration = (s) => {
     if (!s) return ""
