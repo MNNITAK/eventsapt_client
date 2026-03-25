@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 const mainNavigation = [
-  { name: 'Dashboard', href: '/user-profile', icon: LayoutDashboard },
+  { name: 'Personal', href: '/user-profile/personal', icon: LayoutDashboard },
   { name: 'Transactions', href: '/user-profile/transactions', icon: ArrowRightLeft },
   { name: 'Contacts', href: '/user-profile/contacts', icon: Users },
   { name: 'Features', href: '/user-profile/features', icon: ToggleLeft },
