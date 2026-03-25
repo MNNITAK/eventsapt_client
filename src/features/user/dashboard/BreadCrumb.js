@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 const userProfileComponent = {
   personal: "User Profile",
   memories: "Memories",
-  contacts: "Contacts",
-  features: "Features",
+  trending: "Trendind",
+  events: "Events",
   library: "Library",
 }
 function formatPath(path) {

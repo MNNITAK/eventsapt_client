@@ -1,3 +1,4 @@
+import { EventsOverview } from "@/features/user/dashboard/events/EventsOverview";
 import SavedContentGallery from "@/features/user/dashboard/memories/SavedFeed";
 import { MainCard } from "@/features/user/dashboard/personal/MainCard.js";
 import { ProfileHeroCard } from "@/features/user/dashboard/personal/ProfileCard.js";
@@ -32,8 +33,8 @@ const renderUserComponent = (component) => {
 />;
         case "trending":
             return <WeddingMarketInsightsDashboard/>;
-        case "features":
-            return <div>features</div>;
+        case "events":
+            return <EventsOverview/>;
         case "library":
             return <div>library</div>;
         default:
