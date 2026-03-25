@@ -37,7 +37,7 @@ export  function Sidebar() {
     
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
- console.log(pathname)
+ //console.log(pathname)
   return (
     <aside 
       className={`relative flex h-screen flex-col bg-white border-r border-gray-100 py-4 shrink-0 transition-all duration-300 ease-in-out ${
@@ -88,12 +88,12 @@ export  function Sidebar() {
                   isCollapsed ? 'justify-center px-0' : 'px-4'
                 } ${
                   isActive 
-                    ? 'bg-indigo-50 text-indigo-600' 
+                    ? 'bg-[#f7d5e0] text-[#9a2143]' 
                     : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                 }`}
                 title={isCollapsed ? item.name : undefined}
               >
-                <Icon className={`h-5 w-5 shrink-0 ${isActive ? 'text-indigo-600' : 'text-gray-400 group-hover:text-gray-600'}`} />
+                <Icon className={`h-5 w-5 shrink-0 ${isActive ? 'text-[#9a2143]' : 'text-gray-400 group-hover:text-gray-600'}`} />
                 <span className={`whitespace-nowrap overflow-hidden transition-all duration-300 ${
                   isCollapsed ? 'max-w-0 opacity-0 ml-0' : 'max-w-[200px] opacity-100 ml-3'
                 }`}>
@@ -124,7 +124,7 @@ export  function Sidebar() {
                   isCollapsed ? 'justify-center px-0' : 'px-4'
                 } ${
                   isActive 
-                    ? 'bg-indigo-50 text-indigo-600' 
+                    ? 'bg-[#f7d5e0] text-[#9a2143]' 
                     : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                 }`}
                 title={isCollapsed ? item.name : undefined}
