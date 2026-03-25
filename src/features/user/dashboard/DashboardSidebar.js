@@ -18,24 +18,26 @@ import {
 } from 'lucide-react';
 
 const mainNavigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { name: 'Transactions', href: '/transactions', icon: ArrowRightLeft },
-  { name: 'Contacts', href: '/contacts', icon: Users },
-  { name: 'Features', href: '/features', icon: ToggleLeft },
-  { name: 'Library', href: '/library', icon: BookOpen },
+  { name: 'Dashboard', href: '/user-profile', icon: LayoutDashboard },
+  { name: 'Transactions', href: '/user-profile/transactions', icon: ArrowRightLeft },
+  { name: 'Contacts', href: '/user-profile/contacts', icon: Users },
+  { name: 'Features', href: '/user-profile/features', icon: ToggleLeft },
+  { name: 'Library', href: '/user-profile/library', icon: BookOpen },
 ];
 
 const settingsNavigation = [
-  { name: 'Base Wallet', href: '/wallet', icon: Wallet },
-  { name: 'My Contacts', href: '/my-contacts', icon: Users },
-  { name: 'Invoices', href: '/invoices', icon: FileText },
-  { name: 'Schedules', href: '/schedules', icon: CalendarClock },
+  { name: 'Base Wallet', href: '/user-profile/wallet', icon: Wallet },
+  { name: 'My Contacts', href: '/user-profile/my-contacts', icon: Users },
+  { name: 'Invoices', href: '/user-profile/invoices', icon: FileText },
+  { name: 'Schedules', href: '/user-profile/schedules', icon: CalendarClock },
 ];
 
 export  function Sidebar() {
+   
+    
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
-
+ console.log(pathname)
   return (
     <aside 
       className={`relative flex h-screen flex-col bg-white border-r border-gray-100 py-4 shrink-0 transition-all duration-300 ease-in-out ${
