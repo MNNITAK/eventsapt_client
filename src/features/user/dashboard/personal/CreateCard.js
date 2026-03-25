@@ -82,7 +82,7 @@ export  function CreatePostBox() {
           onChange={(e) => setText(e.target.value)}
           disabled={isUploading}
           className="mt-2 min-h-20 w-full resize-none rounded-xl border border-[#efc2d1] px-4 py-3 text-sm outline-none focus:border-[#C94C73] focus:ring-2 focus:ring-[#f4d8e1] disabled:opacity-50"
-          placeholder="Write something..."
+          placeholder="e.g I am looking to host a reception party with venues looking like the photos attached"
         />
 
         {/* IMAGE PREVIEW GRID */}
