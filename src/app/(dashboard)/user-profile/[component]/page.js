@@ -1,6 +1,7 @@
 import SavedContentGallery from "@/features/user/dashboard/memories/SavedFeed";
 import { MainCard } from "@/features/user/dashboard/personal/MainCard.js";
 import { ProfileHeroCard } from "@/features/user/dashboard/personal/ProfileCard.js";
+import { WeddingMarketInsightsDashboard } from "@/features/user/dashboard/trending/TrendingMarket";
 const renderUserComponent = (component) => {
     switch (component) {
         case "personal":
@@ -29,8 +30,8 @@ const renderUserComponent = (component) => {
     },
   ]}
 />;
-        case "contacts":
-            return <div>contacts</div>;
+        case "trending":
+            return <WeddingMarketInsightsDashboard/>;
         case "features":
             return <div>features</div>;
         case "library":
