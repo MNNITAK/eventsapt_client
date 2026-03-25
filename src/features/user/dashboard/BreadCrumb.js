@@ -2,6 +2,13 @@
 import { ChevronRight } from "lucide-react";
 import { House } from "lucide-react";
 import { usePathname } from "next/navigation";
+const userProfileComponent = {
+  personal: "User Profile",
+  memories: "Memories",
+  contacts: "Contacts",
+  features: "Features",
+  library: "Library",
+}
 function formatPath(path) {
   const parts = path.split("/").filter(Boolean);
   return "/ " + parts.join(" / ");
@@ -20,7 +27,7 @@ export  function Breadcrumb() {
   return (
     <div className="flex items-center text-sm bg-white/80 w-[95%] mx-auto backdrop-blur px-6 py-4 rounded-lg justify-between border shadow-sm">
         {/* page description here */}
-      <span className="font-semibold text-gray-700">User Profile</span>
+      <span className="font-semibold text-gray-700">{userProfileComponent[parts[1]]}</span>
       {/* routes link */}
       <div className="flex items-center gap-2">
       <span className="flex items-center"><House size={18} color="#9a2143" /><Separotor/></span>

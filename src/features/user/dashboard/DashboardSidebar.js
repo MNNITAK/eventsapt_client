@@ -19,7 +19,7 @@ import {
 
 const mainNavigation = [
   { name: 'Personal', href: '/user-profile/personal', icon: LayoutDashboard },
-  { name: 'Memories', href: '/user-profile/memoeries', icon: ArrowRightLeft },
+  { name: 'Memories', href: '/user-profile/memories', icon: ArrowRightLeft },
   { name: 'Contacts', href: '/user-profile/contacts', icon: Users },
   { name: 'Features', href: '/user-profile/features', icon: ToggleLeft },
   { name: 'Library', href: '/user-profile/library', icon: BookOpen },

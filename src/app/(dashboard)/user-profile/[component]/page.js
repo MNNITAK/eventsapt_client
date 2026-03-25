@@ -1,3 +1,4 @@
+import SavedContentGallery from "@/features/user/dashboard/memories/SavedFeed";
 import { MainCard } from "@/features/user/dashboard/personal/MainCard.js";
 import { ProfileHeroCard } from "@/features/user/dashboard/personal/ProfileCard.js";
 const renderUserComponent = (component) => {
@@ -7,8 +8,27 @@ const renderUserComponent = (component) => {
                 <ProfileHeroCard />
                 <MainCard />
             </>);
-        case "memoeries":
-            return <div>memoeries</div>;
+        case "memories":
+            return <SavedContentGallery
+  savedPosts={[
+    {
+      id: "p1",
+      title: "My favorite post",
+      thumbnailUrl: "https://images.pexels.com/photos/36026443/pexels-photo-36026443.jpeg",
+      likes: 1200,
+      savedAt: "2026-03-20T10:00:00Z",
+    },
+  ]}
+  savedReels={[
+    {
+      id: "r1",
+      title: "Saved reel clip",
+      coverUrl: "https://images.pexels.com/photos/7615158/pexels-photo-7615158.jpeg",
+      views: 58000,
+      savedAt: "2026-03-22T10:00:00Z",
+    },
+  ]}
+/>;
         case "contacts":
             return <div>contacts</div>;
         case "features":
