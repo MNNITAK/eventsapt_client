@@ -51,7 +51,7 @@ export const MainCard = ({
                         <button
                             type="button"
                             onClick={handleEdit}
-                            className="flex items-center text-[12px]  gap-1 rounded-md  bg-[#C94C73] text-white p-1.5  font-medium  transition "
+                            className="flex items-center text-[12px]  gap-1 rounded-md  bg-[#C94C73] text-white p-1.5 px-2  font-medium  transition "
                         >
                             Edit
                             <PencilLine size={13} />
