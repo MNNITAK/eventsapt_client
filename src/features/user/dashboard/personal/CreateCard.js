@@ -70,6 +70,7 @@ export  function CreatePostBox() {
   }, [images]);
 
   return (
+    <>
     <div className="w-[100%]">
       <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-md">
         <h3 className="text-sm font-semibold text-slate-700">
@@ -146,5 +147,6 @@ export  function CreatePostBox() {
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { PencilLine, Check, ImageUp, X, Plus,Loader2 } from "lucide-react";
+import { PencilLine, Check, ImageUp, X, Plus,Loader2 ,Calendars, Calendar} from "lucide-react";
 import { CreatePostBox } from "./CreateCard";
 export const MainCard = ({
     initialValue = "Add yoir description here or about yourself... Like - Once i looked into the sky and you know it was all black?",
@@ -95,6 +95,20 @@ export const MainCard = ({
             </div>
             {/* Right Panel */}
             <div className="w-[60%]">
+                <div className="w-[100%] mb-2 flex gap-2">
+                    <div className="rounded-2xl w-[33%] h-[20vh] border border-slate-200 bg-white p-4 shadow-md transition">
+                        <h3 className="text-sm font-semibold text-slate-700">Number of Events Hosted</h3>
+                        <p className="text-[60px]">0</p>
+                    </div>
+                    <div className="rounded-2xl w-[33%] h-[20vh] border border-slate-200 bg-white p-4 shadow-md transition">
+                        <h3 className="text-sm font-semibold text-slate-700">Upcoming Events</h3>
+                        <p className="text-[60px]">0</p>
+                    </div>
+                    <button className="rounded-2xl bg-[#C94C73] flex flex-col items-center justify-center w-[33%] h-[20vh] border border-slate-200  p-4 shadow-md hover:shadow-lg transition">
+                       <Calendar size={25} className="text-white"/>
+                       <p className="text-[25px] text-white">Create Event</p>
+                    </button>
+                </div>
                 <CreatePostBox/>
                 
             </div>
