@@ -18,50 +18,61 @@ import { FaRegHeart, FaHeart, FaRegBookmark, FaBookmark } from "react-icons/fa"
 import { IoPersonAddOutline, IoCheckmark } from "react-icons/io5"
 import { MdOutlineMessage } from "react-icons/md"
 import { BsChevronDown, BsChevronUp, BsGridFill } from "react-icons/bs"
-import { TbMovie } from "react-icons/tb"
+import { TbMovie, TbShare3 } from "react-icons/tb"
 import { RiImageLine } from "react-icons/ri"
 import { BiMessageSquareDetail } from "react-icons/bi"
-import { CommentsDrawer } from "@/features/feed/components/CommentsDrawer"
 import { PostCard } from "@/features/feed/components/PostCard"
 import { ReelCard } from "@/features/feed/components/ReelCard"
 
-// ── Small sub-components ────────────────────────────────────────────────────
+// ── Sub-components ───────────────────────────────────────────────────────────
 
-const StarRating = ({ value = 0, max = 5 }) => (
+const StarRating = ({ value = 0, max = 5, size = "sm" }) => (
     <div className="flex gap-0.5">
         {Array.from({ length: max }).map((_, i) => (
             <LuStar
                 key={i}
-                className={`text-sm ${i < Math.round(value) ? "fill-amber-400 text-amber-400" : "text-gray-300"}`}
+                className={`${size === "lg" ? "text-lg" : "text-sm"} ${
+                    i < Math.round(value) ? "fill-amber-400 text-amber-400" : "text-[#3f3f46]"
+                }`}
             />
         ))}
     </div>
 )
 
 const ReviewCard = ({ review }) => (
-    <div className="bg-gray-50 rounded-2xl p-4 mb-3">
-        <div className="flex items-center gap-3 mb-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#C94C73] to-[#f5a3bb] flex items-center justify-center flex-shrink-0">
-                <span className="text-white text-xs font-bold">
+    <div className="bg-[rgba(32,31,31,0.6)] backdrop-blur-sm rounded-[32px] p-8 flex flex-col gap-6">
+        {/* Reviewer header */}
+        <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#ff89ac] to-[#a68cff] flex items-center justify-center flex-shrink-0">
+                <span className="text-black font-bold text-sm">
                     {review?.reviewer?.name?.[0]?.toUpperCase() || "U"}
                 </span>
             </div>
-            <div>
-                <p className="text-sm font-semibold text-gray-800">{review?.reviewer?.name || "Guest"}</p>
-                <StarRating value={review?.rating || 0} />
+            <div className="flex-1 min-w-0">
+                <p className="text-white font-semibold text-base leading-tight">
+                    {review?.reviewer?.name || "Guest"}
+                </p>
+                <p className="text-[#adaaaa] text-xs mt-0.5">
+                    {review?.eventType && `${review.eventType} • `}
+                    {review?.createdAt && new Date(review.createdAt).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}
+                </p>
             </div>
-            {review?.createdAt && (
-                <span className="ml-auto text-[11px] text-gray-400">
-                    {new Date(review.createdAt).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}
-                </span>
-            )}
+            <StarRating value={review?.rating || 0} />
         </div>
-        {review?.title && <p className="text-sm font-medium text-gray-700 mb-1">{review.title}</p>}
-        {review?.review && <p className="text-sm text-gray-600 leading-relaxed">{review.review}</p>}
+
+        {/* Review text */}
+        {review?.title && <p className="text-white font-semibold text-sm">"{review.title}"</p>}
+        {review?.review && (
+            <p className="text-[#adaaaa] text-base leading-relaxed">
+                "{review.review}"
+            </p>
+        )}
+
+        {/* Vendor response */}
         {review?.vendorResponse?.response && (
-            <div className="mt-3 pl-3 border-l-2 border-[#C94C73]">
-                <p className="text-xs text-[#C94C73] font-semibold mb-0.5">Vendor replied</p>
-                <p className="text-xs text-gray-600">{review.vendorResponse.response}</p>
+            <div className="pl-4 border-l-2 border-[#ff89ac]">
+                <p className="text-xs text-[#ff89ac] font-semibold mb-1">Vendor replied</p>
+                <p className="text-xs text-[#adaaaa]">{review.vendorResponse.response}</p>
             </div>
         )}
     </div>
@@ -70,51 +81,56 @@ const ReviewCard = ({ review }) => (
 const ServiceAccordion = ({ service }) => {
     const [open, setOpen] = useState(false)
     return (
-        <div className="border border-gray-100 rounded-2xl overflow-hidden mb-3">
+        <div className="bg-[#131313] border border-[rgba(255,255,255,0.05)] rounded-[32px] overflow-hidden mb-3">
             <button
                 onClick={() => setOpen((o) => !o)}
-                className="w-full flex items-center justify-between px-4 py-3 bg-white hover:bg-gray-50 transition-colors"
+                className="w-full flex items-center justify-between px-6 py-5 hover:bg-[#1a1a1a] transition-colors"
             >
                 <div className="text-left">
-                    <p className="font-semibold text-gray-800 text-sm">{service?.category}</p>
+                    <p className="font-semibold text-white text-sm">{service?.category}</p>
                     {service?.description && (
-                        <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">{service.description}</p>
+                        <p className="text-xs text-[#adaaaa] mt-0.5 line-clamp-1">{service.description}</p>
                     )}
                 </div>
-                {open ? <BsChevronUp className="text-gray-400 flex-shrink-0" /> : <BsChevronDown className="text-gray-400 flex-shrink-0" />}
+                {open
+                    ? <BsChevronUp className="text-[#adaaaa] flex-shrink-0" />
+                    : <BsChevronDown className="text-[#adaaaa] flex-shrink-0" />}
             </button>
 
             {open && service?.packages?.length > 0 && (
-                <div className="px-4 pb-4 pt-1 bg-gray-50 space-y-3">
+                <div className="px-6 pb-6 pt-2 space-y-3">
                     {service.packages.map((pkg, i) => (
-                        <div key={i} className="bg-white rounded-xl p-3 shadow-sm">
-                            <div className="flex items-start justify-between gap-2">
-                                <div>
-                                    <p className="font-semibold text-sm text-gray-800">{pkg.name}</p>
+                        <div key={i} className="bg-[#0e0e0e] border border-[rgba(255,255,255,0.05)] rounded-2xl p-4">
+                            <div className="flex items-start justify-between gap-3">
+                                <div className="flex-1 min-w-0">
+                                    <p className="font-semibold text-sm text-white">{pkg.name}</p>
                                     {pkg.description && (
-                                        <p className="text-xs text-gray-500 mt-0.5">{pkg.description}</p>
+                                        <p className="text-xs text-[#adaaaa] mt-1">{pkg.description}</p>
                                     )}
                                 </div>
                                 {pkg.price && (
                                     <div className="text-right flex-shrink-0">
-                                        <p className="text-sm font-bold text-[#C94C73]">
+                                        <p className="text-lg font-extrabold text-white">
                                             ₹{Number(pkg.price).toLocaleString("en-IN")}
                                         </p>
                                         {pkg.priceType && (
-                                            <p className="text-[10px] text-gray-400">{pkg.priceType}</p>
+                                            <p className="text-[10px] text-[#adaaaa] uppercase">{pkg.priceType}</p>
                                         )}
                                     </div>
                                 )}
                             </div>
                             {pkg.deliverables?.length > 0 && (
-                                <div className="flex flex-wrap gap-1 mt-2">
+                                <div className="flex flex-wrap gap-1.5 mt-3">
                                     {pkg.deliverables.slice(0, 4).map((d, j) => (
-                                        <span key={j} className="text-[10px] bg-[#fff0f4] text-[#C94C73] px-2 py-0.5 rounded-full">
+                                        <span key={j} className="text-[10px] bg-[#ff89ac]/10 text-[#ff89ac] px-2.5 py-1 rounded-full border border-[#ff89ac]/20">
                                             {d}
                                         </span>
                                     ))}
                                 </div>
                             )}
+                            <button className="mt-4 w-full py-3 rounded-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] text-white text-sm font-semibold hover:bg-[rgba(255,255,255,0.1)] transition-colors">
+                                Book Now
+                            </button>
                         </div>
                     ))}
                 </div>
@@ -123,13 +139,13 @@ const ServiceAccordion = ({ service }) => {
     )
 }
 
-// ── Main Component ──────────────────────────────────────────────────────────
+// ── Main Component ────────────────────────────────────────────────────────────
 
 const TABS = [
-    { id: "posts", label: "Posts", icon: RiImageLine },
-    { id: "reels", label: "Reels", icon: TbMovie },
+    { id: "posts",     label: "Posts",     icon: RiImageLine },
+    { id: "reels",     label: "Reels",     icon: TbMovie },
     { id: "portfolio", label: "Portfolio", icon: BsGridFill },
-    { id: "reviews", label: "Reviews", icon: BiMessageSquareDetail },
+    { id: "reviews",   label: "Reviews",   icon: BiMessageSquareDetail },
 ]
 
 const VendorPublicProfile = () => {
@@ -138,7 +154,6 @@ const VendorPublicProfile = () => {
     const vendorIdParam = searchParams.get("vendorId")
     const vendorNameParam = searchParams.get("vendorName")
 
-    // Step 1: resolve vendorId — either direct from param, or look up by name
     const { data: resolvedId, isLoading: resolving } = useQuery({
         queryKey: ["vendor-resolve", vendorIdParam, vendorNameParam],
         queryFn: async () => {
@@ -158,7 +173,6 @@ const VendorPublicProfile = () => {
     const [saved, setSaved] = useState(false)
     const [actionLoading, setActionLoading] = useState(null)
 
-    // ── Data fetching ──────────────────────────────────────────────
     const { data: profile, isLoading: profileLoading, isError: profileError } = useQuery({
         queryKey: ["vendor-public-profile", vendorId],
         queryFn: () => fetchPublicVendorProfile(vendorId),
@@ -201,14 +215,9 @@ const VendorPublicProfile = () => {
         setFollowing((f) => !f)
         try {
             const token = await getCookies()
-            await axiosInstance.post("/auth/users/vendor/follow", { vendorId }, {
-                headers: { wedoraCredentials: token },
-            })
-        } catch {
-            setFollowing((f) => !f)
-        } finally {
-            setActionLoading(null)
-        }
+            await axiosInstance.post("/auth/users/vendor/follow", { vendorId }, { headers: { wedoraCredentials: token } })
+        } catch { setFollowing((f) => !f) }
+        finally { setActionLoading(null) }
     }
 
     const handleLike = async () => {
@@ -217,14 +226,9 @@ const VendorPublicProfile = () => {
         setLiked((l) => !l)
         try {
             const token = await getCookies()
-            await axiosInstance.post("/auth/users/vendor/like", { vendorId }, {
-                headers: { wedoraCredentials: token },
-            })
-        } catch {
-            setLiked((l) => !l)
-        } finally {
-            setActionLoading(null)
-        }
+            await axiosInstance.post("/auth/users/vendor/like", { vendorId }, { headers: { wedoraCredentials: token } })
+        } catch { setLiked((l) => !l) }
+        finally { setActionLoading(null) }
     }
 
     const handleSave = async () => {
@@ -233,14 +237,9 @@ const VendorPublicProfile = () => {
         setSaved((s) => !s)
         try {
             const token = await getCookies()
-            await axiosInstance.post("/auth/users/vendor/save", { vendorId }, {
-                headers: { wedoraCredentials: token },
-            })
-        } catch {
-            setSaved((s) => !s)
-        } finally {
-            setActionLoading(null)
-        }
+            await axiosInstance.post("/auth/users/vendor/save", { vendorId }, { headers: { wedoraCredentials: token } })
+        } catch { setSaved((s) => !s) }
+        finally { setActionLoading(null) }
     }
 
     const goBack = () => {
@@ -250,129 +249,158 @@ const VendorPublicProfile = () => {
         router.push(`?${params.toString()}`)
     }
 
-    // ── Render ─────────────────────────────────────────────────────
+    // ── Guards ─────────────────────────────────────────────────────
     if (!vendorIdParam && !vendorNameParam) return null
 
     if (resolving || profileLoading) return (
-        <div className="w-full h-screen flex items-center justify-center">
-            <LuLoaderCircle className="animate-spin text-[#C94C73] text-3xl" />
+        <div className="w-full h-screen flex items-center justify-center bg-[#0e0e0e]">
+            <LuLoaderCircle className="animate-spin text-[#ff89ac] text-3xl" />
         </div>
     )
 
     if (profileError || !profile) return (
-        <div className="w-full h-screen flex flex-col items-center justify-center gap-3">
-            <p className="text-gray-500 text-sm">Could not load vendor profile.</p>
-            <button onClick={goBack} className="text-[#C94C73] text-sm underline">Go back</button>
+        <div className="w-full h-screen flex flex-col items-center justify-center gap-3 bg-[#0e0e0e]">
+            <p className="text-[#adaaaa] text-sm">Could not load vendor profile.</p>
+            <button onClick={goBack} className="text-[#ff89ac] text-sm underline">Go back</button>
         </div>
     )
 
-    const coverImages = profile?.coverImages || []
-    const coverUrl = coverImages[0] || null
-    const logo = profile?.logo || null
-    const stats = profile?.stats || {}
+    const coverUrl    = profile?.coverImages?.[0] || null
+    const logo        = profile?.logo || null
+    const stats       = profile?.stats || {}
     const socialLinks = profile?.socialLinks || {}
 
     return (
-        <div className="w-full h-full overflow-y-auto bg-white pb-10">
+        <div className="w-full h-full overflow-y-auto bg-[#0e0e0e] pb-16">
 
-            {/* ── Hero ──────────────────────────────────────────── */}
-            <div className="relative">
-                {/* Cover image */}
-                <div className="w-full h-48 bg-gradient-to-br from-[#C94C73] to-[#f5a3bb] relative">
-                    {coverUrl && (
-                        <img src={coverUrl} alt="cover" className="w-full h-full object-cover" />
-                    )}
-                    {/* Overlay gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+            {/* ── Hero / Cover ──────────────────────────────────── */}
+            <div className="relative h-[400px] overflow-hidden">
+                {coverUrl ? (
+                    <img src={coverUrl} alt="cover" className="w-full h-full object-cover opacity-60" />
+                ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-[#1a1919] via-[#2a1f2f] to-[#1a1919]" />
+                )}
+                {/* Bottom gradient fade into page bg */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e0e] via-[rgba(14,14,14,0)] to-transparent" />
 
-                    {/* Back button */}
-                    <button
-                        onClick={goBack}
-                        className="absolute top-4 left-4 w-9 h-9 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-all"
-                    >
-                        <LuArrowLeft />
-                    </button>
-                </div>
-
-                {/* Logo */}
-                <div className="absolute left-5 -bottom-10 w-20 h-20 rounded-2xl border-4 border-white shadow-lg bg-white overflow-hidden">
-                    {logo ? (
-                        <img src={logo} alt="logo" className="w-full h-full object-cover" />
-                    ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-[#C94C73] to-[#f5a3bb] flex items-center justify-center">
-                            <span className="text-white font-bold text-2xl">
-                                {profile?.businessName?.[0]?.toUpperCase() || "W"}
-                            </span>
-                        </div>
-                    )}
-                </div>
+                {/* Back button */}
+                <button
+                    onClick={goBack}
+                    className="absolute top-5 left-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-all border border-white/10"
+                >
+                    <LuArrowLeft />
+                </button>
             </div>
 
-            {/* ── Name + actions ────────────────────────────────── */}
-            <div className="pt-14 px-5">
-                <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1">
-                        <h1 className="text-xl font-bold text-gray-900 leading-tight">
-                            {profile?.businessName || "Vendor"}
-                        </h1>
-                        <div className="flex items-center flex-wrap gap-2 mt-1">
+            {/* ── Profile Header ────────────────────────────────── */}
+            <div className="px-8 -mt-20 relative z-10">
+                <div className="flex items-end gap-6">
+                    {/* Avatar with glow */}
+                    <div className="relative flex-shrink-0">
+                        {/* Glow blur behind avatar */}
+                        <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-[#ff89ac] to-[#a68cff] opacity-40 blur-[6px]" />
+                        <div className="relative w-[140px] h-[140px] rounded-full border-4 border-[#0e0e0e] overflow-hidden shadow-2xl">
+                            {logo ? (
+                                <img src={logo} alt="logo" className="w-full h-full object-cover" />
+                            ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-[#ff89ac] to-[#a68cff] flex items-center justify-center">
+                                    <span className="text-black font-extrabold text-4xl">
+                                        {profile?.businessName?.[0]?.toUpperCase() || "W"}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Name + meta */}
+                    <div className="flex-1 min-w-0 pb-4">
+                        <div className="flex items-center gap-3 flex-wrap">
+                            <h1 className="text-3xl font-extrabold text-white tracking-tight leading-tight">
+                                {profile?.businessName || "Vendor"}
+                            </h1>
                             {profile?.category && (
-                                <span className="text-xs bg-[#fff0f4] text-[#C94C73] font-semibold px-2.5 py-0.5 rounded-full border border-[#f5c8d6]">
+                                <span className="bg-[rgba(255,137,172,0.1)] border border-[rgba(255,137,172,0.2)] text-[#ff89ac] text-[10px] font-semibold px-3 py-1.5 rounded-full tracking-widest uppercase">
                                     {profile.category}
                                 </span>
                             )}
+                        </div>
+
+                        {/* Meta row */}
+                        <div className="flex items-center gap-5 mt-2 flex-wrap">
+                            {stats.avgRating > 0 && (
+                                <div className="flex items-center gap-1.5">
+                                    <LuStar className="text-amber-400 fill-amber-400 text-sm" />
+                                    <span className="text-white font-medium text-sm">{stats.avgRating?.toFixed(1)}</span>
+                                    {stats.totalReviews > 0 && (
+                                        <span className="text-[#adaaaa] text-sm">({stats.totalReviews} Reviews)</span>
+                                    )}
+                                </div>
+                            )}
                             {(profile?.city || profile?.address) && (
-                                <span className="text-xs text-gray-500 flex items-center gap-0.5">
-                                    <LuMapPin className="text-[#C94C73] text-xs" />
-                                    {profile?.city || profile?.address}
-                                </span>
+                                <div className="flex items-center gap-1.5">
+                                    <LuMapPin className="text-[#adaaaa] text-sm" />
+                                    <span className="text-[#adaaaa] text-sm">{profile?.city || profile?.address}</span>
+                                </div>
+                            )}
+                            {profile?.foundedYear && (
+                                <div className="flex items-center gap-1.5">
+                                    <LuCalendar className="text-[#adaaaa] text-sm" />
+                                    <span className="text-[#adaaaa] text-sm">Professional since {profile.foundedYear}</span>
+                                </div>
                             )}
                         </div>
-                        {profile?.tagline && (
-                            <p className="text-sm text-gray-500 mt-2 italic">"{profile.tagline}"</p>
-                        )}
+                    </div>
+
+                    {/* Share Profile button */}
+                    <div className="pb-4 flex-shrink-0">
+                        <button className="backdrop-blur-md bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] text-white font-semibold text-sm px-7 py-3.5 rounded-full hover:bg-[rgba(255,255,255,0.1)] transition-all flex items-center gap-2">
+                            <TbShare3 className="text-base" />
+                            Share Profile
+                        </button>
                     </div>
                 </div>
 
-                {/* Stats row */}
-                <div className="flex items-center gap-5 mt-4 py-3 border-y border-gray-100">
-                    {stats.avgRating > 0 && (
-                        <div className="flex flex-col items-center gap-0.5">
-                            <div className="flex items-center gap-1">
-                                <LuStar className="text-amber-400 fill-amber-400 text-sm" />
-                                <span className="font-bold text-gray-800 text-sm">{stats.avgRating?.toFixed(1)}</span>
-                            </div>
-                            <span className="text-[10px] text-gray-400">Rating</span>
-                        </div>
-                    )}
-                    {stats.totalReviews > 0 && (
-                        <div className="flex flex-col items-center gap-0.5">
-                            <span className="font-bold text-gray-800 text-sm">{stats.totalReviews}</span>
-                            <span className="text-[10px] text-gray-400">Reviews</span>
-                        </div>
-                    )}
+                {/* Tagline */}
+                {profile?.tagline && (
+                    <p className="text-[#adaaaa] text-sm italic mt-4">"{profile.tagline}"</p>
+                )}
+
+                {/* Stats bar */}
+                <div className="flex items-center gap-8 mt-6 py-4 border-y border-[#1f1f1f]">
                     {stats.totalBookings > 0 && (
-                        <div className="flex flex-col items-center gap-0.5">
-                            <span className="font-bold text-gray-800 text-sm">{stats.totalBookings}</span>
-                            <span className="text-[10px] text-gray-400">Events</span>
+                        <div className="flex flex-col gap-0.5">
+                            <span className="text-white font-bold text-lg">{stats.totalBookings}</span>
+                            <span className="text-[#52525b] text-xs uppercase tracking-wider">Events</span>
                         </div>
                     )}
                     {profile?.followedBy?.length > 0 && (
-                        <div className="flex flex-col items-center gap-0.5">
-                            <span className="font-bold text-gray-800 text-sm">{profile.followedBy.length}</span>
-                            <span className="text-[10px] text-gray-400">Followers</span>
+                        <div className="flex flex-col gap-0.5">
+                            <span className="text-white font-bold text-lg">{profile.followedBy.length}</span>
+                            <span className="text-[#52525b] text-xs uppercase tracking-wider">Followers</span>
+                        </div>
+                    )}
+                    {stats.totalReviews > 0 && (
+                        <div className="flex flex-col gap-0.5">
+                            <span className="text-white font-bold text-lg">{stats.totalReviews}</span>
+                            <span className="text-[#52525b] text-xs uppercase tracking-wider">Reviews</span>
+                        </div>
+                    )}
+                    {profile?.teamSize && (
+                        <div className="flex flex-col gap-0.5">
+                            <span className="text-white font-bold text-lg">{profile.teamSize}</span>
+                            <span className="text-[#52525b] text-xs uppercase tracking-wider">Team</span>
                         </div>
                     )}
                 </div>
 
                 {/* Action buttons */}
-                <div className="flex gap-3 mt-4">
+                <div className="flex gap-3 mt-5">
                     <button
                         onClick={handleFollow}
-                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-sm transition-all ${
+                        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full font-semibold text-sm transition-all ${
                             following
-                                ? "bg-gray-100 text-gray-700"
-                                : "bg-[#C94C73] text-white shadow-md shadow-[#C94C73]/30"
+                                ? "bg-[#1f1f1f] text-[#adaaaa] border border-[#2a2828]"
+                                : "bg-gradient-to-r from-[#ff89ac] to-[#a68cff] text-black shadow-[0px_0px_20px_0px_rgba(255,137,172,0.3)]"
                         }`}
                     >
                         {actionLoading === "follow"
@@ -384,30 +412,32 @@ const VendorPublicProfile = () => {
 
                     <button
                         onClick={handleLike}
-                        className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all border ${
-                            liked ? "bg-[#fff0f4] border-[#f5c8d6]" : "bg-gray-50 border-gray-200"
+                        className={`w-12 h-12 rounded-full flex items-center justify-center transition-all border ${
+                            liked
+                                ? "bg-[#ff89ac]/10 border-[#ff89ac]/30"
+                                : "bg-[#1f1f1f] border-[#2a2828]"
                         }`}
                     >
                         {liked
-                            ? <FaHeart className="text-[#C94C73] text-lg" />
-                            : <FaRegHeart className="text-gray-500 text-lg" />
-                        }
+                            ? <FaHeart className="text-[#ff89ac] text-lg" />
+                            : <FaRegHeart className="text-[#adaaaa] text-lg" />}
                     </button>
 
                     <button
                         onClick={handleSave}
-                        className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all border ${
-                            saved ? "bg-[#fff0f4] border-[#f5c8d6]" : "bg-gray-50 border-gray-200"
+                        className={`w-12 h-12 rounded-full flex items-center justify-center transition-all border ${
+                            saved
+                                ? "bg-[#ff89ac]/10 border-[#ff89ac]/30"
+                                : "bg-[#1f1f1f] border-[#2a2828]"
                         }`}
                     >
                         {saved
-                            ? <FaBookmark className="text-[#C94C73] text-lg" />
-                            : <FaRegBookmark className="text-gray-500 text-lg" />
-                        }
+                            ? <FaBookmark className="text-[#ff89ac] text-lg" />
+                            : <FaRegBookmark className="text-[#adaaaa] text-lg" />}
                     </button>
 
-                    <button className="w-11 h-11 rounded-xl flex items-center justify-center bg-gray-50 border border-gray-200">
-                        <MdOutlineMessage className="text-gray-500 text-lg" />
+                    <button className="w-12 h-12 rounded-full flex items-center justify-center bg-[#1f1f1f] border border-[#2a2828] hover:border-[#ff89ac]/30 transition-all">
+                        <MdOutlineMessage className="text-[#adaaaa] text-lg" />
                     </button>
                 </div>
 
@@ -416,83 +446,75 @@ const VendorPublicProfile = () => {
                     <div className="flex items-center gap-3 mt-4">
                         {socialLinks.instagram && (
                             <a href={socialLinks.instagram} target="_blank" rel="noreferrer"
-                                className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-[#C94C73] transition-colors">
+                                className="w-10 h-10 rounded-full bg-[#1f1f1f] border border-[#2a2828] flex items-center justify-center text-[#adaaaa] hover:text-[#ff89ac] hover:border-[#ff89ac]/30 transition-all">
                                 <LuInstagram />
                             </a>
                         )}
                         {socialLinks.youtube && (
                             <a href={socialLinks.youtube} target="_blank" rel="noreferrer"
-                                className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-red-500 transition-colors">
+                                className="w-10 h-10 rounded-full bg-[#1f1f1f] border border-[#2a2828] flex items-center justify-center text-[#adaaaa] hover:text-red-500 hover:border-red-500/30 transition-all">
                                 <LuYoutube />
                             </a>
                         )}
                         {socialLinks.facebook && (
                             <a href={socialLinks.facebook} target="_blank" rel="noreferrer"
-                                className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-blue-600 transition-colors">
+                                className="w-10 h-10 rounded-full bg-[#1f1f1f] border border-[#2a2828] flex items-center justify-center text-[#adaaaa] hover:text-blue-400 hover:border-blue-400/30 transition-all">
                                 <FaFacebook />
                             </a>
                         )}
                         {socialLinks.website && (
                             <a href={socialLinks.website} target="_blank" rel="noreferrer"
-                                className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-800 transition-colors">
+                                className="w-10 h-10 rounded-full bg-[#1f1f1f] border border-[#2a2828] flex items-center justify-center text-[#adaaaa] hover:text-white hover:border-white/30 transition-all">
                                 <LuGlobe />
                             </a>
                         )}
                     </div>
                 )}
 
-                {/* About */}
+                {/* About / Bio */}
                 {profile?.bio && (
-                    <div className="mt-5">
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">About</p>
-                        <p className="text-sm text-gray-700 leading-relaxed">{profile.bio}</p>
+                    <div className="mt-8">
+                        <p className="text-[#71717a] text-xs font-bold uppercase tracking-widest mb-3">About</p>
+                        <p className="text-[#adaaaa] text-sm leading-relaxed">{profile.bio}</p>
                     </div>
                 )}
 
-                {/* Meta info pills */}
-                <div className="flex flex-wrap gap-2 mt-4">
-                    {profile?.foundedYear && (
-                        <span className="text-xs text-gray-500 flex items-center gap-1 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
-                            <LuCalendar className="text-[#C94C73]" />
-                            Since {profile.foundedYear}
-                        </span>
-                    )}
-                    {profile?.teamSize && (
-                        <span className="text-xs text-gray-500 flex items-center gap-1 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
-                            <LuUsers className="text-[#C94C73]" />
-                            {profile.teamSize} team members
-                        </span>
-                    )}
-                    {profile?.serviceAreas?.map((area, i) => area.isPrimary && (
-                        <span key={i} className="text-xs text-gray-500 flex items-center gap-1 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
-                            <LuMapPin className="text-[#C94C73]" />
-                            Serves {area.city}
-                        </span>
-                    ))}
-                </div>
-
-                {/* Services accordion */}
-                {profile?.services?.length > 0 && (
-                    <div className="mt-6">
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Services & Packages</p>
-                        {profile.services.map((svc, i) => (
-                            <ServiceAccordion key={i} service={svc} />
+                {/* Service area pills */}
+                {profile?.serviceAreas?.some(a => a.isPrimary) && (
+                    <div className="flex flex-wrap gap-2 mt-4">
+                        {profile.serviceAreas.map((area, i) => area.isPrimary && (
+                            <span key={i} className="text-xs text-[#adaaaa] flex items-center gap-1 bg-[#1a1919] border border-[#2a2828] px-3 py-1.5 rounded-full">
+                                <LuMapPin className="text-[#ff89ac] text-xs" />
+                                Serves {area.city}
+                            </span>
                         ))}
+                    </div>
+                )}
+
+                {/* ── Services & Packages ───────────────────────── */}
+                {profile?.services?.length > 0 && (
+                    <div className="mt-10">
+                        <p className="text-white text-2xl font-bold mb-6">Service Packages</p>
+                        <div className="flex flex-col gap-3">
+                            {profile.services.map((svc, i) => (
+                                <ServiceAccordion key={i} service={svc} />
+                            ))}
+                        </div>
                     </div>
                 )}
             </div>
 
             {/* ── Tabs ─────────────────────────────────────────── */}
-            <div className="sticky top-0 bg-white z-10 px-5 mt-6 border-b border-gray-100">
+            <div className="sticky top-0 bg-[#0e0e0e]/90 backdrop-blur-md z-10 px-8 mt-10 border-b border-[#1f1f1f]">
                 <div className="flex gap-1">
                     {TABS.map(({ id, label, icon: Icon }) => (
                         <button
                             key={id}
                             onClick={() => setActiveTab(id)}
-                            className={`flex items-center gap-1.5 px-4 py-3 text-sm font-medium border-b-2 transition-all ${
+                            className={`flex items-center gap-1.5 px-5 py-4 text-sm font-medium border-b-2 transition-all ${
                                 activeTab === id
-                                    ? "border-[#C94C73] text-[#C94C73]"
-                                    : "border-transparent text-gray-400 hover:text-gray-600"
+                                    ? "border-[#ff89ac] text-[#ff89ac]"
+                                    : "border-transparent text-[#71717a] hover:text-[#adaaaa]"
                             }`}
                         >
                             <Icon className="text-base" />
@@ -502,19 +524,19 @@ const VendorPublicProfile = () => {
                 </div>
             </div>
 
-            {/* ── Tab content ──────────────────────────────────── */}
-            <div className="px-4 mt-5">
+            {/* ── Tab Content ──────────────────────────────────── */}
+            <div className="px-8 mt-8">
 
-                {/* Posts tab */}
+                {/* Posts */}
                 {activeTab === "posts" && (
                     postsLoading ? (
-                        <div className="flex justify-center py-10">
-                            <LuLoaderCircle className="animate-spin text-[#C94C73] text-2xl" />
+                        <div className="flex justify-center py-16">
+                            <LuLoaderCircle className="animate-spin text-[#ff89ac] text-2xl" />
                         </div>
                     ) : posts.length === 0 ? (
-                        <p className="text-center text-gray-400 text-sm py-10">No posts yet</p>
+                        <p className="text-center text-[#52525b] text-sm py-16">No posts yet</p>
                     ) : (
-                        <div className="space-y-4">
+                        <div className="space-y-5 max-w-2xl mx-auto">
                             {posts.map((post) => (
                                 <PostCard key={post._id} item={{ ...post, contentType: "post" }} />
                             ))}
@@ -522,16 +544,16 @@ const VendorPublicProfile = () => {
                     )
                 )}
 
-                {/* Reels tab */}
+                {/* Reels */}
                 {activeTab === "reels" && (
                     reelsLoading ? (
-                        <div className="flex justify-center py-10">
-                            <LuLoaderCircle className="animate-spin text-[#C94C73] text-2xl" />
+                        <div className="flex justify-center py-16">
+                            <LuLoaderCircle className="animate-spin text-[#ff89ac] text-2xl" />
                         </div>
                     ) : reels.length === 0 ? (
-                        <p className="text-center text-gray-400 text-sm py-10">No reels yet</p>
+                        <p className="text-center text-[#52525b] text-sm py-16">No reels yet</p>
                     ) : (
-                        <div className="space-y-4">
+                        <div className="space-y-5 max-w-2xl mx-auto">
                             {reels.map((reel) => (
                                 <ReelCard key={reel._id} item={{ ...reel, contentType: "reel" }} />
                             ))}
@@ -539,25 +561,29 @@ const VendorPublicProfile = () => {
                     )
                 )}
 
-                {/* Portfolio tab */}
+                {/* Portfolio */}
                 {activeTab === "portfolio" && (
                     portfolioLoading ? (
-                        <div className="flex justify-center py-10">
-                            <LuLoaderCircle className="animate-spin text-[#C94C73] text-2xl" />
+                        <div className="flex justify-center py-16">
+                            <LuLoaderCircle className="animate-spin text-[#ff89ac] text-2xl" />
                         </div>
-                    ) : !portfolio || portfolio?.albums?.length === 0 ? (
-                        <p className="text-center text-gray-400 text-sm py-10">No portfolio albums yet</p>
+                    ) : !portfolio?.albums?.length ? (
+                        <p className="text-center text-[#52525b] text-sm py-16">No portfolio albums yet</p>
                     ) : (
-                        <div className="space-y-6">
+                        <div className="space-y-10">
+                            <div className="flex items-center justify-between mb-2">
+                                <p className="text-white text-2xl font-bold">Curated Portfolio</p>
+                                <button className="text-[#ff89ac] text-sm font-semibold hover:underline">View All Gallery</button>
+                            </div>
                             {portfolio.albums.filter((a) => a.isPublic !== false).map((album, i) => (
                                 <div key={i}>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <p className="font-semibold text-gray-800 text-sm">{album.name}</p>
-                                        <span className="text-xs text-gray-400">{album.media?.length || 0} photos</span>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <p className="font-semibold text-white text-sm">{album.title}</p>
+                                        <span className="text-xs text-[#52525b]">{album.media?.length || 0} photos</span>
                                     </div>
-                                    <div className="grid grid-cols-3 gap-1 rounded-xl overflow-hidden">
-                                        {(album.media || []).slice(0, 9).map((m, j) => (
-                                            <div key={j} className="aspect-square bg-gray-100 overflow-hidden">
+                                    <div className="grid grid-cols-3 gap-2 rounded-[32px] overflow-hidden">
+                                        {(album.media || []).slice(0, 6).map((m, j) => (
+                                            <div key={j} className="aspect-square bg-[#1a1919] overflow-hidden rounded-lg">
                                                 <img src={m.url} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                                             </div>
                                         ))}
@@ -568,51 +594,80 @@ const VendorPublicProfile = () => {
                     )
                 )}
 
-                {/* Reviews tab */}
+                {/* Reviews */}
                 {activeTab === "reviews" && (
                     reviewsLoading ? (
-                        <div className="flex justify-center py-10">
-                            <LuLoaderCircle className="animate-spin text-[#C94C73] text-2xl" />
+                        <div className="flex justify-center py-16">
+                            <LuLoaderCircle className="animate-spin text-[#ff89ac] text-2xl" />
                         </div>
                     ) : !reviewsData?.reviews?.length ? (
-                        <p className="text-center text-gray-400 text-sm py-10">No reviews yet</p>
+                        <p className="text-center text-[#52525b] text-sm py-16">No reviews yet</p>
                     ) : (
                         <div>
-                            {/* Rating summary */}
+                            {/* Rating summary header */}
                             {reviewsData?.stats && (
-                                <div className="flex items-center gap-4 bg-gray-50 rounded-2xl p-4 mb-5">
-                                    <div className="text-center">
-                                        <p className="text-4xl font-bold text-gray-900">{reviewsData.stats.averageRating?.toFixed(1) || "—"}</p>
-                                        <StarRating value={reviewsData.stats.averageRating || 0} />
-                                        <p className="text-xs text-gray-400 mt-1">{reviewsData.stats.totalReviews || 0} reviews</p>
+                                <div className="flex items-center justify-between mb-8">
+                                    <p className="text-white text-2xl font-bold">Client Love</p>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-white text-2xl font-extrabold">
+                                            {reviewsData.stats.averageRating?.toFixed(1) || "—"}
+                                        </span>
+                                        <StarRating value={reviewsData.stats.averageRating || 0} size="lg" />
                                     </div>
-                                    <div className="flex-1 space-y-1.5">
+                                </div>
+                            )}
+
+                            {/* Rating breakdown */}
+                            {reviewsData?.stats && (
+                                <div className="bg-[#131313] border border-[rgba(255,255,255,0.05)] rounded-[32px] p-6 mb-8">
+                                    <div className="space-y-2">
                                         {[5, 4, 3, 2, 1].map((star) => {
                                             const count = reviewsData.stats.ratingBreakdown?.[star] || 0
                                             const total = reviewsData.stats.totalReviews || 1
                                             return (
-                                                <div key={star} className="flex items-center gap-2">
-                                                    <span className="text-xs text-gray-500 w-3">{star}</span>
-                                                    <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                                <div key={star} className="flex items-center gap-3">
+                                                    <span className="text-[#adaaaa] text-xs w-3">{star}</span>
+                                                    <div className="flex-1 h-1.5 bg-[#1a1919] rounded-full overflow-hidden">
                                                         <div
                                                             className="h-full bg-amber-400 rounded-full"
                                                             style={{ width: `${(count / total) * 100}%` }}
                                                         />
                                                     </div>
-                                                    <span className="text-xs text-gray-400 w-4">{count}</span>
+                                                    <span className="text-xs text-[#52525b] w-4">{count}</span>
                                                 </div>
                                             )
                                         })}
                                     </div>
                                 </div>
                             )}
-                            {reviewsData.reviews.map((r, i) => (
-                                <ReviewCard key={i} review={r} />
-                            ))}
+
+                            {/* Review cards — 2-column grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {reviewsData.reviews.map((r, i) => (
+                                    <ReviewCard key={i} review={r} />
+                                ))}
+                            </div>
                         </div>
                     )
                 )}
             </div>
+
+            {/* ── Footer ───────────────────────────────────────── */}
+            <footer className="mt-20 mx-8 pt-12 border-t border-[rgba(39,39,42,0.4)] flex items-center justify-between flex-wrap gap-4">
+                <div>
+                    <p className="text-white font-semibold text-lg">Wedora</p>
+                    <p className="text-[#71717a] text-[10px] uppercase tracking-widest mt-1">
+                        © 2025 Wedora. Built for the elite.
+                    </p>
+                </div>
+                <div className="flex gap-6">
+                    {["Privacy", "Terms", "Support", "Careers"].map((l) => (
+                        <span key={l} className="text-[#71717a] text-xs uppercase tracking-widest cursor-pointer hover:text-[#adaaaa] transition-colors">
+                            {l}
+                        </span>
+                    ))}
+                </div>
+            </footer>
         </div>
     )
 }
