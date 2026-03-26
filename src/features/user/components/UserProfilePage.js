@@ -7,7 +7,7 @@ import { UserFollowStat } from "@/apiFunctions/user/UserFollowings";
 
 const UserProfile = async ({ }) => {
     const prf = await profileFetch()
-    const {userProfile}=prf?.data
+    const { userProfile } = prf?.data ?? {}
     console.log(userProfile);
     
     return(
@@ -56,10 +56,10 @@ const UserProfile = async ({ }) => {
                 </div>
                 <div className="flex md:w-[80%] w-[95%] justify-between mx-auto mt-3 py-2 rounded-md bg-gray-100">
                     <div className="w-[50%] border-r-2 border-[#9A2143] flex justify-center items-center text-center py-1 font-light text-gray-500">
-                        <span className="font-semibold  text-gray-700">{`${userProfile?.vendorLiked.length + userProfile?.coupleLiked.length + " "}`} </span>Likes
+                        <span className="font-semibold  text-gray-700">{`${(userProfile?.vendorLiked?.length ?? 0) + (userProfile?.coupleLiked?.length ?? 0)} `} </span>Likes
                     </div>
                     <div className="w-[50%] text-center py-1 font-light text-gray-500">
-                        <span className="font-semibold text-gray-700">{userProfile?.vendorFollowed.length + " "} </span>Following
+                        <span className="font-semibold text-gray-700">{`${userProfile?.vendorFollowed?.length ?? 0} `}</span>Following
                     </div>
                 </div>
                 <UserFollowStat userData={prf?.data?.vendor_and_coupleCollection} />
