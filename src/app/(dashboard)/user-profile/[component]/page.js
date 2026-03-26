@@ -1,3 +1,4 @@
+import { ChatAppShell } from "@/features/chats/ChatAppShell";
 import { EventsOverview } from "@/features/user/dashboard/events/EventsOverview";
 import SavedContentGallery from "@/features/user/dashboard/memories/SavedFeed";
 import { MainCard } from "@/features/user/dashboard/personal/MainCard.js";
@@ -35,8 +36,8 @@ const renderUserComponent = (component) => {
             return <WeddingMarketInsightsDashboard/>;
         case "events":
             return <EventsOverview/>;
-        case "library":
-            return <div>library</div>;
+        case "chats":
+            return <ChatAppShell/>;
         default:
             return <div>Oopsss</div>;
     }

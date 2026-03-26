@@ -23,7 +23,7 @@ const mainNavigation = [
   { name: 'Memories', href: '/user-profile/memories', icon: ArrowRightLeft },
   { name: 'Trending', href: '/user-profile/trending', icon: TrendingUp },
   { name: 'Events', href: '/user-profile/events', icon: ToggleLeft },
-  { name: 'Library', href: '/user-profile/library', icon: BookOpen },
+  { name: 'Chats', href: '/user-profile/chats', icon: BookOpen },
 ];
 
 const settingsNavigation = [

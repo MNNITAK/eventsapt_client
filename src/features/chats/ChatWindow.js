@@ -9,7 +9,7 @@ import {
   Sparkles,
   Video,
 } from "lucide-react";
-import ChatComposer from "@/components/chat/ChatComposer";
+import ChatComposer from "./ChatComposer.js";
 
 export default function ChatWindow({ contact, messages, onSendMessage, settings }) {
   const bottomRef = useRef(null);

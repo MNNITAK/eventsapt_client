@@ -13,7 +13,7 @@ import {
   Image as ImageIcon,
   HeartHandshake,
 } from "lucide-react";
-import { SIDEBAR_SETTINGS } from "@/components/chat/chat-data";
+import { SIDEBAR_SETTINGS } from "./chat-data.js"
 
 export default function ChatSidebar({
   contacts,
@@ -28,7 +28,7 @@ export default function ChatSidebar({
   onSelectContact,
   filters,
 }) {
-  const [showSettings, setShowSettings] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
 
   const counts = {
     all: allContacts.length,
@@ -38,7 +38,7 @@ export default function ChatSidebar({
   };
 
   return (
-    <aside className="flex h-full flex-col border-r border-slate-200 bg-[#fbfafc]">
+    <aside className="flex h-full flex-col border-r overflow-auto border-slate-200 bg-[#fbfafc]">
       <div className="border-b border-slate-200 px-5 py-5">
         <div className="mb-4 flex items-center justify-between">
           <div>

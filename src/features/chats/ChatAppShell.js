@@ -1,11 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import ChatSidebar from "@/components/chat/ChatSidebar";
-import ChatWindow from "@/components/chat/ChatWindow";
-import { FILTERS, INITIAL_CONTACTS, INITIAL_THREADS } from "@/components/chat/chat-data";
+import ChatSidebar from "./ChatSidebar.js";
+import ChatWindow from "./ChatWindow.js";
+import { FILTERS, INITIAL_CONTACTS, INITIAL_THREADS } from "./chat-data.js";
 
-export default function ChatAppShell() {
+export  function ChatAppShell() {
   const [contacts, setContacts] = useState(INITIAL_CONTACTS);
   const [threads, setThreads] = useState(INITIAL_THREADS);
   const [activeContactId, setActiveContactId] = useState(null);
@@ -113,7 +113,7 @@ export default function ChatAppShell() {
   };
 
   return (
-    <div className="grid h-[calc(100vh-2rem)] overflow-hidden rounded-[32px] border border-white/70 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)] lg:grid-cols-[360px_1fr]">
+    <div className="grid w-[95%] mt-5 mb-5 mx-auto h-[84vh] overflow-hidden rounded-[32px] border border-white/70 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)] lg:grid-cols-[360px_1fr]">
       <ChatSidebar
         contacts={visibleContacts}
         allContacts={contacts}
