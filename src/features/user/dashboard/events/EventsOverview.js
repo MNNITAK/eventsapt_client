@@ -36,7 +36,7 @@ export function EventsOverview() {
     return (
         <div className="space-y-6 w-[95%] mx-auto mt-5">
             <div className="rounded-[32px] border relative border-white/70 bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-                <button className="absolute right-5 flex items-center gap-2 rounded-lg bg-[#C94C73] px-4 py-2 text-sm font-semibold text-white">
+                <button className="absolute right-5 flex items-center gap-2 rounded-lg bg-[#C94C73] px-4 py-2 text-sm font-medium text-white">
                     <Calendars />
                     Create Event
                 </button>
