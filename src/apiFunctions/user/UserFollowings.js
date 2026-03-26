@@ -13,7 +13,7 @@ const UserFollowStat = ({ userData }) => {
             </div>
             <div className="grid mt-3 md:w-[80%] w-[90%] pb-[13vh] mx-auto grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-2">
                 {
-                    userData.map((item, pos) => {
+                    (userData ?? []).map((item, pos) => {
                         if (item.type === 'likedVendors' && userView === "likes") {
                             return item.items.map((item1, pos1) => (
                                 <VendorLiked isFollowed={false} key={pos1} dt={item1} />
