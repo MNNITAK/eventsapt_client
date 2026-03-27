@@ -6,7 +6,7 @@ import {
   scheduleFlush,
   flushOnExit,
 } from "../utils/insightsBuffer.js";
-import { REEL_EVENTS, POST_EVENTS } from "../utils/insightHelpers.js";
+import { REEL_EVENTS, POST_EVENTS } from "../utils/insightHelpers_old.js";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 

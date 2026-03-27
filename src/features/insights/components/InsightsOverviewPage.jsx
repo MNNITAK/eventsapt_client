@@ -12,7 +12,7 @@ import {
   InsightsSkeleton, InsightsError,
 } from "./InsightPrimitives";
 import { EngagementDonut } from "./InsightCharts";
-import { formatCount, formatSeconds, formatPct } from "../utils/insightHelpers";
+import { formatCount, formatSeconds, formatPct } from "../utils/insightHelpers_old";
 
 // ─── TopContentRow ───────────────────────────────────────────────────────────
 

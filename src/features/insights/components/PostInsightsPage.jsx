@@ -14,7 +14,7 @@ import {
 import { EngagementDonut } from "./InsightCharts";
 import {
   formatCount, parseDelta, computeAudiencePct, formatSeconds,
-} from "../utils/insightHelpers";
+} from "../utils/insightHelpers_old";
 
 // ─── PostInsightsPage ────────────────────────────────────────────────────────
 // Props:
