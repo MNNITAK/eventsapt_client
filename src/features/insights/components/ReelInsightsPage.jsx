@@ -15,7 +15,7 @@ import {
 import { EngagementDonut, WatchTimeBar } from "./InsightCharts";
 import {
   formatCount, formatSeconds, formatPct, parseDelta, computeAudiencePct,
-} from "../utils/insightHelpers_old";
+} from "../utils/insightHelpers";
 
 // ─── ReelInsightsPage ────────────────────────────────────────────────────────
 // Props:

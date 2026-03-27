@@ -1,6 +1,6 @@
 "use client";
 
-import { PERIODS } from "../utils/insightHelpers_old";
+import { PERIODS } from "../utils/insightHelpers";
 
 // ─── StatCard ────────────────────────────────────────────────────────────────
 
