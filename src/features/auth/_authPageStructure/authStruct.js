@@ -1,30 +1,38 @@
 'use client'
-import { useParams } from "next/navigation"
-import LinkButton from "@/shared/common/linkbutton";
 import Link from "next/link";
-import { SwitchAccount } from "../../../shared/components/ui/SwitchAccountButton";
-export default function AuthStruct({usertype}) {
-    const params = useParams()
-    return (
-        <div className="w-full flex flex-col  h-[80%] justify-between items-center ">
-           <div className="w-[100%] flex flex-col items-center">
-           <LinkButton client={usertype} linkText="Login" linkTag={`/login`} />
-           <LinkButton client={usertype}  color="bg-[#F1F1F1]"  linkText="SignUp" linkTag={`/signup`} />
-           </div>
-           {/* <SwitchAccount/> */}
-           {
-            usertype == "user" && <div className='w-[100%] text-center text-gray-500'>Are you a vendor?<Link replace={true} className='ml-3 text-white bg-[#C94C73] py-3 px-4 rounded-lg' href="/authPage/vendor">Business Sign In</Link></div>
-           }
-           {
-            usertype == "vendor" &&  <div className='w-[100%] text-center text-gray-500'>Are you a user?<Link replace={true} className='ml-3 text-white bg-[#C94C73] py-3 px-4 rounded-lg' href="/authPage/user">User Sign In</Link></div>
-           }
-            {/* {
-                usertype == "vendor" ? <>
-                 <div className='w-[100%] text-center text-gray-500'>Are you a vendor?<Link className='ml-3 text-white bg-[#C94C73] py-3 px-4 rounded-lg' href="/authPage/vendor">Business Sign In</Link></div>
-                </> : <>
-                <div className='w-[100%] text-center text-gray-500'>Are you a user?<Link className='ml-3 text-white bg-[#C94C73] py-3 px-4 rounded-lg' href="/authPage/user">User Sign In</Link></div>
-                </>
-            } */}
-        </div>
-    )
+
+export default function AuthStruct({ usertype }) {
+  const isVendor = usertype === 'vendor'
+
+  const loginHref = {
+    pathname: '/login',
+    query: isVendor ? { usertype: 'vendor' } : { usertype: 'user' },
+  }
+  const signupHref = {
+    pathname: '/signup',
+    query: isVendor ? { usertype: 'vendor' } : { usertype: 'user', compIndex: '1' },
+  }
+
+  return (
+    <div className="w-full flex flex-col gap-3 mt-2">
+      {/* Login button — gradient fill */}
+      <Link
+        href={loginHref}
+        className="w-full text-center font-semibold py-3 rounded-xl text-black transition-opacity hover:opacity-90"
+        style={{ background: 'linear-gradient(135deg, #FF89AC 0%, #EA73FB 100%)', fontFamily: 'var(--font-inter), sans-serif' }}
+      >
+        Login
+      </Link>
+
+      {/* Sign Up button — outlined */}
+      <Link
+        replace={!isVendor}
+        href={signupHref}
+        className="w-full text-center font-semibold py-3 rounded-xl text-white border transition-colors hover:border-white/50"
+        style={{ borderColor: '#494847', fontFamily: 'var(--font-inter), sans-serif' }}
+      >
+        Sign Up
+      </Link>
+    </div>
+  )
 }

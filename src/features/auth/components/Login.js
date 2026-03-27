@@ -1,70 +1,48 @@
 'use client'
 import { useMutation } from "@tanstack/react-query";
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { PlaceholdersAndVanishInput } from "@/app/Components/ui/changeInputPlaceholder"
 import Link from "next/link";
 import GoogleLogo from "../../../../public/google-icon.svg"
 import Image from "next/image";
-import { FaEyeSlash, FaEye } from "react-icons/fa";
-import { loginUser } from "@/features/auth/api/login";
 import { logViaGoogle } from "@/lib/googleAuth";
 import { loginSchema } from "@/schema/userSchema";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { loginClient } from "@/features/auth/api/clientLogin";
+
 function UserLogin() {
   const searchParams = useSearchParams()
   const searchKey = searchParams.get('usertype')
   const router = useRouter()
-  let [credError, setErr] = useState([])
-  const { mutate, error, isPending, data, isError, isSuccess } = useMutation({
-    mutationFn: loginClient
-  })
-  const placeholders = [
-    "Enter Username or",
-    "Enter email"
-  ];
-  const passplaceholders = [
-    "Enter password",
+  const [credError, setErr] = useState([])
+  const { mutate, error, isPending, isError, isSuccess } = useMutation({ mutationFn: loginClient })
+  const [userCredentials, setCredentials] = useState({ userid: "", password: "", isGoogleAuthenticated: false })
 
-  ];
-  let [userCredentials, setCredentials] = useState({
-    userid: "",
-    password: "",
-    isGoogleAuthenticated: false
-  })
-  const loginViaGoole = async () => {
-    //console.log(userDetails);
-    let data = await logViaGoogle()
-    //console.log(data);
-    //setCredentials((prev)=>({...prev,userid:data.email,isGoogleAuthenticated:true}))
-    mutate({
-      data: { userid: data.email },
-      router: router,
-      client: searchKey
-    })
+  const placeholders = ["Enter username or email", "Enter email"]
+
+  const loginViaGoogle = async () => {
+    const data = await logViaGoogle()
+    mutate({ data: { userid: data.email }, router, client: searchKey })
   }
+
   const handleChange = (e) => {
-    setCredentials((prev) => ({ ...prev, [e.target.name]: (e.target.value).trim() }))
-  };
-  const onSubmit = (e) => {
+    setCredentials(prev => ({ ...prev, [e.target.name]: e.target.value.trim() }))
+  }
+
+  const onSubmit = () => {
     setErr([])
-    let validatedSchema = loginSchema.safeParse(userCredentials)
-    //console.log(validatedSchema); 
-    if (!(validatedSchema?.success)) {
-      setErr(validatedSchema?.error?.errors)
-      return
-    }
-    //console.log(userCredentials);  
-    mutate({
-      data: userCredentials,
-      router: router,
-      client: searchKey
-    })
-  };
+    const validated = loginSchema.safeParse(userCredentials)
+    if (!validated?.success) { setErr(validated?.error?.errors); return }
+    mutate({ data: userCredentials, router, client: searchKey })
+  }
+
   return (
-    <div className="md:mt-10 mt-4 flex flex-col">
-      <span className="">
+    <div className="flex flex-col gap-4 w-full">
+
+      {/* Username/email input */}
+      <div>
+        <label className="text-xs font-medium mb-1.5 block" style={{ color: '#adaaaa' }}>Username or Email</label>
         <PlaceholdersAndVanishInput
           placeholders={placeholders}
           onChange={handleChange}
@@ -72,52 +50,81 @@ function UserLogin() {
           autofocusInput={true}
           name="userid"
         />
-      </span>
-      <h2></h2>
-      <input
-        type="password"
-        className="md:w-[25vw] w-[85vw] mt-4 outline-2 pl-4  sm:pl-7 border-[1px] focus:outline-[#C94C73] pr-20 relative dark:bg-zinc-800 h-12 rounded-lg overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200"
-        placeholder="Enter password"
-        onChange={handleChange}
-        name="password"
-      />
-      <h2 className="text-sm ml-2 mt-2 font-semibold text-gray-500">{
-        <>{
-          credError?.length > 0 ? "Provide valid credentials " : ""
-        }</>
-      }</h2>
-      <h2 className="text-sm ml-2 mt-0 font-semibold text-gray-500">{
-        <>{
-          isError ? error?.response?.data?.message : ""
-        }</>
-      }</h2>
+      </div>
+
+      {/* Password input */}
+      <div>
+        <label className="text-xs font-medium mb-1.5 block" style={{ color: '#adaaaa' }}>Password</label>
+        <input
+          type="password"
+          className="w-full h-12 rounded-xl px-4 text-white text-sm outline-none transition-all"
+          style={{
+            background: '#1a1919',
+            border: '1px solid rgba(73,72,71,0.4)',
+            fontFamily: 'var(--font-inter), sans-serif',
+          }}
+          onFocus={e => e.target.style.borderColor = '#FF89AC'}
+          onBlur={e => e.target.style.borderColor = 'rgba(73,72,71,0.4)'}
+          placeholder="Enter password"
+          onChange={handleChange}
+          name="password"
+        />
+      </div>
+
+      {/* Errors */}
+      {credError?.length > 0 && (
+        <p className="text-sm" style={{ color: '#FF89AC' }}>Please provide valid credentials.</p>
+      )}
+      {isError && (
+        <p className="text-sm" style={{ color: '#FF89AC' }}>{error?.response?.data?.message}</p>
+      )}
+
+      {/* Login button */}
       <button
         onClick={onSubmit}
         disabled={isPending || isSuccess}
-        className="md:w-[25vw] w-[85vw] text-white rounded-lg mt-10 md:mt-4 py-3 bg-[#C94C73]">
-        {
-          isPending ? "Logging you in" : "Login"
-        }
+        className="w-full py-3 rounded-xl font-semibold text-black transition-opacity hover:opacity-90 disabled:opacity-60 mt-2"
+        style={{ background: 'linear-gradient(135deg, #FF89AC 0%, #EA73FB 100%)', fontFamily: 'var(--font-inter), sans-serif' }}
+      >
+        {isPending ? 'Signing in…' : 'Login'}
       </button>
-      <div className="text-[#838485] text-center mt-4 md:mt-2">{`Don't have an account?`}<Link className="text-black ml-1" href={`/authPage/user`}>Sign Up</Link></div>
-      {
-        searchKey != "vendor" && <>
-          <div
-            className="relative "
-          >
-            <hr className="border-[#9e9d9d] mt-8"></hr>
-            <span className="absolute left-[45%] text-[#9e9d9d] top-5 bg-white px-3">OR</span>
 
+      {/* Sign up link */}
+      <p className="text-center text-sm" style={{ color: '#adaaaa' }}>
+        Don&apos;t have an account?{' '}
+        <Link href="/authPage/user" className="font-semibold hover:opacity-80 transition-opacity" style={{ color: '#FF89AC' }}>
+          Sign Up
+        </Link>
+      </p>
+
+      {/* Google — only for non-vendor */}
+      {searchKey !== 'vendor' && (
+        <>
+          <div className="relative my-1">
+            <hr style={{ borderColor: 'rgba(73,72,71,0.4)' }} />
+            <span
+              className="absolute left-1/2 -translate-x-1/2 -top-2.5 px-3 text-xs"
+              style={{ color: '#adaaaa', background: '#0e0e0e' }}
+            >
+              OR
+            </span>
           </div>
-          <button
-            onClick={loginViaGoole}
-            className="md:w-[25vw] border-[#C94C73] border-2 flex justify-center items-center  w-[85vw] text-black rounded-lg mt-5 md:mt-10 py-3 bg-white">
-            <span className="mr-2">Continue with google</span>
-            <Image alt="googleLogin" src={GoogleLogo} height={20} width={20} />
-          </button>
 
+          <button
+            onClick={loginViaGoogle}
+            className="w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 border transition-colors hover:border-white/30"
+            style={{
+              background: '#1a1919',
+              border: '1px solid rgba(73,72,71,0.4)',
+              color: '#ffffff',
+              fontFamily: 'var(--font-inter), sans-serif',
+            }}
+          >
+            <Image alt="Google" src={GoogleLogo} height={18} width={18} />
+            Continue with Google
+          </button>
         </>
-      }
+      )}
     </div>
   )
 }
