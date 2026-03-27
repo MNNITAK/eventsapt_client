@@ -1,94 +1,128 @@
 import Image from 'next/image'
-import React, { use, useState } from 'react'
+import React, { useState } from 'react'
 import locationLogo from "../../../../public/location.svg"
-import { useDebouncedCallback } from 'use-debounce';
-import { fetchCity } from '@/lib/apis';
+import { useDebouncedCallback } from 'use-debounce'
+import { fetchCity } from '@/lib/apis'
 import fadeLoader from "../../../../public/fadeLoader.svg"
-function Userlocation({prev,next,userDetails,setDetails,queryParams,index}) {
-    let famousCityList=["Mumbai","Delhi","Jaipur","Chennai","Kolkata","Hugli","Telangana"]
-    let availableServiceCities=["Mirzapur","Jabalpur","Varanasi","Hamirpur","Jammu","Singrauli","Pune","Haryana","Jabalpur","Shivpur"]
-    let [fetchedCity,setCityArr]=useState([])
-    let [loading,setLoader]=useState(false)
-    let [locVal,setLocVal]=useState("")
-    let debounceSearch=useDebouncedCallback((val)=>{
-      if(!(famousCityList.includes(val) || availableServiceCities.includes(val)))
-     {
+
+function Userlocation({ prev, next, userDetails, setDetails, queryParams, index }) {
+  const famousCityList = ["Mumbai", "Delhi", "Jaipur", "Chennai", "Kolkata", "Hugli", "Telangana"]
+  const availableServiceCities = ["Mirzapur", "Jabalpur", "Varanasi", "Hamirpur", "Jammu", "Singrauli", "Pune", "Haryana", "Jabalpur", "Shivpur"]
+  const [fetchedCity, setCityArr] = useState([])
+  const [loading, setLoader] = useState(false)
+  const [locVal, setLocVal] = useState("")
+
+  const debounceSearch = useDebouncedCallback(val => {
+    if (!(famousCityList.includes(val) || availableServiceCities.includes(val))) {
       setLoader(true)
-      fetchCity(val.toLowerCase()).then((res)=>{
-        //console.log(res);
-        setCityArr(res.length>0?res.filter((item)=>item.country==="IN"):[])
-        setLoader(false)
-      }).catch((err)=>{
-        setCityArr([])
-        setLoader(false)
-      })
-     }
-    },1000)
-    let searchCity=async(e)=>{
-      //setDetails((prev)=>({...prev,[e.target.name]:e.target.value}))
-      //setCityArr(availableServiceCities.filter((item)=>item.toLowerCase().includes(e.target.value.toLowerCase())))
-      setLocVal(e.target.value)
-      debounceSearch(e.target.value)
+      fetchCity(val.toLowerCase())
+        .then(res => { setCityArr(res.length > 0 ? res.filter(item => item.country === 'IN') : []); setLoader(false) })
+        .catch(() => { setCityArr([]); setLoader(false) })
     }
-    const WindowHistoryStack=(pageIndex,replace=false)=>{
-      const params = new URLSearchParams(queryParams)
-      params.set('compIndex', pageIndex)
-      if(replace){
-        window.history.replaceState(null, '', `?${params.toString()}`)
-      }else{
-        window.history.pushState(null, '', `?${params.toString()}`)
-      }
-      return true
-    }
-    return (
-    <>
-    <div className='w-[100%] flex flex-col items-center md:px-0 h-[55vh]  md:h-[60vh]'>
-    <input
-    type="text"
-    name="locationCity"
-    className= "md:w-[25vw] w-[85vw] mt-4 md:ml-1 outline-2 pl-4 sm:pl-7 border-[1px] focus:outline-[#C94C73] pr-20 relative dark:bg-zinc-800 h-[6vh] rounded-lg overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200"
-    placeholder="Search location"
-    value={locVal}
-    onChange={(e)=>{searchCity(e)}}/>
-     <div className='w-[100%] relative'>  
-    {/* <div className='w-[98%] ml-1 py-3 recommenerbody h-[30vh] md:min-h-[1vh] md:max-h-[20vh] overflow-auto absolute top-1 bg-[#ffffff] rounded-lg border-2 border-gray-500'>
-      {
-        availableServiceCities.map((item,pos)=>
-        <div key={pos} className=' mt-1 mb-1 bg-[#FFECEC] rounded-lg text-[#C94C73] font-semibold text-[0.8rem] py-1 px-2'>{item}</div>
-      )
-      }
-    </div> */}
-     </div>
-    <h2 className='text-[0.9rem] w-[97%] mt-2 font-semibold text-gray-500'>Our famous services are available in</h2>
-    <div className='flex flex-wrap mt-2'>
-        {
-           famousCityList.map((item,pos)=>
-        <span key={pos} onClick={()=>{setDetails((prev)=>({...prev,locationCity:item}));setLocVal(item),setCityArr([])}} className={`mx-1 mt-1 mb-1 rounded-lg  ${userDetails['locationCity']===item?"bg-[#C94C73] text-white":"text-[#C94C73] bg-[#FFECEC]"} font-semibold text-[0.8rem] py-1 px-2`}>{item}</span>) 
-        }
-    </div>
-    {
-      locVal.length>0 && fetchedCity.length>0 ? <>
-      <h2 className='text-[0.9rem] w-[97%] flex mt-4 font-semibold text-gray-500'>Cities founded {loading?<><Image className='ml-2' alt='loader' src={fadeLoader} width={20} height={20}/></>:<></>}</h2>
-    <div className='flex flex-wrap mt-2 w-[97%]'>
-        {
-           fetchedCity?.map((item,pos)=>
-        <span key={pos} onClick={()=>{setDetails((prev)=>({...prev,locationCity:item?.name}));setLocVal(item?.name)}} className={`mx-1 mt-1 mb-1 rounded-lg  ${userDetails['locationCity']==item?.name?"bg-[#C94C73] text-white":"text-[#C94C73] bg-[#FFECEC] "} font-semibold text-[0.8rem] py-1 px-2`}>{item?.name}</span>) 
-        }
-    </div>
-      </> : <div className='flex justify-center mt-10 md:mt-5'>
-      <Image alt='location' loading='lazy' sizes='w-auto h-auto' width={200} height={250} src={locationLogo}/>
-  </div>
-    }
-    </div>
-     <div className="mt-1 md:mt-4 flex justify-between px-1">
-        <button className="p-2 rounded-lg text-[#C94C73]  mr-1" onClick={()=>{next();WindowHistoryStack(index+1,false)}}>
+  }, 1000)
+
+  const searchCity = e => { setLocVal(e.target.value); debounceSearch(e.target.value) }
+
+  const WindowHistoryStack = (pageIndex, replace = false) => {
+    const params = new URLSearchParams(queryParams)
+    params.set('compIndex', pageIndex)
+    replace ? window.history.replaceState(null, '', `?${params.toString()}`) : window.history.pushState(null, '', `?${params.toString()}`)
+    return true
+  }
+
+  const chipBase = 'px-3 py-1.5 rounded-full text-xs font-semibold cursor-pointer transition-all'
+
+  return (
+    <div className="w-[87vw] md:w-[26vw] flex flex-col gap-4">
+
+      {/* Search input */}
+      <div>
+        <label className="text-xs font-medium mb-1.5 block" style={{ color: '#adaaaa' }}>Search your city</label>
+        <input
+          type="text"
+          name="locationCity"
+          className="w-full h-12 rounded-xl px-4 text-white text-sm outline-none transition-all placeholder:text-[#555]"
+          style={{ background: '#1a1919', border: '1px solid rgba(73,72,71,0.4)' }}
+          onFocus={e => (e.target.style.borderColor = '#FF89AC')}
+          onBlur={e => (e.target.style.borderColor = 'rgba(73,72,71,0.4)')}
+          placeholder="Type to search…"
+          value={locVal}
+          onChange={searchCity}
+        />
+      </div>
+
+      {/* Popular cities */}
+      <div>
+        <p className="text-xs font-medium mb-2" style={{ color: '#adaaaa' }}>Popular cities</p>
+        <div className="flex flex-wrap gap-2">
+          {famousCityList.map((item, pos) => (
+            <span
+              key={pos}
+              onClick={() => { setDetails(prev => ({ ...prev, locationCity: item })); setLocVal(item); setCityArr([]) }}
+              className={chipBase}
+              style={
+                userDetails.locationCity === item
+                  ? { background: 'linear-gradient(135deg, #FF89AC, #EA73FB)', color: '#000' }
+                  : { background: 'rgba(255,137,172,0.08)', color: '#FF89AC', border: '1px solid rgba(255,137,172,0.2)' }
+              }
+            >
+              {item}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Search results */}
+      {locVal.length > 0 && fetchedCity.length > 0 && (
+        <div>
+          <p className="text-xs font-medium mb-2 flex items-center gap-2" style={{ color: '#adaaaa' }}>
+            Results {loading && <Image className="ml-1" alt="loader" src={fadeLoader} width={16} height={16} />}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {fetchedCity.map((item, pos) => (
+              <span
+                key={pos}
+                onClick={() => { setDetails(prev => ({ ...prev, locationCity: item.name })); setLocVal(item.name) }}
+                className={chipBase}
+                style={
+                  userDetails.locationCity === item.name
+                    ? { background: 'linear-gradient(135deg, #FF89AC, #EA73FB)', color: '#000' }
+                    : { background: 'rgba(255,137,172,0.08)', color: '#FF89AC', border: '1px solid rgba(255,137,172,0.2)' }
+                }
+              >
+                {item.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Empty illustration */}
+      {locVal.length === 0 && (
+        <div className="flex justify-center py-4 opacity-30">
+          <Image alt="location" loading="lazy" width={140} height={140} src={locationLogo} />
+        </div>
+      )}
+
+      {/* Navigation */}
+      <div className="flex justify-between gap-3 pt-2">
+        <button
+          onClick={() => { next(); WindowHistoryStack(index + 1, false) }}
+          className="flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-colors hover:border-white/30"
+          style={{ borderColor: '#494847', color: '#adaaaa' }}
+        >
           Skip
         </button>
-        <button className="p-2 border-2 rounded-lg border-[#C94C73] ml-1" onClick={()=>{ userDetails['locationCity'].length>0 && locVal.length>0 && WindowHistoryStack(index+1) && next()  }}>
-          Next
+        <button
+          onClick={() => { userDetails.locationCity.length > 0 && locVal.length > 0 && WindowHistoryStack(index + 1) && next() }}
+          className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-black transition-opacity hover:opacity-90"
+          style={{ background: 'linear-gradient(135deg, #FF89AC 0%, #EA73FB 100%)' }}
+        >
+          Next →
         </button>
       </div>
-    </>
+    </div>
   )
 }
+
 export { Userlocation }
