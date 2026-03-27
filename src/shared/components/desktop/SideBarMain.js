@@ -54,7 +54,7 @@ function SideBarMain({ client }) {
 
                 {/* Profile link */}
                 <Link
-                    href={client === 'user' ? `/profile/${client}` : `/profile/${client}/1`}
+                    href={client === 'user' ? `/user-profile/personal` : `/profile/${client}/1`}
                     className='flex items-center gap-3 px-2 pt-4 border-t border-[#1f1f1f] cursor-pointer group'
                 >
                     <div className='w-8 h-8 rounded-full bg-gradient-to-tr from-[#ff89ac] to-[#a68cff] flex items-center justify-center flex-shrink-0'>
