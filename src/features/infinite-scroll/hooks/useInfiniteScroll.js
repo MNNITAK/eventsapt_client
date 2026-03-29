@@ -82,8 +82,18 @@ export function useInfiniteScroll({
   });
 
   // Flatten pages: TanStack Query returns { pages: [page1, page2, ...] }
-  // Each page has a `data` array. We flatten into one clean array.
-  const items = data?.pages.flatMap((page) => page.data) ?? [];
+  // Each page has a `data` array. We flatten into one clean array,
+  // then deduplicate by _id — backend pagination can return the same
+  // document on multiple pages (e.g. Redis feed overlap), which causes
+  // React duplicate-key warnings and broken infinite scroll rendering.
+  const rawItems = data?.pages.flatMap((page) => page.data) ?? [];
+  const seen = new Set();
+  const items = rawItems.filter((item) => {
+    const id = item?._id;
+    if (!id || seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
 
   // Only trigger next fetch when:
   // - there actually is a next page
