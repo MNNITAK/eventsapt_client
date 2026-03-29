@@ -9,6 +9,8 @@ import { PortfolioManagement } from './PortfolioManagement'
 import { ReviewsManagement } from './ReviewsManagement'
 import { CalendarManagement } from './CalendarManagement'
 import { ProfileSettings } from './ProfileSettings'
+import { ContentStudio } from './ContentStudio'
+import { MediaLibrary } from './MediaLibrary'
 
 /**
  * Main Vendor Control Panel Component
@@ -29,6 +31,10 @@ export function VendorDashboard() {
         return <ServicesManagement />
       case 'portfolio':
         return <PortfolioManagement />
+      case 'content':
+        return <ContentStudio />
+      case 'media':
+        return <MediaLibrary />
       case 'reviews':
         return <ReviewsManagement />
       case 'calendar':
