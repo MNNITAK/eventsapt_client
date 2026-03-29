@@ -129,7 +129,7 @@ const PostCard = ({ item }) => {
                 {/* ── Media carousel ─────────────────────────────────── */}
                 <div
                     ref={insightContainerRef}
-                    className="w-full aspect-[4/3] bg-[#111] relative overflow-hidden select-none"
+                    className="w-full aspect-[1/1] bg-[#111] relative overflow-hidden select-none"
                     onTouchStart={onTouchStart}
                     onTouchEnd={onTouchEnd}
                     onDoubleClick={handleDoubleTap}

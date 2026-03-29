@@ -211,7 +211,7 @@ const ReelCard = ({ item }) => {
             {/* ── Video container ────────────────────────────────── */}
             <div
                 ref={setInsightContainerRef}
-                className="w-full aspect-[9/16] md:aspect-[4/5] bg-black relative overflow-hidden"
+                className="w-full aspect-[4/5] bg-black relative overflow-hidden"
             >
                 {video.url ? (
                     <video
