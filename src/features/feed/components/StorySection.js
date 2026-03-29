@@ -1,43 +1,60 @@
 'use client'
-import React from "react";
-import { Splide, SplideSlide, SplideTrack } from '@splidejs/react-splide';
-import '@splidejs/react-splide/css/core';
+import React, { useState } from "react";
 import { StoryCard } from "./StoryCard";
-import { FaArrowRight } from "react-icons/fa";
-import { FaArrowLeft } from "react-icons/fa";
-// import '@splidejs/react-splide/css';
+import { StoryViewer } from "./StoryViewer";
+import { useInfiniteScroll } from "@/features/infinite-scroll/hooks/useInfiniteScroll";
+import { fetchFeed } from "@/features/feed/api/fetchFeed";
+
+export const STORY_COUNT = 6;
+
 function StorySection() {
+    const [viewerIndex, setViewerIndex] = useState(null) // null = closed
+
+    const { items, isLoading } = useInfiniteScroll({
+        queryKey: ['feed'],
+        fetcher: fetchFeed,
+        initialPageParam: 1,
+        queryOptions: { staleTime: 1000 * 60 * 5 },
+    });
+
+    const storyItems = items.slice(0, STORY_COUNT);
+
+    if (isLoading) {
+        return (
+            <div className="flex gap-4 px-4 py-3 w-full items-center">
+                {[...Array(STORY_COUNT)].map((_, i) => (
+                    <div key={i} className="flex flex-col items-center gap-1.5 flex-shrink-0">
+                        <div className="w-14 h-14 rounded-full bg-[#2a2828] animate-pulse" />
+                        <div className="h-2 w-10 bg-[#2a2828] rounded-full animate-pulse" />
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
+    if (storyItems.length === 0) return null;
+
     return (
         <>
-            <Splide
-                className="relative flex items-center w-[100%] md:w-[50vw]"
-                options={{
-                    perPage: 6,
-                    pagination:false,
-                    breakpoints:{
-                        640:{
-                            perPage:4
-                        },
-                        1024:{
-                            perPage:4
-                        }
-                    }
-                }}
-                hasTrack={false} aria-label="...">
-                <SplideTrack className="w-[100%] overflow-visible md:w-[50vw] h-[18vh] md:h-[24vh] md:mt-4">
-                    {
-                        new Array(10).fill(0).map((_, pos) =>
-                            <SplideSlide className="overflow-visible " key={pos}>
-                                <StoryCard/>
-                            </SplideSlide>
-                        )
-                    }
-                </SplideTrack>
-                <div className="splide__arrows  md:flex justify-between w-[100%] px-0 absolute top-[50%] transform -translate-y-1/2">
-                    <button className="splide__arrow hidden md:block splide__arrow--prev bg-white aspect-square rounded-full border-2 p-2 w-[2vw] h-[2vw]"><FaArrowLeft className="w-[100%] h-[100%] text-xl"/></button>
-                    <button className="splide__arrow hidden md:block splide__arrow--next bg-white aspect-square rounded-full border-2 p-2 w-[2vw] h-[2vw]"><FaArrowRight className="w-[100%] h-[100%] text-xl"/></button>
-                </div>
-            </Splide>
+            {/* Story circles row */}
+            <div className="w-full px-3 py-3 flex gap-1 overflow-x-auto scrollbar-hide border-b border-[#1a1a1a]">
+                {storyItems.map((item, i) => (
+                    <StoryCard
+                        key={item._id || i}
+                        item={item}
+                        onClick={() => setViewerIndex(i)}
+                    />
+                ))}
+            </div>
+
+            {/* Full-screen viewer — rendered when a story is tapped */}
+            {viewerIndex !== null && (
+                <StoryViewer
+                    items={storyItems}
+                    startIndex={viewerIndex}
+                    onClose={() => setViewerIndex(null)}
+                />
+            )}
         </>
     );
 }
