@@ -1,15 +1,17 @@
 'use client'
 import React from 'react'
-import { 
-  LayoutDashboard, 
-  Users, 
-  Calendar, 
-  Package, 
-  Image, 
-  Star, 
+import {
+  LayoutDashboard,
+  Users,
+  Calendar,
+  Package,
+  Image,
+  Star,
   Settings,
   FileText,
-  LogOut
+  LogOut,
+  Video,
+  Library
 } from 'lucide-react'
 
 /**
@@ -23,6 +25,8 @@ export function DashboardSidebar({ activeTab, setActiveTab }) {
     { id: 'bookings', label: 'Bookings', icon: Calendar },
     { id: 'services', label: 'Services & Packages', icon: Package },
     { id: 'portfolio', label: 'Portfolio', icon: Image },
+    { id: 'content', label: 'Content Studio', icon: Video },
+    { id: 'media', label: 'Media Library', icon: Library },
     { id: 'reviews', label: 'Reviews', icon: Star },
     { id: 'calendar', label: 'Calendar', icon: Calendar },
     { id: 'settings', label: 'Settings', icon: Settings },
