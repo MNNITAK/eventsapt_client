@@ -211,26 +211,31 @@ const ReelCard = ({ item }) => {
             {/* ── Video container ────────────────────────────────── */}
             <div
                 ref={setInsightContainerRef}
-                className="w-full aspect-[4/5] bg-black relative overflow-hidden"
+                className="w-full aspect-[4/5] bg-[#1a1919] relative overflow-hidden"
             >
+                {/* Thumbnail always covers the full area — no black bars from browser poster handling */}
+                {video.thumbnail && (
+                    <img
+                        src={video.thumbnail}
+                        alt="Reel"
+                        className="absolute inset-0 w-full h-full object-cover"
+                    />
+                )}
                 {video.url ? (
                     <video
                         ref={combinedVideoRefFunction}
                         src={video.url}
-                        poster={video.thumbnail}
-                        className="w-full h-full object-cover"
+                        className="absolute inset-0 w-full h-full object-cover"
                         playsInline
                         loop
                         muted={muted}
                         onTimeUpdate={onTimeUpdate}
                     />
-                ) : video.thumbnail ? (
-                    <img src={video.thumbnail} alt="Reel" className="w-full h-full object-cover" />
-                ) : (
+                ) : !video.thumbnail ? (
                     <div className="w-full h-full flex items-center justify-center text-gray-600 text-sm">
                         No video available
                     </div>
-                )}
+                ) : null}
 
                 {/* ── Tap to play/pause overlay ── */}
                 <div

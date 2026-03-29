@@ -3,6 +3,7 @@ import { useInfiniteScroll } from "@/features/infinite-scroll/hooks/useInfiniteS
 import { fetchFeed } from "@/features/feed/api/fetchFeed"
 import { PostCard } from "./PostCard"
 import { ReelCard } from "./ReelCard"
+import { STORY_COUNT } from "./StorySection"
 
 // Skeleton card shown while loading
 const FeedSkeleton = () => (
@@ -28,6 +29,20 @@ const FeedSkeleton = () => (
     </div>
 )
 
+// Interleave posts and reels in 2:1 ratio — post, post, reel, post, post, reel, ...
+function buildFeedRatio(items) {
+    const posts = items.filter(item => item?.contentType !== 'reel')
+    const reels = items.filter(item => item?.contentType === 'reel')
+    const result = []
+    let pi = 0, ri = 0
+    while (pi < posts.length || ri < reels.length) {
+        if (pi < posts.length) result.push(posts[pi++])
+        if (pi < posts.length) result.push(posts[pi++])
+        if (ri < reels.length) result.push(reels[ri++])
+    }
+    return result
+}
+
 const FeedSWR = () => {
     const { items, sentinelRef, isLoading, isFetchingNextPage, isError } = useInfiniteScroll({
         queryKey: ['feed'],
@@ -46,7 +61,10 @@ const FeedSWR = () => {
         )
     }
 
-    if (isError || items.length === 0) {
+    // First STORY_COUNT items are used by StorySection — skip them here
+    const feedItems = buildFeedRatio(items.slice(STORY_COUNT))
+
+    if (isError || feedItems.length === 0) {
         return (
             <div className="w-full flex flex-col items-center justify-center py-16">
                 <p className="text-lg font-medium text-[#adaaaa]">No posts yet</p>
@@ -57,7 +75,7 @@ const FeedSWR = () => {
 
     return (
         <div className="w-full">
-            {items.map((item, i) =>
+            {feedItems.map((item, i) =>
                 item?.contentType === 'reel'
                     ? <ReelCard key={item._id || i} item={item} />
                     : <PostCard key={item._id || i} item={item} />

@@ -2,7 +2,6 @@ export const metadata = {
   title: "Home",
 }
 import { NavBar } from "@/shared/components/navbar/NavBar"
-import { StorySection } from "@/features/feed/components/StorySection"
 import { Posts } from "@/features/feed/components/Posts"
 import { Search } from "@/shared/components/desktop/Search.js"
 import { VendorPublicProfile } from "@/features/vendor/components/VendorPublicProfile"
@@ -20,9 +19,6 @@ async function page({ params, searchParams }) {
         {/* Mobile top bar */}
         <div className="md:hidden w-full">
           <NavBar user={clientParam.clientType} />
-          <div className="w-full flex justify-center">
-            <StorySection />
-          </div>
         </div>
 
         {/* Vendor / Couple profile — full width */}
@@ -44,11 +40,6 @@ async function page({ params, searchParams }) {
 
             {/* Centre — stories + feed */}
             <div className='flex flex-col flex-1 min-w-0 items-center md:items-start h-full overflow-y-auto'>
-              <div className="w-full hidden md:block">
-                <div className="w-full flex justify-center px-4 pt-4">
-                  <StorySection />
-                </div>
-              </div>
               <Posts id_={"mainPost"} />
             </div>
 
