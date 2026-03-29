@@ -54,11 +54,11 @@ export const uploadMedia = async (token, file, options = {}) => {
  */
 export const uploadMultipleMedia = async (token, files, options = {}) => {
   const formData = new FormData()
-  
+
   for (const file of files) {
     formData.append('files', file)
   }
-  
+
   if (options.context) formData.append('context', options.context)
   if (options.folder) formData.append('folder', options.folder)
   if (options.tags) formData.append('tags', JSON.stringify(options.tags))
@@ -70,5 +70,35 @@ export const uploadMultipleMedia = async (token, files, options = {}) => {
     },
   })
 
+  return response.data
+}
+
+export const getMyMedia = async (token, params = {}) => {
+  const response = await axiosInstance.get('/media/my-files', {
+    headers: { wedoraCredentials: token },
+    params,
+  })
+  return response.data
+}
+
+export const getStorageStats = async (token) => {
+  const response = await axiosInstance.get('/media/stats', {
+    headers: { wedoraCredentials: token },
+  })
+  return response.data
+}
+
+export const deleteMedia = async (token, mediaId) => {
+  const response = await axiosInstance.delete(`/media/${mediaId}`, {
+    headers: { wedoraCredentials: token },
+  })
+  return response.data
+}
+
+export const deleteMediaBulk = async (token, ids) => {
+  const response = await axiosInstance.delete('/media/bulk', {
+    headers: { wedoraCredentials: token },
+    data: { ids },
+  })
   return response.data
 }

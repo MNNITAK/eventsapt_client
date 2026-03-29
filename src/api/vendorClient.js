@@ -1844,8 +1844,8 @@ export const markReviewHelpful = async (token, reviewId) => {
  */
 export const flagReview = async (token, reviewId, reason) => {
   try {
-    const response = await axiosInstance.post(`/vendors/reviews/${reviewId}/flag`, 
-      { reason }, 
+    const response = await axiosInstance.post(`/vendors/reviews/${reviewId}/flag`,
+      { reason },
       {
         headers: { wedoraCredentials: token }
       }
@@ -1854,4 +1854,187 @@ export const flagReview = async (token, reviewId, reason) => {
   } catch (error) {
     throw error;
   }
+};
+
+export const updateReviewResponse = async (token, reviewId, response) => {
+  try {
+    const res = await axiosInstance.put(`/vendors/reviews/${reviewId}/response`, { response }, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const deleteReviewResponse = async (token, reviewId) => {
+  try {
+    const res = await axiosInstance.delete(`/vendors/reviews/${reviewId}/response`, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const removeReviewHelpful = async (token, reviewId) => {
+  try {
+    const res = await axiosInstance.delete(`/vendors/reviews/${reviewId}/helpful`, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+// ─── Lead Extended ────────────────────────────────────────────────────────────
+
+export const updateLeadPriority = async (token, leadId, priority) => {
+  try {
+    const res = await axiosInstance.patch(`/vendors/leads/${leadId}/priority`, { priority }, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const archiveLead = async (token, leadId) => {
+  try {
+    const res = await axiosInstance.post(`/vendors/leads/${leadId}/archive`, {}, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const markLeadAsSpam = async (token, leadId) => {
+  try {
+    const res = await axiosInstance.post(`/vendors/leads/${leadId}/spam`, {}, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const addLeadTags = async (token, leadId, tags) => {
+  try {
+    const res = await axiosInstance.patch(`/vendors/leads/${leadId}/tags`, { tags }, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const completeLeadFollowUp = async (token, leadId, followUpId) => {
+  try {
+    const res = await axiosInstance.patch(`/vendors/leads/${leadId}/follow-ups/${followUpId}/complete`, {}, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+// ─── Booking Extended ─────────────────────────────────────────────────────────
+
+export const getBookingById = async (token, bookingId) => {
+  try {
+    const res = await axiosInstance.get(`/vendors/bookings/${bookingId}`, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const updateBookingStatus = async (token, bookingId, status) => {
+  try {
+    const res = await axiosInstance.patch(`/vendors/bookings/${bookingId}/status`, { status }, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const addBookingNote = async (token, bookingId, content) => {
+  try {
+    const res = await axiosInstance.post(`/vendors/bookings/${bookingId}/notes`, { content }, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+// ─── Calendar Extended ────────────────────────────────────────────────────────
+
+export const removeDateOverride = async (token, overrideId) => {
+  try {
+    const res = await axiosInstance.delete(`/vendors/calendar/date-overrides/${overrideId}`, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const unblockDate = async (token, date) => {
+  try {
+    const res = await axiosInstance.post(`/vendors/calendar/unblock`, { date }, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const releaseCalendarHold = async (token, holdId) => {
+  try {
+    const res = await axiosInstance.delete(`/vendors/calendar/holds/${holdId}`, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+// ─── Profile Extended ─────────────────────────────────────────────────────────
+
+export const updatePrivacySettings = async (token, settings) => {
+  try {
+    const res = await axiosInstance.put('/vendors/profile/privacy-settings', settings, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const addQuickReply = async (token, reply) => {
+  try {
+    const res = await axiosInstance.post('/vendors/profile/quick-replies', reply, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const updateQuickReply = async (token, replyId, reply) => {
+  try {
+    const res = await axiosInstance.put(`/vendors/profile/quick-replies/${replyId}`, reply, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const deleteQuickReply = async (token, replyId) => {
+  try {
+    const res = await axiosInstance.delete(`/vendors/profile/quick-replies/${replyId}`, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const addVendorPeakSeason = async (token, season) => {
+  try {
+    const res = await axiosInstance.post('/vendors/profile/peak-seasons', season, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const updateVendorPeakSeason = async (token, seasonId, season) => {
+  try {
+    const res = await axiosInstance.put(`/vendors/profile/peak-seasons/${seasonId}`, season, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const deleteVendorPeakSeason = async (token, seasonId) => {
+  try {
+    const res = await axiosInstance.delete(`/vendors/profile/peak-seasons/${seasonId}`, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const updateTeamMember = async (token, memberId, updates) => {
+  try {
+    const res = await axiosInstance.put(`/vendors/profile/team/${memberId}`, updates, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const deleteTeamMember = async (token, memberId) => {
+  try {
+    const res = await axiosInstance.delete(`/vendors/profile/team/${memberId}`, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const updateServiceArea = async (token, areaId, updates) => {
+  try {
+    const res = await axiosInstance.put(`/vendors/profile/service-areas/${areaId}`, updates, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
+};
+
+export const deleteServiceArea = async (token, areaId) => {
+  try {
+    const res = await axiosInstance.delete(`/vendors/profile/service-areas/${areaId}`, { headers: { wedoraCredentials: token } });
+    return res.data;
+  } catch (error) { throw error; }
 };
