@@ -315,7 +315,7 @@ const MultiWeddingMoodboards = () => {
               placeholder="Image URL (or upload in production)"
               value={newPinUrl}
               onChange={(e) => setNewPinUrl(e.target.value)}
-              className="w-full px-5 py-4 border border-purple-200 rounded-2xl focus:outline-none focus:border-purple-500 mb-4"
+              className="w-full px-5 py-4 border border-[#f2c2d1] rounded-2xl focus:outline-none focus:border-[#C94C73] mb-4"
             />
 
             <input
@@ -323,19 +323,19 @@ const MultiWeddingMoodboards = () => {
               placeholder="Tag (e.g. Reception lighting)"
               value={newPinTag}
               onChange={(e) => setNewPinTag(e.target.value)}
-              className="w-full px-5 py-4 border border-purple-200 rounded-2xl focus:outline-none focus:border-purple-500 mb-6"
+              className="w-full px-5 py-4 border border-[#f2c2d1] rounded-2xl focus:outline-none focus:border-[#C94C73] mb-6"
             />
 
             <div className="flex gap-3">
               <button
                 onClick={() => setShowAddPinModal(false)}
-                className="flex-1 py-4 border border-purple-200 rounded-2xl font-medium"
+                className="flex-1 py-4 border border-[#f2c2d1] rounded-2xl font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleAddPin}
-                className="flex-1 py-4 bg-purple-600 text-white rounded-2xl font-medium"
+                className="flex-1 py-4 bg-[#C94C73] text-white rounded-2xl font-medium"
               >
                 Add to Moodboard
               </button>
