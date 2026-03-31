@@ -43,6 +43,9 @@ const nextConfig = {
           {
             protocol: "https",
             hostname: "**.fna.fbcdn.net",
+          },{
+            protocol:"https",
+            hostname:"picsum.photos/**"
           }
         ],
       },

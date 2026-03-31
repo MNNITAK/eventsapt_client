@@ -1,7 +1,7 @@
 import { ChatAppShell } from "@/features/chats/ChatAppShell";
 import { EventsOverview } from "@/features/user/dashboard/events/EventsOverview";
 import SavedContentGallery from "@/features/user/dashboard/memories/SavedFeed";
-import { MainCard } from "@/features/user/dashboard/personal/MainCard.js";
+import { MultiWeddingMoodboards } from "@/features/user/dashboard/personal/MainCard.js";
 import { ProfileHeroCard } from "@/features/user/dashboard/personal/ProfileCard.js";
 import { WeddingMarketInsightsDashboard } from "@/features/user/dashboard/trending/TrendingMarket";
 const renderUserComponent = (component) => {
@@ -9,7 +9,7 @@ const renderUserComponent = (component) => {
         case "personal":
             return (<>
                 <ProfileHeroCard />
-                <MainCard />
+                <MultiWeddingMoodboards />
             </>);
         case "memories":
             return <SavedContentGallery

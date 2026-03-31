@@ -191,7 +191,7 @@ export function ProfileHeroCard() {
                 <button
                   type="button"
                   onClick={handleSaveBio}
-                  className="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-3 py-2 text-xs font-medium text-white transition hover:bg-emerald-700"
+                  className="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-2 py-1 text-xs font-medium text-white transition hover:bg-emerald-700"
                 >
                   <Save size={13} />
                   Save
@@ -199,7 +199,7 @@ export function ProfileHeroCard() {
                 <button
                   type="button"
                   onClick={handleCancelBio}
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                  className="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
                 >
                   <X size={13} />
                   Cancel
