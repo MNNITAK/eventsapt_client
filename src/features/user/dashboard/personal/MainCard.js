@@ -116,7 +116,7 @@ const MultiWeddingMoodboards = () => {
       {/* Header + Controls */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
         <div>
-          <h2 className="text-3xl font-semibold text-gray-900 tracking-tight">My Wedding Moodboards</h2>
+          <h4 className="text-2xl font-semibold text-gray-900 tracking-tight">My Wedding Moodboards</h4>
           <p className="text-[#C94C73] text-lg">Organize inspiration for every part of your big day</p>
         </div>
 
@@ -124,7 +124,7 @@ const MultiWeddingMoodboards = () => {
           {/* Create new moodboard */}
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-[#C94C73]  text-white rounded-2xl font-medium shadow-md  transition-all active:scale-95"
+            className="flex items-center gap-2 px-4 py-2 bg-[#C94C73]  text-white rounded-2xl font-medium shadow-md  transition-all active:scale-95"
           >
             <FolderPlus className="w-5 h-5" />
             New Moodboard
@@ -134,7 +134,7 @@ const MultiWeddingMoodboards = () => {
           {currentMoodboard && (
             <button
               onClick={() => setShowAddPinModal(true)}
-              className="flex items-center gap-2 px-6 py-3 border border-[#C94C73] text-[#C94C73] rounded-2xl font-medium transition-all"
+              className="flex items-center gap-2 px-4 py-2 border border-[#C94C73] text-[#C94C73] rounded-2xl font-medium transition-all"
             >
               <Upload className="w-5 h-5" />
               Add Pin
@@ -148,7 +148,7 @@ const MultiWeddingMoodboards = () => {
                 navigator.clipboard.writeText(`https://eventsapt.com/moodboard/${selectedMoodboardId}`);
                 alert('🔗 Moodboard link copied!');
               }}
-              className="flex items-center gap-2 px-6 py-3 border border-[#C94C73] hover:border-[#C94C73] text-[#C94C73] rounded-2xl font-medium transition-all"
+              className="flex items-center gap-2 px-4 py-2 border border-[#C94C73] hover:border-[#C94C73] text-[#C94C73] rounded-2xl font-medium transition-all"
             >
               <Share2 className="w-5 h-5" />
               Share
@@ -163,7 +163,7 @@ const MultiWeddingMoodboards = () => {
           <div
             key={board.id}
             onClick={() => setSelectedMoodboardId(board.id)}
-            className={`group flex-shrink-0 flex items-center gap-3 px-6 py-3 rounded-3xl cursor-pointer transition-all ${
+            className={`group flex-shrink-0 flex items-center gap-3 px-4 py-2 rounded-3xl cursor-pointer transition-all ${
               board.id === selectedMoodboardId
                 ? 'bg-[#C94C73] text-white shadow-md'
                 : 'bg-white hover:bg-[#C94C73] border border-[#C94C73] text-[#C94C73] hover:text-[white]'
@@ -223,7 +223,7 @@ const MultiWeddingMoodboards = () => {
                 {/* Heart */}
                 <button
                   onClick={() => toggleFavorite(pin.id)}
-                  className="absolute top-4 right-16 p-3 bg-white/80 hover:bg-white rounded-2xl shadow transition-all active:scale-90"
+                  className="absolute top-4 right-16 p-2 bg-white/80 hover:bg-white rounded-xl shadow transition-all active:scale-90"
                 >
                   <Heart className="w-6 h-6 text-red-400" />
                 </button>
@@ -231,9 +231,9 @@ const MultiWeddingMoodboards = () => {
                 {/* Delete pin */}
                 <button
                   onClick={() => handleDeletePin(pin.id)}
-                  className="absolute top-4 right-4 p-3 bg-white/80 hover:bg-red-50 hover:text-red-500 rounded-2xl shadow transition-all active:scale-90"
+                  className="absolute top-4 right-4 p-2 bg-white/80 hover:bg-red-50 hover:text-red-500 rounded-xl shadow transition-all active:scale-90"
                 >
-                  <Trash2 className="w-5 h-5" />
+                  <Trash2 className="w-6 h-6" />
                 </button>
               </div>
             ))}
@@ -241,10 +241,10 @@ const MultiWeddingMoodboards = () => {
 
           {currentMoodboard.pins.length === 0 && (
             <div className="text-center py-16 border-2 border-dashed border-purple-200 rounded-3xl">
-              <p className="text-purple-400 text-xl">No pins yet in this moodboard</p>
+              <p className="text-[#C94C73] text-xl">No pins yet in this moodboard</p>
               <button
                 onClick={() => setShowAddPinModal(true)}
-                className="mt-6 px-8 py-3 bg-purple-100 text-[#C94C73] rounded-2xl  transition-all font-medium"
+                className="mt-6 px-8 py-3 bg-[#f1d9e1] text-[#C94C73] rounded-2xl  transition-all font-medium"
               >
                 Add your first pin
               </button>
@@ -271,14 +271,14 @@ const MultiWeddingMoodboards = () => {
               placeholder="Moodboard title (e.g. Venue Ideas)"
               value={newBoardTitle}
               onChange={(e) => setNewBoardTitle(e.target.value)}
-              className="w-full px-5 py-4 border border-[#C94C73] rounded-2xl focus:outline-none focus:border-[#C94C73] mb-4"
+              className="w-full px-5 py-4 border border-[#f1d9e1] rounded-2xl focus:outline-none focus:border-[#C94C73] mb-4"
             />
 
             <textarea
               placeholder="Optional description"
               value={newBoardDesc}
               onChange={(e) => setNewBoardDesc(e.target.value)}
-              className="w-full px-5 py-4 border border-[#C94C73] rounded-2xl focus:outline-none focus:border-[#C94C73] h-28 resize-none"
+              className="w-full px-5 py-4 border border-[#f1d9e1] rounded-2xl focus:outline-none focus:border-[#C94C73] h-28 resize-none"
             />
 
             <div className="flex gap-3 mt-8">
@@ -315,7 +315,7 @@ const MultiWeddingMoodboards = () => {
               placeholder="Image URL (or upload in production)"
               value={newPinUrl}
               onChange={(e) => setNewPinUrl(e.target.value)}
-              className="w-full px-5 py-4 border border-[#f2c2d1] rounded-2xl focus:outline-none focus:border-[#C94C73] mb-4"
+              className="w-full px-5 py-4 border border-[#f1d9e1] rounded-2xl focus:outline-none focus:border-[#C94C73] mb-4"
             />
 
             <input
@@ -323,13 +323,13 @@ const MultiWeddingMoodboards = () => {
               placeholder="Tag (e.g. Reception lighting)"
               value={newPinTag}
               onChange={(e) => setNewPinTag(e.target.value)}
-              className="w-full px-5 py-4 border border-[#f2c2d1] rounded-2xl focus:outline-none focus:border-[#C94C73] mb-6"
+              className="w-full px-5 py-4 border border-[#f1d9e1] rounded-2xl focus:outline-none focus:border-[#C94C73] mb-6"
             />
 
             <div className="flex gap-3">
               <button
                 onClick={() => setShowAddPinModal(false)}
-                className="flex-1 py-4 border border-[#f2c2d1] rounded-2xl font-medium"
+                className="flex-1 py-4 border border-[#C94C73] rounded-2xl font-medium"
               >
                 Cancel
               </button>
