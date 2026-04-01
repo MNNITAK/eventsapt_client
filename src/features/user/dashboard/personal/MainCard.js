@@ -112,7 +112,7 @@ const MultiWeddingMoodboards = () => {
   };
 
   return (
-    <div className="w-[95%] mx-auto mt-5 mb-5 bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-md border border-purple-100">
+    <div className="w-[95%] mx-auto mt-5 mb-5 bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-mdnom  border border-purple-100">
       {/* Header + Controls */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
         <div>
