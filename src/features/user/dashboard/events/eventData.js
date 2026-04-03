@@ -24,7 +24,7 @@ export const UPCOMING_EVENTS = [
   {
     id: "evt-101",
     icon: "venue",
-    title: "Venue Finalization Visit",
+    title: "Manginikari Ceremony",
     description:
       "Shortlist the final venue, confirm guest capacity, and lock the wedding dates.",
     progress: 42,
@@ -38,7 +38,7 @@ export const UPCOMING_EVENTS = [
   {
     id: "evt-102",
     icon: "catering",
-    title: "Food Tasting Session",
+    title: "Dawaat",
     description:
       "Finalize menu combinations, dessert counter, and live station preferences.",
     progress: 67,
@@ -52,7 +52,7 @@ export const UPCOMING_EVENTS = [
   {
     id: "evt-103",
     icon: "photography",
-    title: "Pre-Wedding Shoot",
+    title: "Photo Shoot",
     description:
       "Plan outfits, locations, and storyboard for the pre-wedding shoot day.",
     progress: 28,
@@ -66,7 +66,7 @@ export const UPCOMING_EVENTS = [
   {
     id: "evt-104",
     icon: "decor",
-    title: "Decor Theme Approval",
+    title: "Wedding Decor",
     description:
       "Review floral palette, stage design, lighting, and entry arch concepts.",
     progress: 54,
