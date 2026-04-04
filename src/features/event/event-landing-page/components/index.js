@@ -84,7 +84,7 @@ export function CreateEventLandingPage() {
               disabled={!title || !selectedType}
               className="w-full mt-8 bg-gray-900 text-white py-3.5 rounded-xl font-semibold hover:bg-pink-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
             >
-              Continue to Vendors
+              Create Workspace
             </button>
           </div>
         </div>
