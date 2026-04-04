@@ -53,10 +53,10 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 
-import { useEventDraft } from '@/store/useEventDraftStore';
-import { validateStep } from '@/config/eventSchemas';
-import { getProgress, EVENT_STEPS } from '@/config/eventSteps';
-import { STEP_ICON_MAP } from './stepIconMap';
+import { useEventDraft } from '../hooks/useEventDraftStore.js';
+import { validateStep } from '../config/eventSchemas.js';
+import { getProgress, EVENT_STEPS } from '../config/eventSteps.js';
+import { STEP_ICON_MAP } from './stepIconMap.js';
 
 // ─── Category accent colours ──────────────────────────────────────────────────
 

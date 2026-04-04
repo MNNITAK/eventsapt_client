@@ -23,7 +23,7 @@ import {
   getStepIndex,
   getNextStepId,
   getPrevStepId,
-} from '@/config/eventSteps';
+} from '@/features/event/event-wizard/config/eventSteps.js';
 import WizardShell from '@/features/event/event-wizard/components/WizardShell.jsx';
 
 // ── Map step id → real form component (add as you build each step) ──────────

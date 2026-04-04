@@ -55,7 +55,7 @@ export function CreateEventLandingPage() {
 
         //----------------on successful create execute the below line---------
 
-        router.replace(`/event-wizard/${selectedType}/basics?node=${eventUID}`)
+        router.replace(`/event-wizard/${selectedType}/steps?node=${eventUID}`)
     }
     
 

@@ -40,8 +40,8 @@ import {
 } from 'lucide-react';
 
 import { useEventDraft } from '../hooks/useEventDraftStore.js';
-import { EVENT_STEPS, getStepsByCategory, getProgress } from '@/config/eventSteps';
-import { STEP_ICON_MAP } from './stepIconMap';
+import { EVENT_STEPS, getStepsByCategory, getProgress } from '../config/eventSteps.js';
+import { STEP_ICON_MAP } from './stepIconMap.js';
 
 // ─── Category meta ────────────────────────────────────────────────────────────
 
