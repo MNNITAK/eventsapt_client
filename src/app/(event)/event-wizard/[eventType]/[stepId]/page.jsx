@@ -61,14 +61,17 @@ const STEP_FORMS = {
 };
 
 export async function generateMetadata({ params }) {
-  const step = getStep(params.eventType, params.stepId);
+  const paramData = await params;
+  const step = getStep(paramData.eventType, paramData.stepId);
   if (!step) return {};
   return { title: `${step.label} | EventApp` };
 }
 
-export default function StepPage({ params, searchParams }) {
-  const { eventType, stepId } = params;
-  const eventUID = searchParams?.node ?? '';
+export default async function StepPage({ params, searchParams }) {
+  const paramData = await params;
+  const { eventType, stepId } = paramData;
+  const searchParamData = await searchParams;
+  const eventUID = searchParamData?.node ?? '';
 
   const eventMeta  = EVENT_STEPS[eventType];
   const step       = getStep(eventType, stepId);

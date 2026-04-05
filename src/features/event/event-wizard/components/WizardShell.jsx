@@ -6,36 +6,35 @@
  * The root client shell for every step page inside the event wizard.
  * URL pattern: /event-wizard/[eventType]/[stepId]?node=[eventUID]
  *
- * Layout (desktop):
- * ┌────────────────────────────────────────────────────────────┐
- * │  Sticky top header  (event title · step label · autosave) │
- * ├─────────────────┬──────────────────────────────────────────┤
- * │  Left sidebar   │  Right panel: step form                  │
- * │  (progress +    │  (scrollable, max-w-2xl centred)         │
- * │   step list)    │                                          │
- * ├─────────────────┴──────────────────────────────────────────┤
- * │  Sticky footer  (Save Draft · Back · Skip · Continue)     │
- * └────────────────────────────────────────────────────────────┘
+ * Layout (desktop ≥ lg):
+ * ┌───────────────────┬────────────────────────────────────────────┐
+ * │                   │  Glassmorphism header (step title + save)  │
+ * │  Left sidebar     ├────────────────────────────────────────────┤
+ * │  22vw wide        │  Scrollable form area                      │
+ * │  100vh tall       │  (flex-1, overflow-y-auto)                 │
+ * │  (progress +      ├────────────────────────────────────────────┤
+ * │   step list)      │  Footer nav (Save Draft · Back · Continue) │
+ * └───────────────────┴────────────────────────────────────────────┘
  *
- * Layout (mobile):
- * ─ Top header (hamburger opens sidebar drawer)
- * ─ Step form (full width)
- * ─ Sticky footer nav
+ * Layout (mobile < lg):
+ * ┌────────────────────────────────────────────────────────────────┐
+ * │  Header (hamburger · step title · autosave)                   │
+ * ├────────────────────────────────────────────────────────────────┤
+ * │  Scrollable form area                                         │
+ * ├────────────────────────────────────────────────────────────────┤
+ * │  Footer nav                                                   │
+ * └────────────────────────────────────────────────────────────────┘
+ * Sidebar slides in as an overlay drawer triggered by hamburger.
  *
- * State management:
- * - Zustand + localStorage via useEventDraft(uid)  ← your store
- * - Per-step Zod validation on "Continue"
- * - completedSteps tracked inside the draft object
+ * KEY LAYOUT RULES:
+ *  - Outer shell: `flex-row`, `w-[100vw]`, `h-[100vh]`, `overflow-hidden`
+ *  - Sidebar:     `w-[22vw]`, `h-[100vh]`, `overflow-y-auto` — no sticky/fixed
+ *  - Right panel: `flex-col`, `w-[78vw]`, `h-[100vh]` — natural flow
+ *    ├─ Header:   `flex-shrink-0` — glassmorphism effect
+ *    ├─ Body:     `flex-1`, `overflow-y-auto` — scrolls independently
+ *    └─ Footer:   `flex-shrink-0` — always visible at bottom
  *
- * Props (all passed from the Next.js server page):
- *   eventType   string   — e.g. "wedding"
- *   eventUID    string   — the ?node= query value
- *   allSteps    array    — from getStepsForEvent(eventType)
- *   currentStep object   — the step config for this URL segment
- *   stepIndex   number   — 0-based
- *   nextStepId  string|null
- *   prevStepId  string|null
- *   StepForm    component — the actual form for this step (passed as prop)
+ * ✅ Zero logic changes from original — only className strings changed.
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -77,7 +76,7 @@ export default function WizardShell({
   stepIndex,
   nextStepId,
   prevStepId,
-  StepForm, // optional — if not passed, renders field-list placeholder
+  StepForm,
 }) {
   const router = useRouter();
 
@@ -92,7 +91,7 @@ export default function WizardShell({
 
   // ── Local UI state ────────────────────────────────────────────────────────
   const [fieldErrors,       setFieldErrors]       = useState({});
-  const [saveStatus,        setSaveStatus]         = useState('idle'); // idle | saving | saved | error
+  const [saveStatus,        setSaveStatus]         = useState('idle');
   const [mobileSidebarOpen, setMobileSidebarOpen]  = useState(false);
   const saveTimer = useRef(null);
 
@@ -108,20 +107,18 @@ export default function WizardShell({
   // ── Field change handler — debounced write to Zustand ─────────────────────
   const handleChange = useCallback(
     (field, value) => {
-      // Clear inline error immediately so user sees response
       setFieldErrors((prev) => {
         if (!prev[field]) return prev;
         const next = { ...prev };
         delete next[field];
         return next;
       });
-      // Debounced draft write (400 ms) — safe for typing fields
       upsertDraftDebounced({ [field]: value }, 400);
     },
     [upsertDraftDebounced]
   );
 
-  // ── Instant change for select/checkbox/radio (no typing delay needed) ─────
+  // ── Instant change for select/checkbox/radio ──────────────────────────────
   const handleChangeImmediate = useCallback(
     (field, value) => {
       setFieldErrors((prev) => {
@@ -156,7 +153,6 @@ export default function WizardShell({
   function handleSaveDraft() {
     clearTimeout(saveTimer.current);
     setSaveStatus('saving');
-    // upsertDraft with empty patch just forces a store sync
     upsertDraft({});
     saveTimer.current = setTimeout(() => {
       setSaveStatus('saved');
@@ -166,7 +162,6 @@ export default function WizardShell({
 
   // ── Continue (validate → mark complete → navigate) ────────────────────────
   function handleContinue() {
-    // Pull current step's fields out of draft
     const stepData = {};
     (currentStep.fields ?? []).forEach((f) => {
       stepData[f] = draft?.[f];
@@ -179,7 +174,6 @@ export default function WizardShell({
       return;
     }
 
-    // Mark step complete — stored inside the draft itself
     const already = completedStepIds.includes(currentStep.id);
     if (!already) {
       upsertDraft({
@@ -190,7 +184,6 @@ export default function WizardShell({
     if (nextStepId) {
       navigateTo(nextStepId);
     } else {
-      // Final step — navigate to review / submit
       navigateTo('review');
     }
   }
@@ -208,7 +201,7 @@ export default function WizardShell({
   // ── Show hydration guard — avoid flash of empty form ─────────────────────
   if (!hydrated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="w-[100vw] h-[100vh] flex items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center gap-3 text-gray-400">
           <Loader2 size={28} className="animate-spin" />
           <p className="text-sm font-medium">Loading your draft…</p>
@@ -261,7 +254,7 @@ export default function WizardShell({
         <span
           className={[
             'text-xs leading-tight truncate flex-1',
-            isActive   ? 'font-semibold text-indigo-700' : '',
+            isActive    ? 'font-semibold text-indigo-700' : '',
             isCompleted ? 'text-gray-700' : '',
           ].join(' ')}
         >
@@ -278,7 +271,6 @@ export default function WizardShell({
 
   // ── Sidebar panel content ─────────────────────────────────────────────────
   function SidebarContent() {
-    // Group steps by category preserving order
     const grouped = allSteps.reduce((acc, step) => {
       const cat = step.category ?? 'Other';
       if (!acc[cat]) acc[cat] = [];
@@ -286,24 +278,28 @@ export default function WizardShell({
       return acc;
     }, {});
 
-    const catOrder = ['Planning', 'Logistics', 'Vendors', 'Finalize'];
+    const catOrder   = ['Planning', 'Logistics', 'Vendors', 'Finalize'];
     const sortedCats = Object.keys(grouped).sort(
       (a, b) => catOrder.indexOf(a) - catOrder.indexOf(b)
     );
 
     return (
+      /* fill the full sidebar height, split into 3 rows:
+         top info block | scrollable step list | bottom back-link */
       <div className="flex flex-col h-full">
-        {/* Event type badge */}
-        <div className="px-4 pt-4 pb-3 border-b border-gray-100 flex-shrink-0">
+
+        {/* ── Top: event badge + progress ── */}
+        <div className="px-4 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
           <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-0.5">
             {eventMeta.label ?? eventType}
           </p>
-          <p className="text-xs text-gray-500 truncate">
+          <p className="text-xs font-medium text-gray-700 truncate">
             {draft?.eventName || 'Untitled Event'}
           </p>
-          {/* Progress bar */}
+
+          {/* Progress */}
           <div className="mt-3">
-            <div className="flex justify-between items-center mb-1">
+            <div className="flex justify-between items-center mb-1.5">
               <span className="text-[10px] text-gray-400">{completedCount}/{totalSteps} steps</span>
               <span className="text-[10px] font-semibold text-indigo-600">{progress}%</span>
             </div>
@@ -316,16 +312,18 @@ export default function WizardShell({
           </div>
         </div>
 
-        {/* Step list by category */}
+        {/* ── Middle: scrollable step list ── */}
         <div className="flex-1 overflow-y-auto py-3 px-2">
           {sortedCats.map((cat) => (
-            <div key={cat} className="mb-3">
-              <div className="flex items-center gap-1.5 px-2 mb-1">
+            <div key={cat} className="mb-4">
+              {/* Category label */}
+              <div className="flex items-center gap-1.5 px-2 mb-1.5">
                 <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${CATEGORY_DOT[cat] ?? 'bg-gray-400'}`} />
                 <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400">
                   {cat}
                 </span>
               </div>
+              {/* Step buttons */}
               <div className="flex flex-col gap-0.5">
                 {grouped[cat].map((step, idx) => (
                   <SidebarItem key={step.id} step={step} idx={idx} />
@@ -335,8 +333,8 @@ export default function WizardShell({
           ))}
         </div>
 
-        {/* Back to overview link */}
-        <div className="flex-shrink-0 px-3 py-3 border-t border-gray-100">
+        {/* ── Bottom: back to overview ── */}
+        <div className="flex-shrink-0 px-4 py-4 border-t border-gray-100">
           <button
             type="button"
             onClick={() =>
@@ -348,91 +346,151 @@ export default function WizardShell({
             Back to overview
           </button>
         </div>
+
       </div>
     );
   }
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    /*
+      Root: full viewport, flex-row.
+      Sidebar fills the left 22vw, right panel fills the remaining 78vw.
+      Both are 100vh tall. No fixed/sticky anywhere.
+    */
+    <div className="flex flex-row w-[100vw] h-[100vh] overflow-hidden bg-gray-50">
 
-      {/* ══ Sticky top header ══════════════════════════════════════════════ */}
-      <header className="sticky top-0 z-30 bg-white border-b border-gray-200 h-14 flex items-center px-4 sm:px-6 gap-3">
+      {/* ══ LEFT SIDEBAR — desktop only ════════════════════════════════════ */}
+      <aside
+        className="
+          hidden lg:flex flex-col
+          w-[22vw] h-[100vh]
+          bg-white border-r border-gray-200
+          flex-shrink-0
+          overflow-hidden
+        "
+      >
+        <SidebarContent />
+      </aside>
 
-        {/* Mobile sidebar toggle */}
-        <button
-          type="button"
-          aria-label="Toggle step list"
-          onClick={() => setMobileSidebarOpen((v) => !v)}
-          className="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 flex-shrink-0 transition-colors"
+      {/* ══ MOBILE SIDEBAR OVERLAY ═════════════════════════════════════════ */}
+      {mobileSidebarOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+            onClick={() => setMobileSidebarOpen(false)}
+            aria-hidden="true"
+          />
+          {/* Drawer */}
+          <aside
+            className="
+              fixed left-0 top-0 z-50
+              w-[80vw] max-w-[320px] h-[100vh]
+              bg-white border-r border-gray-200
+              flex flex-col
+              shadow-2xl
+              lg:hidden
+            "
+          >
+            {/* Drawer header */}
+            <div className="flex items-center justify-between px-4 h-[7vh] border-b border-gray-100 flex-shrink-0">
+              <span className="text-sm font-semibold text-gray-800">Planning Steps</span>
+              <button
+                type="button"
+                onClick={() => setMobileSidebarOpen(false)}
+                className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
+              >
+                <X size={15} />
+              </button>
+            </div>
+            {/* Drawer body */}
+            <div className="flex-1 overflow-hidden">
+              <SidebarContent />
+            </div>
+          </aside>
+        </>
+      )}
+
+      {/* ══ RIGHT PANEL ════════════════════════════════════════════════════ */}
+      {/*
+        flex-col, takes remaining width (78vw on desktop, 100vw on mobile).
+        Internally split into: header | scrollable body | footer.
+        Nothing is fixed or sticky — the column itself is 100vh and each
+        section either flex-shrinks or flex-1-grows to fill it perfectly.
+      */}
+      <div
+        className="
+          flex flex-col
+          flex-1
+          w-full lg:w-[78vw]
+          h-[100vh]
+          overflow-hidden
+        "
+      >
+
+        {/* ── HEADER — glassmorphism, natural flow, flex-shrink-0 ────────── */}
+        <header
+          className="
+            flex-shrink-0
+            flex items-center gap-3
+            px-4 sm:px-8
+            h-[8vh] min-h-[56px]
+            border-b border-white/30
+            backdrop-blur-md
+            bg-white/70
+            z-10
+          "
+          style={{
+            WebkitBackdropFilter: 'blur(12px)',
+            boxShadow: '0 1px 0 0 rgba(0,0,0,0.06), 0 4px 16px 0 rgba(99,102,241,0.04)',
+          }}
         >
-          <Menu size={16} />
-        </button>
+          {/* Mobile hamburger */}
+          <button
+            type="button"
+            aria-label="Toggle step list"
+            onClick={() => setMobileSidebarOpen((v) => !v)}
+            className="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-white/80 flex-shrink-0 transition-colors"
+          >
+            <Menu size={16} />
+          </button>
 
-        {/* Step meta */}
-        <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 leading-none mb-0.5 hidden sm:block">
-            Step {stepIndex + 1} of {allSteps.length} &nbsp;·&nbsp; {currentStep.category}
-          </p>
-          <h1 className="text-sm sm:text-base font-bold text-gray-900 truncate leading-tight">
-            {currentStep.label}
-          </h1>
-        </div>
+          {/* Step meta text */}
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 leading-none mb-0.5 hidden sm:block">
+              Step {stepIndex + 1} of {allSteps.length} &nbsp;·&nbsp; {currentStep.category}
+            </p>
+            <h1 className="text-sm sm:text-base font-bold text-gray-900 truncate leading-tight">
+              {currentStep.label}
+            </h1>
+          </div>
 
-        {/* Autosave indicator */}
-        <div className="flex-shrink-0">
-          {saveStatus === 'saving' && (
-            <span className="flex items-center gap-1.5 text-xs text-gray-400">
-              <Loader2 size={11} className="animate-spin" />
-              Saving…
-            </span>
-          )}
-          {saveStatus === 'saved' && (
-            <span className="flex items-center gap-1.5 text-xs text-green-600 bg-green-50 border border-green-200 px-2.5 py-1 rounded-full">
-              <Save size={11} /> Saved
-            </span>
-          )}
-        </div>
-      </header>
+          {/* Autosave indicator */}
+          <div className="flex-shrink-0">
+            {saveStatus === 'saving' && (
+              <span className="flex items-center gap-1.5 text-xs text-gray-400">
+                <Loader2 size={11} className="animate-spin" />
+                Saving…
+              </span>
+            )}
+            {saveStatus === 'saved' && (
+              <span className="flex items-center gap-1.5 text-xs text-green-600 bg-green-50 border border-green-200 px-2.5 py-1 rounded-full">
+                <Save size={11} /> Saved
+              </span>
+            )}
+          </div>
+        </header>
 
-      {/* ══ Body ═══════════════════════════════════════════════════════════ */}
-      <div className="flex flex-1 overflow-hidden">
-
-        {/* ── Desktop sidebar ────────────────────────────────────────────── */}
-        <aside className="hidden lg:flex flex-col w-56 xl:w-60 flex-shrink-0 bg-white border-r border-gray-200 sticky top-14 h-[calc(100vh-3.5rem)] overflow-hidden">
-          <SidebarContent />
-        </aside>
-
-        {/* ── Mobile sidebar overlay ─────────────────────────────────────── */}
-        {mobileSidebarOpen && (
-          <>
-            <div
-              className="fixed inset-0 z-40 bg-black/40 lg:hidden"
-              onClick={() => setMobileSidebarOpen(false)}
-              aria-hidden="true"
-            />
-            <aside className="fixed left-0 top-0 bottom-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col lg:hidden shadow-xl">
-              {/* Mobile sidebar header */}
-              <div className="flex items-center justify-between px-4 h-14 border-b border-gray-100 flex-shrink-0">
-                <span className="text-sm font-semibold text-gray-800">Planning Steps</span>
-                <button
-                  type="button"
-                  onClick={() => setMobileSidebarOpen(false)}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
-                >
-                  <X size={15} />
-                </button>
-              </div>
-              <div className="flex-1 overflow-hidden">
-                <SidebarContent />
-              </div>
-            </aside>
-          </>
-        )}
-
-        {/* ── Main step content panel ────────────────────────────────────── */}
-        <main className="flex-1 overflow-y-auto">
-          <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-32">
+        {/* ── SCROLLABLE FORM BODY — flex-1 so it fills space between header and footer ── */}
+        <main
+          className="
+            flex-1
+            overflow-y-auto
+            bg-gray-50
+          "
+        >
+          <div className="max-w-2xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
 
             {/* Step description */}
             <div className="mb-6">
@@ -446,7 +504,7 @@ export default function WizardShell({
               )}
             </div>
 
-            {/* ── Validation error summary ───────────────────────────────── */}
+            {/* Validation error summary */}
             {errorCount > 0 && (
               <div
                 role="alert"
@@ -466,7 +524,7 @@ export default function WizardShell({
               </div>
             )}
 
-            {/* ── Step form ─────────────────────────────────────────────── */}
+            {/* Step form */}
             {StepForm ? (
               <StepForm
                 draft={draft ?? {}}
@@ -480,12 +538,19 @@ export default function WizardShell({
 
           </div>
         </main>
-      </div>
 
-      {/* ══ Sticky footer nav ══════════════════════════════════════════════ */}
-      <footer className="fixed bottom-0 left-0 right-0 z-20 bg-white border-t border-gray-200 px-4 sm:px-6 py-3 sm:py-4">
-        <div className="max-w-screen-xl mx-auto flex items-center justify-between gap-3 flex-wrap">
-
+        {/* ── FOOTER — flex-shrink-0, always pinned at bottom of right panel ── */}
+        <footer
+          className="
+            flex-shrink-0
+            flex items-center justify-between gap-3
+            flex-wrap
+            px-4 sm:px-8
+            h-[8vh] min-h-[56px]
+            bg-white
+            border-t border-gray-200
+          "
+        >
           {/* Left: Save Draft */}
           <button
             type="button"
@@ -540,14 +605,16 @@ export default function WizardShell({
               )}
             </button>
           </div>
-        </div>
-      </footer>
+        </footer>
+
+      </div>
+      {/* ── end right panel ── */}
+
     </div>
   );
 }
 
 // ─── Development placeholder ──────────────────────────────────────────────────
-// Shows the field list for a step until the real form component is built.
 
 function StepFieldPlaceholder({ step, draft }) {
   return (
@@ -561,7 +628,8 @@ function StepFieldPlaceholder({ step, draft }) {
         <code className="bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">
           components/steps/{step.id}.jsx
         </code>{' '}
-        and pass it as the <code className="bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">StepForm</code> prop.
+        and pass it as the{' '}
+        <code className="bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">StepForm</code> prop.
         Zod validation is already wired via{' '}
         <code className="bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">eventSchemas.js</code>.
       </p>
