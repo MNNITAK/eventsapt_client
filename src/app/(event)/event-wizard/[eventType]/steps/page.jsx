@@ -12,7 +12,8 @@ import { EVENT_STEPS } from '@/features/event/event-wizard/config/eventSteps.js'
 import EventStepsList from '@/features/event/event-wizard/components/EventStepsList.jsx';
 
 export async function generateMetadata({ params }) {
-  const meta = EVENT_STEPS[params.eventType];
+  const paramData = await params;
+  const meta = EVENT_STEPS[paramData.eventType];
   if (!meta) return {};
   return {
     title: `Plan your ${meta.label} | EventApp`,
@@ -20,9 +21,11 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default function EventStepsPage({ params, searchParams }) {
-  const { eventType } = params;
-  const eventUID      = searchParams?.node ?? '';
+export default async function EventStepsPage({ params, searchParams }) {
+  const paramData = await params;
+  const { eventType } = paramData;
+  const searchParamData =  await searchParams;
+  const eventUID      = searchParamData?.node ?? '';
 
   if (!EVENT_STEPS[eventType]) notFound();
   if (!eventUID) notFound();
