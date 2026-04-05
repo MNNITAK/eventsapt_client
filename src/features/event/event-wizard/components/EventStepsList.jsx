@@ -113,7 +113,7 @@ const Sidebar = ({ eventMeta, userName = "Ujjwal Gupta" }) => {
               />
             </div>
             
-            <p className="text-[10px] mt-4 text-indigo-100/70 italic italic">
+            <p className="text-[10px] mt-4 text-indigo-100/70  italic">
               "Great things are done by a series of small things brought together."
             </p>
           </div>
