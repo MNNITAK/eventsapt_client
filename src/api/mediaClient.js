@@ -10,7 +10,7 @@
 import axios from 'axios'
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:4000/api',
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_API || 'http://localhost:4000/api',
   timeout: 60000, // 60s for uploads
 })
 

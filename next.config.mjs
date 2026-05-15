@@ -45,7 +45,17 @@ const nextConfig = {
             hostname: "**.fna.fbcdn.net",
           },{
             protocol:"https",
-            hostname:"picsum.photos/**"
+            hostname:"picsum.photos"
+          },
+          {
+            protocol: "https",
+            hostname: "d39lafmi6h2ta1.cloudfront.net",
+            pathname: "/**"
+          },
+          {
+            protocol: "https",
+            hostname: "wedoramedia.s3.ap-south-1.amazonaws.com",
+            pathname: "/**"
           }
         ],
       },
