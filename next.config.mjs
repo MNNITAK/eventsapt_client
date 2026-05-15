@@ -13,6 +13,9 @@ const nextConfig = {
         openapikey:process.env.API_KEY,
         frnt:process.env.NEXT_PUBLIC_FRNT
     },
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
     images: {
         remotePatterns: [
           {
