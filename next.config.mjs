@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     env:{
-        NinjaApiKey:"3Wlk1z/7EUfZob9p9l06Kg==014ARTIKUfZ9q2Jn",
+        NinjaApiKey:process.env.NINJA_API_KEY,
         api_key:process.env.NEXT_API_KEY,
         auth_domain:process.env.NEXT_AUTH_DOMAIN,
         project_id:process.env.NEXT_PROJECT_ID,
