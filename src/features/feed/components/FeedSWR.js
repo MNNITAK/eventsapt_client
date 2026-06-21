@@ -51,6 +51,10 @@ const FeedSWR = () => {
         queryOptions: {
             staleTime: 1000 * 60 * 5, // 5 min — feed comes from Redis, no need to refetch often
         },
+        // Pipeline the next page: start fetching ~2–3 cards before the user reaches
+        // the end, so the next set is already loaded by the time they scroll to it
+        // (no visible wait). React Query caches + dedupes the in-flight request.
+        sentinelOptions: { rootMargin: "1600px 0px" },
     })
 
     if (isLoading) {

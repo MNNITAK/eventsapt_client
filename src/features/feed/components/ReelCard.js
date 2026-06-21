@@ -178,33 +178,33 @@ const ReelCard = ({ item }) => {
         <div className="w-full rounded-[32px] bg-[#1a1919] mb-5 overflow-hidden shadow-[0px_0px_40px_0px_rgba(0,0,0,0.3)] border border-[#2a2828]">
 
             {/* ── Header (dark style for reels) ──────────────────── */}
-            <div className="flex items-center justify-between px-4 py-3">
-                <div className="flex items-center gap-3">
-                    <div className="p-[2px] rounded-full bg-gradient-to-tr from-[#ff89ac] to-[#a68cff]">
+            <div className="flex items-center justify-between gap-2 px-4 py-3">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="p-[2px] rounded-full bg-gradient-to-tr from-[#ff89ac] to-[#a68cff] flex-shrink-0">
                         <div className="w-9 h-9 rounded-full bg-[#111] flex items-center justify-center">
                             <span className="text-[#ff89ac] font-bold text-sm">
                                 {item?.authorBusinessName?.[0]?.toUpperCase() || "W"}
                             </span>
                         </div>
                     </div>
-                    <div>
-                        <button onClick={goToVendorProfile} className="font-semibold text-sm text-white leading-tight hover:text-[#f5a3bb] transition-colors text-left">
+                    <div className="min-w-0 flex-1">
+                        <button onClick={goToVendorProfile} className="block w-full truncate font-semibold text-sm text-white leading-tight hover:text-[#f5a3bb] transition-colors text-left">
                             {item?.authorBusinessName || "Wedding Vendor"}
                         </button>
                         {item?.location?.city && (
-                            <p className="text-[11px] text-gray-400 flex items-center gap-0.5 mt-0.5">
-                                <MdLocationOn className="text-[#C94C73] text-xs" />
-                                {item.location.city}
+                            <p className="text-[11px] text-gray-400 flex items-center gap-0.5 mt-0.5 truncate">
+                                <MdLocationOn className="text-[#C94C73] text-xs flex-shrink-0" />
+                                <span className="truncate">{item.location.city}</span>
                             </p>
                         )}
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-shrink-0">
                     <span className="text-[10px] bg-[#ff89ac]/10 text-[#ff89ac] font-semibold px-2.5 py-1 rounded-full border border-[#ff89ac]/20">
                         Reel
                     </span>
-                    <BsThreeDots className="text-gray-400 cursor-pointer hover:text-white transition-colors" />
+                    <BsThreeDots className="text-gray-400 cursor-pointer hover:text-white transition-colors flex-shrink-0" />
                 </div>
             </div>
 

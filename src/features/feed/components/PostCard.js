@@ -89,8 +89,8 @@ const PostCard = ({ item }) => {
             <div className="w-full rounded-[32px] bg-[#1a1919] shadow-[0px_0px_40px_0px_rgba(0,0,0,0.3)] mb-5 overflow-hidden border border-[#2a2828] hover:border-[#3a3838] transition-all duration-300">
 
                 {/* ── Header ─────────────────────────────────────────── */}
-                <div className="flex items-center justify-between px-4 py-3">
-                    <div className="flex items-center gap-3">
+                <div className="flex items-center justify-between gap-2 px-4 py-3">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
                         {/* Avatar with gradient ring */}
                         <button onClick={goToVendorProfile} className="p-[2px] rounded-full bg-gradient-to-tr from-[#ff89ac] to-[#a68cff] flex-shrink-0">
                             <div className="w-9 h-9 rounded-full bg-[#111] flex items-center justify-center">
@@ -99,30 +99,30 @@ const PostCard = ({ item }) => {
                                 </span>
                             </div>
                         </button>
-                        <div>
-                            <button onClick={goToVendorProfile} className="font-semibold text-sm leading-tight text-white hover:text-[#ff89ac] transition-colors text-left">
+                        <div className="min-w-0 flex-1">
+                            <button onClick={goToVendorProfile} className="block w-full truncate font-semibold text-sm leading-tight text-white hover:text-[#ff89ac] transition-colors text-left">
                                 {item?.authorBusinessName || "Wedding Vendor"}
                             </button>
                             {item?.location?.city && (
-                                <p className="text-[11px] text-[#adaaaa] flex items-center gap-0.5 mt-0.5">
-                                    <MdLocationOn className="text-[#ff89ac] text-xs" />
-                                    {item.location.city}{item.location.state ? `, ${item.location.state}` : ""}
+                                <p className="text-[11px] text-[#adaaaa] flex items-center gap-0.5 mt-0.5 truncate">
+                                    <MdLocationOn className="text-[#ff89ac] text-xs flex-shrink-0" />
+                                    <span className="truncate">{item.location.city}{item.location.state ? `, ${item.location.state}` : ""}</span>
                                 </p>
                             )}
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-shrink-0">
                         {item?.eventType && item.eventType !== "wedding vendor" && (
-                            <span className="text-[10px] bg-[#ff89ac]/10 text-[#ff89ac] font-semibold px-2.5 py-1 rounded-full border border-[#ff89ac]/20">
+                            <span className="hidden sm:inline text-[10px] bg-[#ff89ac]/10 text-[#ff89ac] font-semibold px-2.5 py-1 rounded-full border border-[#ff89ac]/20">
                                 {item.eventType}
                             </span>
                         )}
                         {/* Follow button */}
-                        <button className="text-[12px] text-white font-semibold px-4 py-1.5 rounded-full border border-[#494847] hover:border-[#ff89ac] hover:text-[#ff89ac] transition-all duration-150">
+                        <button className="text-[12px] text-white font-semibold px-3.5 py-1.5 rounded-full border border-[#494847] hover:border-[#ff89ac] hover:text-[#ff89ac] transition-all duration-150">
                             Follow
                         </button>
-                        <BsThreeDots className="text-[#adaaaa] cursor-pointer hover:text-white transition-colors" />
+                        <BsThreeDots className="text-[#adaaaa] cursor-pointer hover:text-white transition-colors flex-shrink-0" />
                     </div>
                 </div>
 
