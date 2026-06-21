@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect, useCallback } from "react"
 import { FaRegHeart, FaHeart } from "react-icons/fa"
 import { FaRegBookmark, FaBookmark } from "react-icons/fa6"
-import { BsThreeDots, BsPlayFill, BsPauseFill } from "react-icons/bs"
+import { BsThreeDots, BsPlayFill } from "react-icons/bs"
 import { MdLocationOn, MdMusicNote } from "react-icons/md"
 import { TbShare3 } from "react-icons/tb"
 import { HiVolumeUp, HiVolumeOff } from "react-icons/hi"
@@ -12,13 +12,7 @@ import { getCookies } from "@/app/action.js"
 import { useRouter, useSearchParams } from "next/navigation"
 import { CommentsDrawer } from "./CommentsDrawer"
 import { useTrackReel } from "@/features/insights/hooks/useTrackEvents.js"
-
-const formatDuration = (s) => {
-    if (!s) return ""
-    const m = Math.floor(s / 60)
-    const sec = Math.floor(s % 60)
-    return `${m}:${sec.toString().padStart(2, "0")}`
-}
+import { timeAgo, formatCount, formatDuration } from "./feedUtils.js"
 
 const ReelCard = ({ item }) => {
 
@@ -50,13 +44,11 @@ const ReelCard = ({ item }) => {
         if (vid) params.set("vendorId", String(vid))
         if (name) params.set("vendorName", name)
         router.push(`?${params.toString()}`)
-    }  // always holds the latest muted value for the observer closure
-
+    }
 
     const video = item?.video || {}
     const audio = item?.audio?.track
 
-    // combiene refs of insight generator and video element
     // ── Stable callback ref — useCallback prevents React from calling this
     // on every re-render (new function identity would reset muted each time)
     const setVideoRef = useCallback((node) => {
@@ -111,9 +103,7 @@ const ReelCard = ({ item }) => {
                     setPlaying(false)
                 }
             },
-            // 0.3 threshold: fires when 30% of the card enters the viewport.
-            // Safe for tall 9:16 reels that are taller than the screen.
-            { threshold: 0.3 }
+            { threshold: 0.5 }
         )
 
         observer.observe(el)
@@ -135,7 +125,6 @@ const ReelCard = ({ item }) => {
         v.currentTime = ratio * v.duration
     }
 
-    // ── Manual play/pause toggle ─────────────────────────────────────────
     const handlePlayToggle = (e) => {
         e.stopPropagation()
         const v = videoRef.current
@@ -175,25 +164,26 @@ const ReelCard = ({ item }) => {
             contentType="reel"
             initialCount={item?.interactions?.commentCount || 0}
         />
-        <div className="w-full rounded-[32px] bg-[#1a1919] mb-5 overflow-hidden shadow-[0px_0px_40px_0px_rgba(0,0,0,0.3)] border border-[#2a2828]">
+        {/* Edge-to-edge on mobile (Instagram), framed card on desktop */}
+        <article className="w-full bg-black md:bg-[#1a1919] md:rounded-[28px] md:mb-5 md:overflow-hidden md:border md:border-[#2a2828] mb-3">
 
-            {/* ── Header (dark style for reels) ──────────────────── */}
-            <div className="flex items-center justify-between gap-2 px-4 py-3">
-                <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <div className="p-[2px] rounded-full bg-gradient-to-tr from-[#ff89ac] to-[#a68cff] flex-shrink-0">
-                        <div className="w-9 h-9 rounded-full bg-[#111] flex items-center justify-center">
+            {/* ── Header ──────────────────────────────────────────── */}
+            <div className="flex items-center justify-between gap-2 px-3 md:px-4 py-2.5">
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    <button onClick={goToVendorProfile} className="p-[2px] rounded-full bg-gradient-to-tr from-[#ff89ac] to-[#a68cff] flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
                             <span className="text-[#ff89ac] font-bold text-sm">
                                 {item?.authorBusinessName?.[0]?.toUpperCase() || "W"}
                             </span>
                         </div>
-                    </div>
+                    </button>
                     <div className="min-w-0 flex-1">
-                        <button onClick={goToVendorProfile} className="block w-full truncate font-semibold text-sm text-white leading-tight hover:text-[#f5a3bb] transition-colors text-left">
+                        <button onClick={goToVendorProfile} className="block w-full truncate font-semibold text-[13px] text-white leading-tight text-left">
                             {item?.authorBusinessName || "Wedding Vendor"}
                         </button>
                         {item?.location?.city && (
-                            <p className="text-[11px] text-gray-400 flex items-center gap-0.5 mt-0.5 truncate">
-                                <MdLocationOn className="text-[#C94C73] text-xs flex-shrink-0" />
+                            <p className="text-[11px] text-[#adaaaa] flex items-center gap-0.5 truncate">
+                                <MdLocationOn className="text-[#ff89ac] text-xs flex-shrink-0" />
                                 <span className="truncate">{item.location.city}</span>
                             </p>
                         )}
@@ -201,19 +191,16 @@ const ReelCard = ({ item }) => {
                 </div>
 
                 <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className="text-[10px] bg-[#ff89ac]/10 text-[#ff89ac] font-semibold px-2.5 py-1 rounded-full border border-[#ff89ac]/20">
-                        Reel
-                    </span>
-                    <BsThreeDots className="text-gray-400 cursor-pointer hover:text-white transition-colors flex-shrink-0" />
+                    <button className="text-[12px] text-[#ff89ac] font-semibold px-1">Follow</button>
+                    <BsThreeDots className="text-white text-lg cursor-pointer flex-shrink-0" />
                 </div>
             </div>
 
             {/* ── Video container ────────────────────────────────── */}
             <div
                 ref={setInsightContainerRef}
-                className="w-full aspect-[4/5] bg-[#1a1919] relative overflow-hidden"
+                className="w-full aspect-[4/5] bg-black relative overflow-hidden"
             >
-                {/* Thumbnail always covers the full area — no black bars from browser poster handling */}
                 {video.thumbnail && (
                     <img
                         src={video.thumbnail}
@@ -238,11 +225,7 @@ const ReelCard = ({ item }) => {
                 ) : null}
 
                 {/* ── Tap to play/pause overlay ── */}
-                <div
-                    className="absolute inset-0"
-                    onClick={handlePlayToggle}
-                >
-                    {/* Pause icon flashes briefly on tap */}
+                <div className="absolute inset-0" onClick={handlePlayToggle}>
                     {!playing && (
                         <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
@@ -252,79 +235,23 @@ const ReelCard = ({ item }) => {
                     )}
                 </div>
 
-                {/* ── Right-side action overlay ── */}
-                <div className="absolute right-3 bottom-20 flex flex-col gap-5 items-center">
-                    <button
-                        onClick={(e) => { e.stopPropagation(); handleLike(); trackLike(liked) }}
-                        className="flex flex-col items-center gap-1"
-                    >
-                        {liked
-                            ? <FaHeart className="text-[#C94C73] text-2xl drop-shadow-lg" />
-                            : <FaRegHeart className="text-white text-2xl drop-shadow-lg" />}
-                        <span className="text-white text-[10px] font-medium drop-shadow">{likeCount}</span>
-                    </button>
+                {/* ── Reel badge ── */}
+                <span className="absolute top-3 left-3 text-[10px] bg-black/50 backdrop-blur-sm text-white px-2 py-0.5 rounded-full pointer-events-none flex items-center gap-1">
+                    <BsPlayFill className="text-xs" /> Reel
+                </span>
 
-                    <button
-                        onClick={(e) => { e.stopPropagation(); handleSave(); trackSave(saved) }}
-                        className="flex flex-col items-center gap-1"
-                    >
-                        {saved
-                            ? <FaBookmark className="text-[#C94C73] text-2xl drop-shadow-lg" />
-                            : <FaRegBookmark className="text-white text-2xl drop-shadow-lg" />}
-                        <span className="text-white text-[10px] font-medium drop-shadow">{item?.interactions?.saveCount || 0}</span>
-                    </button>
-
-                    <button
-
-                        onClick={(e) => { e.stopPropagation(); setShowComments(true) }}
-                        className="flex flex-col items-center gap-1"
-                    >
-                        <FaRegComment className="text-white text-2xl drop-shadow-lg" />
-                        <span className="text-white text-[10px] font-medium drop-shadow">{item?.interactions?.commentCount || 0}</span>
-                    </button>
-
-                    <button
-                        onClick={(e) => { e.stopPropagation(); trackShare() }}
-                        className="flex flex-col items-center gap-1"
-                    >
-                        <TbShare3 className="text-white text-2xl drop-shadow-lg" />
-                        <span className="text-white text-[10px] font-medium drop-shadow">{item?.interactions?.shareCount || 0}</span>
-                    </button>
-
-                    {/* ── Audio toggle ── */}
-                    <button
-                        onClick={(e) => { e.stopPropagation(); setMuted((m) => !m) }}
-                        className="w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center"
-                        title={muted ? "Unmute" : "Mute"}
-                    >
-                        {muted
-                            ? <HiVolumeOff className="text-white text-lg" />
-                            : <HiVolumeUp className="text-white text-lg" />}
-                    </button>
-                </div>
-
-                {/* ── Bottom gradient — caption + audio ── */}
-                <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 via-black/30 to-transparent px-4 pb-3 pt-12 pointer-events-none">
-                    {audio?.title && (
-                        <div className="flex items-center gap-1.5 mb-1.5">
-                            <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-                                <MdMusicNote className="text-white text-[10px]" />
-                            </div>
-                            <p className="text-white text-xs opacity-90 truncate">
-                                {audio.title}{audio.artist ? ` · ${audio.artist}` : ""}
-                            </p>
-                        </div>
-                    )}
-                    {item?.caption && (
-                        <p className="text-white text-xs leading-relaxed line-clamp-2 opacity-95">
-                            {item.caption}
-                        </p>
-                    )}
-                </div>
+                {/* ── Mute toggle ── */}
+                <button
+                    onClick={(e) => { e.stopPropagation(); setMuted((m) => !m) }}
+                    className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center"
+                    title={muted ? "Unmute" : "Mute"}
+                >
+                    {muted ? <HiVolumeOff className="text-white text-base" /> : <HiVolumeUp className="text-white text-base" />}
+                </button>
 
                 {/* ── Duration badge ── */}
                 {video.duration && (
-                    <span className="absolute top-3 right-3 text-[10px] bg-black/60 backdrop-blur-sm text-white px-2 py-0.5 rounded-full pointer-events-none">
+                    <span className="absolute bottom-3 right-3 text-[10px] bg-black/60 backdrop-blur-sm text-white px-2 py-0.5 rounded-full pointer-events-none">
                         {formatDuration(video.duration)}
                     </span>
                 )}
@@ -334,24 +261,74 @@ const ReelCard = ({ item }) => {
                     className="absolute bottom-0 left-0 w-full h-1 bg-white/20 cursor-pointer"
                     onClick={(e) => { e.stopPropagation(); scrub(e) }}
                 >
-                    <div
-                        className="h-full bg-[#ff89ac] transition-none"
-                        style={{ width: `${progress}%` }}
-                    />
+                    <div className="h-full bg-[#ff89ac] transition-none" style={{ width: `${progress}%` }} />
                 </div>
             </div>
 
-            {/* ── Tags (below video, dark bg) ────────────────────── */}
+            {/* ── Actions row (Instagram-style, below media) ─────── */}
+            <div className="px-3 md:px-4 pt-3 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <button onClick={() => { handleLike(); trackLike(liked) }} className="flex items-center gap-1.5">
+                        {liked
+                            ? <FaHeart className="text-[#ff89ac] text-[26px]" />
+                            : <FaRegHeart className="text-white text-[26px]" />}
+                        <span className="text-sm text-white font-semibold">{formatCount(likeCount)}</span>
+                    </button>
+
+                    <button onClick={() => { setShowComments(true); trackComment?.() }} className="flex items-center gap-1.5">
+                        <FaRegComment className="text-white text-[25px] -scale-x-100" />
+                        <span className="text-sm text-white font-semibold">{formatCount(item?.interactions?.commentCount || 0)}</span>
+                    </button>
+
+                    <button onClick={() => trackShare()} className="flex items-center gap-1.5">
+                        <TbShare3 className="text-white text-[26px]" />
+                        <span className="text-sm text-white font-semibold">{formatCount(item?.interactions?.shareCount || 0)}</span>
+                    </button>
+                </div>
+
+                <button onClick={() => { handleSave(); trackSave(saved) }}>
+                    {saved
+                        ? <FaBookmark className="text-[#ff89ac] text-[24px]" />
+                        : <FaRegBookmark className="text-white text-[24px]" />}
+                </button>
+            </div>
+
+            {/* ── Caption ────────────────────────────────────────── */}
+            {item?.caption && (
+                <div className="px-3 md:px-4 pt-2">
+                    <p className="text-sm text-white leading-snug line-clamp-2">
+                        <button onClick={goToVendorProfile} className="font-semibold mr-1.5">{item?.authorBusinessName}</button>
+                        <span className="text-[#d4d4d4]">{item.caption}</span>
+                    </p>
+                </div>
+            )}
+
+            {/* ── Audio attribution ──────────────────────────────── */}
+            {audio?.title && (
+                <div className="px-3 md:px-4 pt-2 flex items-center gap-1.5">
+                    <MdMusicNote className="text-white text-sm flex-shrink-0" />
+                    <p className="text-[12px] text-[#d4d4d4] truncate">
+                        {audio.title}{audio.artist ? ` · ${audio.artist}` : ""}
+                    </p>
+                </div>
+            )}
+
+            {/* ── Tags ───────────────────────────────────────────── */}
             {item?.tags?.length > 0 && (
-                <div className="px-4 py-3 flex flex-wrap gap-1.5">
+                <div className="px-3 md:px-4 pt-1.5 flex flex-wrap gap-1.5">
                     {item.tags.slice(0, 5).map((tag, i) => (
-                        <span key={i} className="text-[11px] text-[#f5a3bb] cursor-pointer hover:underline">
+                        <span key={i} className="text-[12px] text-[#ff89ac] font-medium cursor-pointer hover:underline">
                             #{tag}
                         </span>
                     ))}
                 </div>
             )}
-        </div>
+
+            {/* ── Timestamp ──────────────────────────────────────── */}
+            <div className="px-3 md:px-4 pt-1.5 pb-3">
+                <p className="text-[11px] text-[#8a8888]">{timeAgo(item?.createdAt)}</p>
+            </div>
+        </article>
         </>
     )
 }

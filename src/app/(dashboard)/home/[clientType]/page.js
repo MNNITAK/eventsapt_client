@@ -7,10 +7,12 @@ import { Search } from "@/shared/components/desktop/Search.js"
 import { VendorPublicProfile } from "@/features/vendor/components/VendorPublicProfile"
 import { CoupleProfile } from "@/features/couple/components/CoupleProfile"
 import { HomeRightPanel } from "@/features/feed/components/HomeRightPanel"
+import { ReelsViewer } from "@/features/feed/components/ReelsViewer"
 
 async function page({ params, searchParams }) {
   const clientParam = await params;
   const searchprm = await searchParams
+  const tab = searchprm?.tab || 'home'  // default to the home feed when no tab is set
 
   return (
     <>
@@ -22,20 +24,27 @@ async function page({ params, searchParams }) {
         </div>
 
         {/* Vendor / Couple profile — full width */}
-        {searchprm?.tab === 'profile' && (
+        {tab === 'profile' && (
           <div className="w-full h-full overflow-y-auto">
             <VendorPublicProfile />
           </div>
         )}
 
-        {searchprm?.tab === 'coupleProfile' && (
+        {tab === 'coupleProfile' && (
           <div className="w-full flex justify-center items-center">
             <CoupleProfile />
           </div>
         )}
 
+        {/* Reels — full-screen vertical viewer */}
+        {tab === 'reels' && (
+          <div className="w-full h-[calc(85vh-3.5rem)] md:h-screen">
+            <ReelsViewer />
+          </div>
+        )}
+
         {/* Home / Search tabs — feed + optional right panel */}
-        {(searchprm?.tab === 'home' || searchprm?.tab === 'search') && (
+        {(tab === 'home' || tab === 'search') && (
           <div className="flex flex-1 min-h-0 overflow-hidden">
 
             {/* Centre — stories + feed */}
@@ -44,7 +53,7 @@ async function page({ params, searchParams }) {
             </div>
 
             {/* Right — search panel OR trending/vendors panel */}
-            {searchprm?.tab === 'search'
+            {tab === 'search'
               ? <div className="w-[300px] xl:w-[320px] flex-shrink-0 h-full overflow-y-auto border-l border-[#1a1a1a]"><Search /></div>
               : <HomeRightPanel />
             }

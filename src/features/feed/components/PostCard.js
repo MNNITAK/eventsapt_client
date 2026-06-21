@@ -12,6 +12,7 @@ import { getCookies } from "@/app/action.js"
 import { useRouter, useSearchParams } from "next/navigation"
 import { CommentsDrawer } from "./CommentsDrawer"
 import { useTrackPost } from "@/features/insights/hooks/useTrackEvents.js"
+import { timeAgo, formatCount } from "./feedUtils.js"
 
 const PostCard = ({ item }) => {
     const { insightContainerRef, trackLike, trackSave } = useTrackPost({ postId: item._id, isFollower: false })
@@ -21,6 +22,7 @@ const PostCard = ({ item }) => {
     const [commentCount, setCommentCount] = useState(item?.interactions?.commentCount || 0)
     const [currentSlide, setCurrentSlide] = useState(0)
     const [showComments, setShowComments] = useState(false)
+    const [expanded, setExpanded] = useState(false)
 
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -86,25 +88,30 @@ const PostCard = ({ item }) => {
                 contentType="post"
                 initialCount={commentCount}
             />
-            <div className="w-full rounded-[32px] bg-[#1a1919] shadow-[0px_0px_40px_0px_rgba(0,0,0,0.3)] mb-5 overflow-hidden border border-[#2a2828] hover:border-[#3a3838] transition-all duration-300">
+            {/* Edge-to-edge on mobile (Instagram), framed card on desktop */}
+            <article className="w-full bg-black md:bg-[#1a1919] md:rounded-[28px] md:mb-5 md:overflow-hidden md:border md:border-[#2a2828] mb-3">
 
                 {/* ── Header ─────────────────────────────────────────── */}
-                <div className="flex items-center justify-between gap-2 px-4 py-3">
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                        {/* Avatar with gradient ring */}
+                <div className="flex items-center justify-between gap-2 px-3 md:px-4 py-2.5">
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
                         <button onClick={goToVendorProfile} className="p-[2px] rounded-full bg-gradient-to-tr from-[#ff89ac] to-[#a68cff] flex-shrink-0">
-                            <div className="w-9 h-9 rounded-full bg-[#111] flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
                                 <span className="text-[#ff89ac] font-bold text-sm">
                                     {item?.authorBusinessName?.[0]?.toUpperCase() || "W"}
                                 </span>
                             </div>
                         </button>
                         <div className="min-w-0 flex-1">
-                            <button onClick={goToVendorProfile} className="block w-full truncate font-semibold text-sm leading-tight text-white hover:text-[#ff89ac] transition-colors text-left">
-                                {item?.authorBusinessName || "Wedding Vendor"}
-                            </button>
+                            <div className="flex items-center gap-1.5">
+                                <button onClick={goToVendorProfile} className="truncate font-semibold text-[13px] leading-tight text-white text-left">
+                                    {item?.authorBusinessName || "Wedding Vendor"}
+                                </button>
+                                {item?.location?.city && (
+                                    <span className="text-[#adaaaa] text-[11px] flex-shrink-0">•</span>
+                                )}
+                            </div>
                             {item?.location?.city && (
-                                <p className="text-[11px] text-[#adaaaa] flex items-center gap-0.5 mt-0.5 truncate">
+                                <p className="text-[11px] text-[#adaaaa] flex items-center gap-0.5 truncate">
                                     <MdLocationOn className="text-[#ff89ac] text-xs flex-shrink-0" />
                                     <span className="truncate">{item.location.city}{item.location.state ? `, ${item.location.state}` : ""}</span>
                                 </p>
@@ -113,23 +120,17 @@ const PostCard = ({ item }) => {
                     </div>
 
                     <div className="flex items-center gap-2 flex-shrink-0">
-                        {item?.eventType && item.eventType !== "wedding vendor" && (
-                            <span className="hidden sm:inline text-[10px] bg-[#ff89ac]/10 text-[#ff89ac] font-semibold px-2.5 py-1 rounded-full border border-[#ff89ac]/20">
-                                {item.eventType}
-                            </span>
-                        )}
-                        {/* Follow button */}
-                        <button className="text-[12px] text-white font-semibold px-3.5 py-1.5 rounded-full border border-[#494847] hover:border-[#ff89ac] hover:text-[#ff89ac] transition-all duration-150">
+                        <button className="text-[12px] text-[#ff89ac] font-semibold px-1">
                             Follow
                         </button>
-                        <BsThreeDots className="text-[#adaaaa] cursor-pointer hover:text-white transition-colors flex-shrink-0" />
+                        <BsThreeDots className="text-white text-lg cursor-pointer flex-shrink-0" />
                     </div>
                 </div>
 
                 {/* ── Media carousel ─────────────────────────────────── */}
                 <div
                     ref={insightContainerRef}
-                    className="w-full aspect-[1/1] bg-[#111] relative overflow-hidden select-none"
+                    className="w-full aspect-[4/5] bg-black relative overflow-hidden select-none"
                     onTouchStart={onTouchStart}
                     onTouchEnd={onTouchEnd}
                     onDoubleClick={handleDoubleTap}
@@ -154,9 +155,9 @@ const PostCard = ({ item }) => {
                     {hasMultiple && currentSlide > 0 && (
                         <button
                             onClick={(e) => { e.stopPropagation(); prev() }}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-all shadow-md"
+                            className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white shadow-md"
                         >
-                            <IoChevronBackOutline size={16} />
+                            <IoChevronBackOutline size={15} />
                         </button>
                     )}
 
@@ -164,25 +165,10 @@ const PostCard = ({ item }) => {
                     {hasMultiple && currentSlide < media.length - 1 && (
                         <button
                             onClick={(e) => { e.stopPropagation(); next() }}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-all shadow-md"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white shadow-md"
                         >
-                            <IoChevronForwardOutline size={16} />
+                            <IoChevronForwardOutline size={15} />
                         </button>
-                    )}
-
-                    {/* Dots */}
-                    {hasMultiple && (
-                        <div className="absolute bottom-3 left-0 w-full flex justify-center gap-1.5">
-                            {media.map((_, i) => (
-                                <button
-                                    key={i}
-                                    onClick={() => setCurrentSlide(i)}
-                                    className={`rounded-full transition-all duration-200 ${
-                                        i === currentSlide ? "w-4 h-1.5 bg-white" : "w-1.5 h-1.5 bg-white/40"
-                                    }`}
-                                />
-                            ))}
-                        </div>
                     )}
 
                     {/* Slide counter pill */}
@@ -199,58 +185,81 @@ const PostCard = ({ item }) => {
                     )}
                 </div>
 
+                {/* ── Carousel dots (below media, Instagram-style) ───── */}
+                {hasMultiple && (
+                    <div className="w-full flex justify-center gap-1.5 pt-2.5">
+                        {media.map((_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setCurrentSlide(i)}
+                                className={`rounded-full transition-all duration-200 ${
+                                    i === currentSlide ? "w-1.5 h-1.5 bg-[#ff89ac]" : "w-1.5 h-1.5 bg-white/25"
+                                }`}
+                            />
+                        ))}
+                    </div>
+                )}
+
                 {/* ── Actions row ────────────────────────────────────── */}
-                <div className="px-4 pt-3 pb-1 flex items-center justify-between">
-                    <div className="flex items-center gap-5">
+                <div className="px-3 md:px-4 pt-3 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
                         <button
                             onClick={() => { handleLike(); trackLike(liked) }}
-                            className="flex items-center gap-1.5 group"
+                            className="flex items-center gap-1.5"
                         >
                             {liked
-                                ? <FaHeart className="text-[#ff89ac] text-xl scale-110 transition-transform" />
-                                : <FaRegHeart className="text-[#adaaaa] text-xl group-hover:text-[#ff89ac] transition-colors" />}
-                            <span className="text-xs text-[#adaaaa] font-medium">{likeCount}</span>
+                                ? <FaHeart className="text-[#ff89ac] text-[26px]" />
+                                : <FaRegHeart className="text-white text-[26px]" />}
+                            <span className="text-sm text-white font-semibold">{formatCount(likeCount)}</span>
                         </button>
 
-                        <button onClick={() => setShowComments(true)} className="flex items-center gap-1.5 group">
-                            <FaRegComment className="text-[#adaaaa] text-xl group-hover:text-white transition-colors" />
-                            <span className="text-xs text-[#adaaaa] font-medium">{commentCount}</span>
+                        <button onClick={() => setShowComments(true)} className="flex items-center gap-1.5">
+                            <FaRegComment className="text-white text-[25px] -scale-x-100" />
+                            <span className="text-sm text-white font-semibold">{formatCount(commentCount)}</span>
                         </button>
 
-                        <button className="flex items-center gap-1.5 group">
-                            <TbShare3 className="text-[#adaaaa] text-xl group-hover:text-white transition-colors" />
-                            <span className="text-xs text-[#adaaaa] font-medium">{item?.interactions?.shareCount || 0}</span>
+                        <button className="flex items-center gap-1.5">
+                            <TbShare3 className="text-white text-[26px]" />
+                            <span className="text-sm text-white font-semibold">{formatCount(item?.interactions?.shareCount || 0)}</span>
                         </button>
                     </div>
 
-                    <button onClick={() => { handleSave(); trackSave(saved) }} className="group">
+                    <button onClick={() => { handleSave(); trackSave(saved) }}>
                         {saved
-                            ? <FaBookmark className="text-[#ff89ac] text-xl scale-110 transition-transform" />
-                            : <FaRegBookmark className="text-[#adaaaa] text-xl group-hover:text-[#ff89ac] transition-colors" />}
+                            ? <FaBookmark className="text-[#ff89ac] text-[24px]" />
+                            : <FaRegBookmark className="text-white text-[24px]" />}
                     </button>
                 </div>
 
                 {/* ── Caption ────────────────────────────────────────── */}
                 {item?.caption && (
-                    <div className="px-4 pb-2">
-                        <p className="text-sm text-[#adaaaa] leading-relaxed line-clamp-3">
-                            <span className="font-semibold text-white mr-1">{item?.authorBusinessName}</span>
-                            {item.caption}
+                    <div className="px-3 md:px-4 pt-2">
+                        <p className={`text-sm text-white leading-snug ${expanded ? "" : "line-clamp-2"}`}>
+                            <button onClick={goToVendorProfile} className="font-semibold mr-1.5">{item?.authorBusinessName}</button>
+                            <span className="text-[#d4d4d4]">{item.caption}</span>
                         </p>
+                        {!expanded && item.caption.length > 80 && (
+                            <button onClick={() => setExpanded(true)} className="text-[13px] text-[#adaaaa] mt-0.5">more</button>
+                        )}
                     </div>
                 )}
 
                 {/* ── Tags ───────────────────────────────────────────── */}
                 {item?.tags?.length > 0 && (
-                    <div className="px-4 pb-4 flex flex-wrap gap-1.5">
+                    <div className="px-3 md:px-4 pt-1.5 flex flex-wrap gap-1.5">
                         {item.tags.slice(0, 5).map((tag, i) => (
-                            <span key={i} className="text-[11px] text-[#ff89ac] font-semibold cursor-pointer hover:underline">
+                            <span key={i} className="text-[12px] text-[#ff89ac] font-medium cursor-pointer hover:underline">
                                 #{tag}
                             </span>
                         ))}
                     </div>
                 )}
-            </div>
+
+                {/* ── Timestamp ──────────────────────────────────────── */}
+                <div className="px-3 md:px-4 pt-1.5 pb-3">
+                    <p className="text-[11px] text-[#8a8888]">{timeAgo(item?.createdAt)}</p>
+                </div>
+            </article>
         </>
     )
 }
