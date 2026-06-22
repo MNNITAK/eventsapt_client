@@ -6,3 +6,5 @@ export const metadata = {
 export default function VendorDashboardLayout({ children }) {
   return children
 }
+
+
