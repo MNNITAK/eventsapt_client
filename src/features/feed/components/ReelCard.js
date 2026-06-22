@@ -2,8 +2,7 @@
 import { useState, useRef, useEffect, useCallback } from "react"
 import { FaRegHeart, FaHeart } from "react-icons/fa"
 import { FaRegBookmark, FaBookmark } from "react-icons/fa6"
-import { BsThreeDots, BsPlayFill } from "react-icons/bs"
-import { MdLocationOn, MdMusicNote } from "react-icons/md"
+import { BsPlayFill } from "react-icons/bs"
 import { TbShare3 } from "react-icons/tb"
 import { HiVolumeUp, HiVolumeOff } from "react-icons/hi"
 import { FaRegComment } from "react-icons/fa"
@@ -12,7 +11,7 @@ import { getCookies } from "@/app/action.js"
 import { useRouter, useSearchParams } from "next/navigation"
 import { CommentsDrawer } from "./CommentsDrawer"
 import { useTrackReel } from "@/features/insights/hooks/useTrackEvents.js"
-import { timeAgo, formatCount, formatDuration } from "./feedUtils.js"
+import { formatCount, formatDuration } from "./feedUtils.js"
 
 const ReelCard = ({ item }) => {
 
@@ -47,7 +46,6 @@ const ReelCard = ({ item }) => {
     }
 
     const video = item?.video || {}
-    const audio = item?.audio?.track
 
     // ── Stable callback ref — useCallback prevents React from calling this
     // on every re-render (new function identity would reset muted each time)
@@ -167,33 +165,18 @@ const ReelCard = ({ item }) => {
         {/* Edge-to-edge on mobile (Instagram), framed card on desktop */}
         <article className="w-full bg-black md:bg-[#1a1919] md:rounded-[28px] md:mb-5 md:overflow-hidden md:border md:border-[#2a2828] mb-3">
 
-            {/* ── Header ──────────────────────────────────────────── */}
-            <div className="flex items-center justify-between gap-2 px-3 md:px-4 py-2.5">
-                <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                    <button onClick={goToVendorProfile} className="p-[2px] rounded-full bg-gradient-to-tr from-[#ff89ac] to-[#a68cff] flex-shrink-0">
-                        <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
-                            <span className="text-[#ff89ac] font-bold text-sm">
-                                {item?.authorBusinessName?.[0]?.toUpperCase() || "W"}
-                            </span>
-                        </div>
-                    </button>
-                    <div className="min-w-0 flex-1">
-                        <button onClick={goToVendorProfile} className="block w-full truncate font-semibold text-[13px] text-white leading-tight text-left">
-                            {item?.authorBusinessName || "Wedding Vendor"}
-                        </button>
-                        {item?.location?.city && (
-                            <p className="text-[11px] text-[#adaaaa] flex items-center gap-0.5 truncate">
-                                <MdLocationOn className="text-[#ff89ac] text-xs flex-shrink-0" />
-                                <span className="truncate">{item.location.city}</span>
-                            </p>
-                        )}
+            {/* ── Header (minimal: avatar + name, both link to profile) ── */}
+            <div className="flex items-center gap-2.5 px-3 md:px-4 py-2.5">
+                <button onClick={goToVendorProfile} className="p-[2px] rounded-full bg-gradient-to-tr from-[#ff89ac] to-[#a68cff] flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
+                        <span className="text-[#ff89ac] font-bold text-sm">
+                            {item?.authorBusinessName?.[0]?.toUpperCase() || "W"}
+                        </span>
                     </div>
-                </div>
-
-                <div className="flex items-center gap-2 flex-shrink-0">
-                    <button className="text-[12px] text-[#ff89ac] font-semibold px-1">Follow</button>
-                    <BsThreeDots className="text-white text-lg cursor-pointer flex-shrink-0" />
-                </div>
+                </button>
+                <button onClick={goToVendorProfile} className="truncate font-semibold text-[13px] text-white leading-tight text-left">
+                    {item?.authorBusinessName || "Wedding Vendor"}
+                </button>
             </div>
 
             {/* ── Video container ────────────────────────────────── */}
@@ -293,41 +276,15 @@ const ReelCard = ({ item }) => {
                 </button>
             </div>
 
-            {/* ── Caption ────────────────────────────────────────── */}
-            {item?.caption && (
-                <div className="px-3 md:px-4 pt-2">
+            {/* ── Caption (minimal, single line) ─────────────────── */}
+            {item?.caption ? (
+                <div className="px-3 md:px-4 pt-2 pb-3">
                     <p className="text-sm text-white leading-snug line-clamp-2">
                         <button onClick={goToVendorProfile} className="font-semibold mr-1.5">{item?.authorBusinessName}</button>
                         <span className="text-[#d4d4d4]">{item.caption}</span>
                     </p>
                 </div>
-            )}
-
-            {/* ── Audio attribution ──────────────────────────────── */}
-            {audio?.title && (
-                <div className="px-3 md:px-4 pt-2 flex items-center gap-1.5">
-                    <MdMusicNote className="text-white text-sm flex-shrink-0" />
-                    <p className="text-[12px] text-[#d4d4d4] truncate">
-                        {audio.title}{audio.artist ? ` · ${audio.artist}` : ""}
-                    </p>
-                </div>
-            )}
-
-            {/* ── Tags ───────────────────────────────────────────── */}
-            {item?.tags?.length > 0 && (
-                <div className="px-3 md:px-4 pt-1.5 flex flex-wrap gap-1.5">
-                    {item.tags.slice(0, 5).map((tag, i) => (
-                        <span key={i} className="text-[12px] text-[#ff89ac] font-medium cursor-pointer hover:underline">
-                            #{tag}
-                        </span>
-                    ))}
-                </div>
-            )}
-
-            {/* ── Timestamp ──────────────────────────────────────── */}
-            <div className="px-3 md:px-4 pt-1.5 pb-3">
-                <p className="text-[11px] text-[#8a8888]">{timeAgo(item?.createdAt)}</p>
-            </div>
+            ) : <div className="pb-3" />}
         </article>
         </>
     )

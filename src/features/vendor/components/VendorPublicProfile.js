@@ -274,7 +274,7 @@ const VendorPublicProfile = () => {
         <div className="w-full h-full overflow-y-auto bg-[#0e0e0e] pb-16">
 
             {/* ── Hero / Cover ──────────────────────────────────── */}
-            <div className="relative h-[400px] overflow-hidden">
+            <div className="relative h-[200px] sm:h-[300px] md:h-[400px] overflow-hidden">
                 {coverUrl ? (
                     <img src={coverUrl} alt="cover" className="w-full h-full object-cover opacity-60" />
                 ) : (
@@ -293,13 +293,15 @@ const VendorPublicProfile = () => {
             </div>
 
             {/* ── Profile Header ────────────────────────────────── */}
-            <div className="px-8 -mt-20 relative z-10">
-                <div className="flex items-end gap-6">
+            <div className="px-4 sm:px-6 md:px-8 -mt-14 sm:-mt-20 relative z-10">
+                <div className="flex flex-col sm:flex-row sm:items-end gap-4 sm:gap-6">
+                    {/* Avatar + name — kept on one row across breakpoints */}
+                    <div className="flex items-end gap-4 sm:gap-6 flex-1 min-w-0">
                     {/* Avatar with glow */}
                     <div className="relative flex-shrink-0">
                         {/* Glow blur behind avatar */}
                         <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-[#ff89ac] to-[#a68cff] opacity-40 blur-[6px]" />
-                        <div className="relative w-[140px] h-[140px] rounded-full border-4 border-[#0e0e0e] overflow-hidden shadow-2xl">
+                        <div className="relative w-[96px] h-[96px] sm:w-[120px] sm:h-[120px] md:w-[140px] md:h-[140px] rounded-full border-4 border-[#0e0e0e] overflow-hidden shadow-2xl">
                             {logo ? (
                                 <img src={logo} alt="logo" className="w-full h-full object-cover" />
                             ) : (
@@ -314,8 +316,8 @@ const VendorPublicProfile = () => {
 
                     {/* Name + meta */}
                     <div className="flex-1 min-w-0 pb-4">
-                        <div className="flex items-center gap-3 flex-wrap">
-                            <h1 className="text-3xl font-extrabold text-white tracking-tight leading-tight">
+                        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight leading-tight">
                                 {profile?.businessName || "Vendor"}
                             </h1>
                             {profile?.category && (
@@ -351,9 +353,11 @@ const VendorPublicProfile = () => {
                         </div>
                     </div>
 
+                    </div>{/* /avatar+name row */}
+
                     {/* Share Profile button */}
-                    <div className="pb-4 flex-shrink-0">
-                        <button className="backdrop-blur-md bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] text-white font-semibold text-sm px-7 py-3.5 rounded-full hover:bg-[rgba(255,255,255,0.1)] transition-all flex items-center gap-2">
+                    <div className="pb-1 sm:pb-4 flex-shrink-0 w-full sm:w-auto">
+                        <button className="w-full sm:w-auto justify-center backdrop-blur-md bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] text-white font-semibold text-sm px-7 py-3.5 rounded-full hover:bg-[rgba(255,255,255,0.1)] transition-all flex items-center gap-2">
                             <TbShare3 className="text-base" />
                             Share Profile
                         </button>
@@ -366,7 +370,7 @@ const VendorPublicProfile = () => {
                 )}
 
                 {/* Stats bar */}
-                <div className="flex items-center gap-8 mt-6 py-4 border-y border-[#1f1f1f]">
+                <div className="flex items-center flex-wrap gap-6 sm:gap-8 mt-6 py-4 border-y border-[#1f1f1f]">
                     {stats.totalBookings > 0 && (
                         <div className="flex flex-col gap-0.5">
                             <span className="text-white font-bold text-lg">{stats.totalBookings}</span>
@@ -505,13 +509,13 @@ const VendorPublicProfile = () => {
             </div>
 
             {/* ── Tabs ─────────────────────────────────────────── */}
-            <div className="sticky top-0 bg-[#0e0e0e]/90 backdrop-blur-md z-10 px-8 mt-10 border-b border-[#1f1f1f]">
-                <div className="flex gap-1">
+            <div className="sticky top-0 bg-[#0e0e0e]/90 backdrop-blur-md z-10 px-4 sm:px-6 md:px-8 mt-10 border-b border-[#1f1f1f]">
+                <div className="flex gap-1 overflow-x-auto scrollbar-hide">
                     {TABS.map(({ id, label, icon: Icon }) => (
                         <button
                             key={id}
                             onClick={() => setActiveTab(id)}
-                            className={`flex items-center gap-1.5 px-5 py-4 text-sm font-medium border-b-2 transition-all ${
+                            className={`flex items-center gap-1.5 px-3 sm:px-5 py-4 text-sm font-medium border-b-2 transition-all whitespace-nowrap flex-shrink-0 ${
                                 activeTab === id
                                     ? "border-[#ff89ac] text-[#ff89ac]"
                                     : "border-transparent text-[#71717a] hover:text-[#adaaaa]"
@@ -525,7 +529,7 @@ const VendorPublicProfile = () => {
             </div>
 
             {/* ── Tab Content ──────────────────────────────────── */}
-            <div className="px-8 mt-8">
+            <div className="px-4 sm:px-6 md:px-8 mt-8">
 
                 {/* Posts */}
                 {activeTab === "posts" && (
@@ -653,7 +657,7 @@ const VendorPublicProfile = () => {
             </div>
 
             {/* ── Footer ───────────────────────────────────────── */}
-            <footer className="mt-20 mx-8 pt-12 border-t border-[rgba(39,39,42,0.4)] flex items-center justify-between flex-wrap gap-4">
+            <footer className="mt-20 mx-4 sm:mx-8 pt-12 border-t border-[rgba(39,39,42,0.4)] flex items-center justify-between flex-wrap gap-4">
                 <div>
                     <p className="text-white font-semibold text-lg">Wedora</p>
                     <p className="text-[#71717a] text-[10px] uppercase tracking-widest mt-1">

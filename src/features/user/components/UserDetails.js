@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import GoogleLogo from "../../../../public/google-icon.svg"
 import Image from 'next/image'
 import { userschema } from '@/schema/userSchema'
@@ -42,6 +42,18 @@ function Userdetailspage1({ userDetails, setDetails, prev, next, error, setError
     window.history.pushState(null, '', `?${params.toString()}`)
     next()
   }
+
+  // Auto-advance to the next step the moment sign-up succeeds, so the user is
+  // never stranded on the form after a successful sign-up. The "Set Preferences"
+  // button below remains as a manual fallback. Guarded by a ref so it only
+  // advances once (and survives React StrictMode's double-invoke in dev).
+  const advancedRef = useRef(false)
+  useEffect(() => {
+    if (!advancedRef.current && (signupData?.status === 201 || signupData?.status === 200)) {
+      advancedRef.current = true
+      setPreferences()
+    }
+  }, [signupData])
 
   const inputOption = [
     { type: 'text', placeholder: 'Enter username', name: 'username', label: 'Username' },

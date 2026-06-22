@@ -35,3 +35,34 @@ export const fetchReelsFeed = async ({ pageParam = null }) => {
         return { data: [], nextCursor: null }
     }
 }
+
+/**
+ * Fetches the COMBINED feed (reels + posts) for the full-screen Instagram-style
+ * Reels viewer. Uses the same `/v1/feed` endpoint the home feed uses (page
+ * paginated), so the viewer always has content even when there are few reels.
+ *
+ * Shape returned must match useInfiniteScroll: { data: [...items], nextCursor }
+ */
+export const fetchReelsViewerFeed = async ({ pageParam = 1 }) => {
+    try {
+        const token = await getCookies()
+        const page = pageParam || 1
+
+        const resp = await axiosInstance.get(`/v1/feed`, {
+            params: { page, limit: 20 },
+            headers: {
+                wedoraCredentials: token,
+            },
+        })
+
+        const { items = [], hasNextPage, page: currentPage } = resp.data?.data || {}
+
+        return {
+            data: items,
+            nextCursor: hasNextPage ? (currentPage || page) + 1 : null,
+        }
+    } catch (error) {
+        console.error("[fetchReelsViewerFeed] error:", error?.response?.data || error.message)
+        return { data: [], nextCursor: null }
+    }
+}

@@ -11,15 +11,29 @@ import { axiosInstance } from "@/axios/axios.js"
 import { getCookies } from "@/app/action.js"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useInfiniteScroll } from "@/features/infinite-scroll/hooks/useInfiniteScroll"
-import { fetchReelsFeed } from "@/features/feed/api/fetchReelsFeed"
+import { fetchReelsViewerFeed } from "@/features/feed/api/fetchReelsFeed"
 import { CommentsDrawer } from "./CommentsDrawer"
 import { useTrackReel } from "@/features/insights/hooks/useTrackEvents.js"
 import { formatCount } from "./feedUtils.js"
 
-// ── Single full-screen reel ──────────────────────────────────────────────────
+// ── Single full-screen slide (handles both reels and image/video posts) ───────
 function FullScreenReel({ item, globalMuted, setGlobalMuted }) {
     const { insightVideoRef, insightContainerRef, trackLike, trackSave, trackShare, trackComment } =
         useTrackReel({ reelId: item._id, isFollower: false })
+
+    // A slide is a "reel" if it's tagged as one or carries a reel video; everything
+    // else is a post, whose first media item we render full-screen (image or video).
+    const isReel = item?.contentType === "reel" || !!item?.video?.url
+    const kind = isReel ? "reels" : "posts"
+
+    const reelVideo = item?.video || {}
+    const firstMedia = item?.media?.[0] || {}
+    const isVideo = isReel || firstMedia?.mediaType === "video"
+    const mediaUrl = isReel ? reelVideo.url : firstMedia?.url
+    const posterUrl = isReel
+        ? reelVideo.thumbnail
+        : (firstMedia?.mediaType === "video" ? firstMedia?.thumbnail : firstMedia?.url)
+    const audio = item?.audio?.track
 
     const [liked, setLiked] = useState(false)
     const [saved, setSaved] = useState(false)
@@ -34,9 +48,6 @@ function FullScreenReel({ item, globalMuted, setGlobalMuted }) {
     const router = useRouter()
     const searchParams = useSearchParams()
 
-    const video = item?.video || {}
-    const audio = item?.audio?.track
-
     const setContainerRef = (el) => { containerRef.current = el; insightContainerRef.current = el }
     const setVideoRef = (el) => { videoRef.current = el; insightVideoRef.current = el; if (el) el.muted = mutedRef.current }
 
@@ -45,10 +56,10 @@ function FullScreenReel({ item, globalMuted, setGlobalMuted }) {
         if (videoRef.current) videoRef.current.muted = globalMuted
     }, [globalMuted])
 
-    // Auto play/pause whichever reel is centered in the viewport.
+    // Auto play/pause whichever video slide is centered in the viewport.
     useEffect(() => {
         const el = containerRef.current
-        if (!el || !video.url) return
+        if (!el || !isVideo || !mediaUrl) return
         const observer = new IntersectionObserver(
             ([entry]) => {
                 const v = videoRef.current
@@ -59,9 +70,12 @@ function FullScreenReel({ item, globalMuted, setGlobalMuted }) {
                         v.muted = true; mutedRef.current = true; setGlobalMuted(true)
                         v.play().then(() => setPlaying(true)).catch(() => {})
                     })
-                    getCookies().then((token) => {
-                        axiosInstance.post(`/v1/reels/${item._id}/play`, {}, { headers: { wedoraCredentials: token } }).catch(() => {})
-                    })
+                    // Play tracking only applies to reels.
+                    if (isReel) {
+                        getCookies().then((token) => {
+                            axiosInstance.post(`/v1/reels/${item._id}/play`, {}, { headers: { wedoraCredentials: token } }).catch(() => {})
+                        })
+                    }
                 } else {
                     v.pause(); setPlaying(false)
                 }
@@ -70,7 +84,7 @@ function FullScreenReel({ item, globalMuted, setGlobalMuted }) {
         )
         observer.observe(el)
         return () => observer.disconnect()
-    }, [item._id, video.url, setGlobalMuted])
+    }, [item._id, mediaUrl, isVideo, isReel, setGlobalMuted])
 
     const togglePlay = () => {
         const v = videoRef.current
@@ -84,7 +98,7 @@ function FullScreenReel({ item, globalMuted, setGlobalMuted }) {
             const token = await getCookies()
             setLiked((p) => !p)
             setLikeCount((p) => liked ? p - 1 : p + 1)
-            await axiosInstance.post(`/v1/reels/${item._id}/like`, {}, { headers: { wedoraCredentials: token } })
+            await axiosInstance.post(`/v1/${kind}/${item._id}/like`, {}, { headers: { wedoraCredentials: token } })
         } catch {
             setLiked((p) => !p)
             setLikeCount((p) => liked ? p + 1 : p - 1)
@@ -95,7 +109,7 @@ function FullScreenReel({ item, globalMuted, setGlobalMuted }) {
         try {
             const token = await getCookies()
             setSaved((p) => !p)
-            await axiosInstance.post(`/v1/reels/${item._id}/save`, {}, { headers: { wedoraCredentials: token } })
+            await axiosInstance.post(`/v1/${kind}/${item._id}/save`, {}, { headers: { wedoraCredentials: token } })
         } catch {
             setSaved((p) => !p)
         }
@@ -118,44 +132,57 @@ function FullScreenReel({ item, globalMuted, setGlobalMuted }) {
                 open={showComments}
                 onClose={() => setShowComments(false)}
                 itemId={item?._id}
-                contentType="reel"
+                contentType={isReel ? "reel" : "post"}
                 initialCount={item?.interactions?.commentCount || 0}
             />
 
-            {video.thumbnail && (
-                <img src={video.thumbnail} alt="Reel" className="absolute inset-0 w-full h-full object-cover" />
-            )}
-            {video.url ? (
-                <video
-                    ref={setVideoRef}
-                    src={video.url}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    playsInline
-                    loop
-                    muted={globalMuted}
-                />
-            ) : !video.thumbnail ? (
-                <div className="w-full h-full flex items-center justify-center text-gray-600 text-sm">No video available</div>
-            ) : null}
+            {/* ── Media ── */}
+            {isVideo ? (
+                <>
+                    {posterUrl && (
+                        <img src={posterUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                    )}
+                    {mediaUrl ? (
+                        <video
+                            ref={setVideoRef}
+                            src={mediaUrl}
+                            className="absolute inset-0 w-full h-full object-cover"
+                            playsInline
+                            loop
+                            muted={globalMuted}
+                        />
+                    ) : !posterUrl ? (
+                        <div className="w-full h-full flex items-center justify-center text-gray-600 text-sm">No media available</div>
+                    ) : null}
 
-            {/* Tap to play/pause */}
-            <div className="absolute inset-0" onClick={togglePlay}>
-                {!playing && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
-                            <BsPlayFill className="text-white text-3xl ml-1" />
-                        </div>
+                    {/* Tap to play/pause */}
+                    <div className="absolute inset-0" onClick={togglePlay}>
+                        {!playing && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="w-16 h-16 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
+                                    <BsPlayFill className="text-white text-3xl ml-1" />
+                                </div>
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
+                </>
+            ) : (
+                mediaUrl ? (
+                    <img src={mediaUrl} alt={item?.caption || "Post"} className="absolute inset-0 w-full h-full object-contain" />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-600 text-sm">No media available</div>
+                )
+            )}
 
-            {/* Mute toggle */}
-            <button
-                onClick={(e) => { e.stopPropagation(); setGlobalMuted((m) => !m) }}
-                className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center z-10"
-            >
-                {globalMuted ? <HiVolumeOff className="text-white text-lg" /> : <HiVolumeUp className="text-white text-lg" />}
-            </button>
+            {/* Mute toggle — only meaningful for video */}
+            {isVideo && (
+                <button
+                    onClick={(e) => { e.stopPropagation(); setGlobalMuted((m) => !m) }}
+                    className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center z-10"
+                >
+                    {globalMuted ? <HiVolumeOff className="text-white text-lg" /> : <HiVolumeUp className="text-white text-lg" />}
+                </button>
+            )}
 
             {/* Right action rail */}
             <div className="absolute right-3 bottom-28 flex flex-col gap-5 items-center z-10">
@@ -187,13 +214,7 @@ function FullScreenReel({ item, globalMuted, setGlobalMuted }) {
                         </div>
                     </button>
                     <button onClick={goToVendorProfile} className="text-white font-semibold text-sm truncate">{item?.authorBusinessName || "Wedding Vendor"}</button>
-                    <span className="text-[11px] text-white font-semibold px-2.5 py-1 rounded-full border border-white/40">Follow</span>
                 </div>
-                {item?.location?.city && (
-                    <p className="text-[12px] text-white/90 flex items-center gap-1 mb-1.5">
-                        <MdLocationOn className="text-[#ff89ac]" /> {item.location.city}
-                    </p>
-                )}
                 {item?.caption && (
                     <p className="text-white text-[13px] leading-snug line-clamp-2 pr-16 mb-1.5">{item.caption}</p>
                 )}
@@ -211,10 +232,11 @@ function FullScreenReel({ item, globalMuted, setGlobalMuted }) {
 // ── Reels viewer (snap-scroll container) ─────────────────────────────────────
 function ReelsViewer() {
     const [globalMuted, setGlobalMuted] = useState(false)
+    // Combined reels + posts feed, Instagram-style.
     const { items, sentinelRef, isLoading, isFetchingNextPage, isError } = useInfiniteScroll({
-        queryKey: ['reels-feed'],
-        fetcher: fetchReelsFeed,
-        initialPageParam: null,
+        queryKey: ['reels-viewer-feed'],
+        fetcher: fetchReelsViewerFeed,
+        initialPageParam: 1,
         queryOptions: { staleTime: 1000 * 60 * 5 },
         sentinelOptions: { rootMargin: "1200px 0px" },
     })
@@ -230,7 +252,7 @@ function ReelsViewer() {
     if (isError || items.length === 0) {
         return (
             <div className="w-full h-full flex flex-col items-center justify-center bg-black">
-                <p className="text-lg font-medium text-[#adaaaa]">No reels yet</p>
+                <p className="text-lg font-medium text-[#adaaaa]">Nothing here yet</p>
                 <p className="text-sm mt-1 text-[#52525b]">Check back soon for wedding inspiration</p>
             </div>
         )

@@ -12,6 +12,7 @@ const CommentsDrawer = ({ open, onClose, itemId, contentType = "post", initialCo
     const [loading, setLoading] = useState(false)
     const [text, setText] = useState("")
     const [sending, setSending] = useState(false)
+    const [error, setError] = useState("")
     const inputRef = useRef(null)
 
     const endpoint = contentType === "reel" ? "reels" : "posts"
@@ -37,6 +38,7 @@ const CommentsDrawer = ({ open, onClose, itemId, contentType = "post", initialCo
     const handleSend = async () => {
         if (!text.trim() || sending) return
         setSending(true)
+        setError("")
         try {
             const token = await getCookies()
             const res = await axiosInstance.post(
@@ -44,16 +46,20 @@ const CommentsDrawer = ({ open, onClose, itemId, contentType = "post", initialCo
                 { content: text.trim() },
                 { headers: { wedoraCredentials: token } }
             )
-            const newComment = res.data?.data?.comment || {
-                _id: Date.now(),
-                content: text.trim(),
-                createdAt: new Date().toISOString(),
-                author: { name: "You" },
+            // Trust the server as the source of truth so the comment actually
+            // persists across refresh. If the API echoes the saved comment, use
+            // it; otherwise re-fetch the persisted list (no fabricated comments).
+            const newComment = res.data?.data?.comment
+            if (newComment) {
+                setComments((prev) => [newComment, ...prev])
+            } else {
+                const refetch = await axiosInstance.get(`/v1/${endpoint}/${itemId}`)
+                setComments(refetch.data?.data?.interactions?.comments || [])
             }
-            setComments((prev) => [newComment, ...prev])
             setText("")
         } catch {
-            // silent fail — keep text so user can retry
+            // Surface the failure instead of pretending it saved.
+            setError("Couldn't post your comment. Please try again.")
         } finally {
             setSending(false)
         }
@@ -152,11 +158,14 @@ const CommentsDrawer = ({ open, onClose, itemId, contentType = "post", initialCo
                 </div>
 
                 {/* Input */}
+                {error && (
+                    <p className="px-5 pt-2 text-[12px] text-red-500">{error}</p>
+                )}
                 <div className="px-4 pb-5 pt-3 border-t border-gray-100 flex items-center gap-3 bg-white">
                     <input
                         ref={inputRef}
                         value={text}
-                        onChange={(e) => setText(e.target.value)}
+                        onChange={(e) => { setText(e.target.value); if (error) setError("") }}
                         onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
                         placeholder="Add a comment..."
                         className="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#C94C73]/30 transition-all"
