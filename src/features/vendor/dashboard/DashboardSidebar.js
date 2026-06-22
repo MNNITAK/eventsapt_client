@@ -11,14 +11,15 @@ import {
   FileText,
   LogOut,
   Video,
-  Library
+  Library,
+  X
 } from 'lucide-react'
 
 /**
  * Dashboard Sidebar Component
  * Navigation menu for vendor dashboard
  */
-export function DashboardSidebar({ activeTab, setActiveTab }) {
+export function DashboardSidebar({ activeTab, setActiveTab, isOpen = false, onClose }) {
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
     { id: 'leads', label: 'Leads', icon: Users },
@@ -33,11 +34,28 @@ export function DashboardSidebar({ activeTab, setActiveTab }) {
   ]
 
   return (
-    <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
+    <div
+      className={`
+        fixed md:static inset-y-0 left-0 z-40 w-64 max-w-[80vw] h-full
+        bg-white border-r border-gray-200 flex flex-col
+        transform transition-transform duration-300 ease-in-out md:transform-none
+        ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+      `}
+    >
       {/* Logo/Brand */}
-      <div className="p-6 border-b border-gray-200">
-        <h1 className="text-2xl font-bold text-[#C94C73]">Vendor Hub</h1>
-        <p className="text-sm text-gray-500 mt-1">Control Panel</p>
+      <div className="p-6 border-b border-gray-200 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-[#C94C73]">Vendor Hub</h1>
+          <p className="text-sm text-gray-500 mt-1">Control Panel</p>
+        </div>
+        {/* Close button (mobile drawer only) */}
+        <button
+          onClick={onClose}
+          aria-label="Close menu"
+          className="md:hidden text-gray-500 hover:text-gray-700 p-1 -mr-1"
+        >
+          <X size={22} />
+        </button>
       </div>
 
       {/* Navigation Menu */}
