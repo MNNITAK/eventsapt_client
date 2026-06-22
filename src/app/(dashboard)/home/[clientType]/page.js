@@ -16,12 +16,14 @@ async function page({ params, searchParams }) {
 
   return (
     <>
-      <div id="mainPost" className='flex md:flex-row w-full h-[85vh] md:h-[100vh] overflow-y-auto flex-col bg-[#0e0e0e]'>
+      <div id="mainPost" className={`flex md:flex-row w-full flex-col bg-[#0e0e0e] ${tab === 'reels' ? 'h-[100dvh] md:h-screen overflow-hidden' : 'h-[85vh] md:h-[100vh] overflow-y-auto'}`}>
 
-        {/* Mobile top bar */}
-        <div className="md:hidden w-full">
-          <NavBar user={clientParam.clientType} />
-        </div>
+        {/* Mobile top bar — hidden on the immersive reels tab */}
+        {tab !== 'reels' && (
+          <div className="md:hidden w-full">
+            <NavBar user={clientParam.clientType} />
+          </div>
+        )}
 
         {/* Vendor / Couple profile — full width */}
         {tab === 'profile' && (
@@ -36,9 +38,9 @@ async function page({ params, searchParams }) {
           </div>
         )}
 
-        {/* Reels — full-screen vertical viewer */}
+        {/* Reels — full-screen vertical viewer (fills the viewport on mobile) */}
         {tab === 'reels' && (
-          <div className="w-full h-[calc(85vh-3.5rem)] md:h-screen">
+          <div className="w-full h-full min-h-0">
             <ReelsViewer />
           </div>
         )}

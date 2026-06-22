@@ -127,7 +127,7 @@ function FullScreenReel({ item, globalMuted, setGlobalMuted }) {
     }
 
     return (
-        <div ref={setContainerRef} className="relative w-full h-full snap-start snap-always bg-black flex-shrink-0 overflow-hidden">
+        <div ref={setContainerRef} className="relative w-full md:max-w-[480px] md:mx-auto h-full snap-start snap-always bg-black flex-shrink-0 overflow-hidden">
             <CommentsDrawer
                 open={showComments}
                 onClose={() => setShowComments(false)}
@@ -205,8 +205,8 @@ function FullScreenReel({ item, globalMuted, setGlobalMuted }) {
                 <BsThreeDots className="text-white text-xl drop-shadow-lg" />
             </div>
 
-            {/* Bottom info */}
-            <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/85 via-black/30 to-transparent px-4 pb-6 pt-16 z-10">
+            {/* Bottom info — extra bottom padding on mobile so it clears the fixed bottom nav */}
+            <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/85 via-black/30 to-transparent px-4 pb-24 md:pb-6 pt-16 z-10">
                 <div className="flex items-center gap-2.5 mb-2.5 pr-16">
                     <button onClick={goToVendorProfile} className="p-[2px] rounded-full bg-gradient-to-tr from-[#ff89ac] to-[#a68cff] flex-shrink-0">
                         <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
@@ -232,7 +232,8 @@ function FullScreenReel({ item, globalMuted, setGlobalMuted }) {
 // ── Reels viewer (snap-scroll container) ─────────────────────────────────────
 function ReelsViewer() {
     const [globalMuted, setGlobalMuted] = useState(false)
-    // Combined reels + posts feed, Instagram-style.
+    // We pull the combined feed (which actually has content) but show ONLY reels
+    // here — posts are filtered out of the cached items on the frontend.
     const { items, sentinelRef, isLoading, isFetchingNextPage, isError } = useInfiniteScroll({
         queryKey: ['reels-viewer-feed'],
         fetcher: fetchReelsViewerFeed,
@@ -240,6 +241,9 @@ function ReelsViewer() {
         queryOptions: { staleTime: 1000 * 60 * 5 },
         sentinelOptions: { rootMargin: "1200px 0px" },
     })
+
+    // Keep reels only (tagged contentType 'reel', or anything carrying a reel video).
+    const reels = items.filter((it) => it?.contentType === "reel" || !!it?.video?.url)
 
     if (isLoading) {
         return (
@@ -249,7 +253,7 @@ function ReelsViewer() {
         )
     }
 
-    if (isError || items.length === 0) {
+    if (isError && items.length === 0) {
         return (
             <div className="w-full h-full flex flex-col items-center justify-center bg-black">
                 <p className="text-lg font-medium text-[#adaaaa]">Nothing here yet</p>
@@ -260,7 +264,7 @@ function ReelsViewer() {
 
     return (
         <div className="w-full h-full overflow-y-scroll snap-y snap-mandatory bg-black scrollbar-hide">
-            {items.map((item) => (
+            {reels.map((item) => (
                 <FullScreenReel
                     key={item._id}
                     item={item}
@@ -268,8 +272,24 @@ function ReelsViewer() {
                     setGlobalMuted={setGlobalMuted}
                 />
             ))}
+
+            {/* No reels in what we've loaded yet — keep paging via the sentinel below
+                (more pages of the combined feed may contain reels). */}
+            {reels.length === 0 && (
+                <div className="w-full h-full flex flex-col items-center justify-center bg-black">
+                    {isFetchingNextPage ? (
+                        <div className="w-7 h-7 border-2 border-[#ff89ac] border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                        <>
+                            <p className="text-lg font-medium text-[#adaaaa]">No reels yet</p>
+                            <p className="text-sm mt-1 text-[#52525b]">Check back soon for wedding inspiration</p>
+                        </>
+                    )}
+                </div>
+            )}
+
             <div ref={sentinelRef} className="h-px" />
-            {isFetchingNextPage && (
+            {isFetchingNextPage && reels.length > 0 && (
                 <div className="w-full flex justify-center py-4 bg-black">
                     <div className="w-6 h-6 border-2 border-[#ff89ac] border-t-transparent rounded-full animate-spin" />
                 </div>
