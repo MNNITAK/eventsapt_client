@@ -142,7 +142,7 @@ export function ProfileHeroCard() {
   return (
     <div className="mx-auto mt-5 w-[95%] overflow-visible rounded-3xl bg-white shadow-md">
       {/* Cover */}
-      <div className="relative h-[20vh] rounded-t-3xl bg-gradient-to-br from-indigo-200 via-purple-200 to-slate-100 px-5 py-5 md:px-6">
+      <div className="relative min-h-[20vh] md:h-[20vh] rounded-t-3xl bg-gradient-to-br from-indigo-200 via-purple-200 to-slate-100 px-5 py-5 md:px-6">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.65),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(201,76,115,0.14),transparent_24%)]" />
 
         <div className="relative z-10 flex flex-col items-center gap-4 md:flex-row md:items-center md:gap-5">
@@ -172,7 +172,7 @@ export function ProfileHeroCard() {
           </div>
         </div>
 
-        <div className="absolute right-4 top-4 z-10 w-[40vw] rounded-3xl border border-white/60 bg-white/50 p-4 shadow-sm backdrop-blur-md">
+        <div className="relative mt-4 w-full md:absolute md:right-4 md:top-4 md:mt-0 md:w-[40vw] z-10 rounded-3xl border border-white/60 bg-white/50 p-4 shadow-sm backdrop-blur-md">
           <div className="mb-2 flex items-center justify-between gap-3">
             {!isEditingBio ? (
               <button
@@ -224,22 +224,22 @@ export function ProfileHeroCard() {
 
       {/* Bottom section */}
       <div className="w-full px-5 py-5 md:px-6">
-        <div className="flex items-start justify-between gap-6">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
           {/* Stats */}
-          <div className="flex gap-10">
+          <div className="flex gap-6 sm:gap-10 justify-center md:justify-start">
             <Stat label="Posts" value="938" />
             <Stat label="Followers" value="3,586" />
             <Stat label="Following" value="2,659" />
           </div>
 
           {/* Social section */}
-          <div className="relative flex  items-end gap-3 overflow-visible">
+          <div className="relative flex items-end gap-3 overflow-visible justify-center md:justify-end">
             
 
             {isAddingSocial && (
               <div
                 ref={addPopoverRef}
-                className="absolute right-0 top-0 z-30 mt-3 w-[30vw] rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl"
+                className="absolute right-0 top-0 z-30 mt-3 w-[80vw] sm:w-[50vw] md:w-[30vw] rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl"
               >
                 <div className="mb-3 flex gap-2">
                   <select

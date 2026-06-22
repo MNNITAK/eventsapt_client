@@ -112,7 +112,7 @@ const MultiWeddingMoodboards = () => {
   };
 
   return (
-    <div className="w-[95%] mx-auto mt-5 mb-5 bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-mdnom  border border-purple-100">
+    <div className="w-[95%] mx-auto mt-5 mb-5 bg-white/70 backdrop-blur-xl rounded-3xl p-5 sm:p-8 shadow-mdnom  border border-purple-100">
       {/* Header + Controls */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
         <div>
@@ -189,7 +189,7 @@ const MultiWeddingMoodboards = () => {
       {/* Current Moodboard Content */}
       {currentMoodboard ? (
         <>
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
             <div>
               <h3 className="text-2xl font-semibold text-gray-900">{currentMoodboard.title}</h3>
               {currentMoodboard.description && (

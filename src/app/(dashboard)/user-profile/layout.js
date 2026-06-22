@@ -9,14 +9,14 @@ export default async function RootLayout({ children }) {
 
     <div className="bg-[#F8F9FA] text-gray-900 antialiased">
       <div className="flex h-screen overflow-hidden">
-
+        
         {/* Sidebar - Fixed to the left */}
         <Sidebar />
 
         {/* Main Content Area - Takes up remaining space and scrolls */}
         <main className="flex-1 overflow-y-auto">
 
-          <div className="min-h-full w-full pt-4">
+          <div className="min-h-full w-full pt-16 md:pt-4">
             <Breadcrumb items={{name:"User Profile",urlTags:["Home", "Dashboard", "Profile"]}} />
             {children}
           </div>
