@@ -13,9 +13,13 @@ import { loginClient } from "@/features/auth/api/clientLogin";
 
 function UserLogin() {
   const searchParams = useSearchParams()
-  const searchKey = searchParams.get('usertype')
   const router = useRouter()
   const [credError, setErr] = useState([])
+  // Account type is driven by a toggle, seeded from the ?usertype= param. This
+  // makes login self-sufficient: a vendor who lands on a bare /login (e.g. from
+  // the homepage Sign In link) can still pick "Vendor" instead of being queried
+  // against the user collection and getting "no user found".
+  const [clientType, setClientType] = useState(searchParams.get('usertype') === 'vendor' ? 'vendor' : 'user')
   const { mutate, error, isPending, isError, isSuccess } = useMutation({ mutationFn: loginClient })
   const [userCredentials, setCredentials] = useState({ userid: "", password: "", isGoogleAuthenticated: false })
 
@@ -23,7 +27,7 @@ function UserLogin() {
 
   const loginViaGoogle = async () => {
     const data = await logViaGoogle()
-    mutate({ data: { userid: data.email }, router, client: searchKey })
+    mutate({ data: { userid: data.email }, router, client: clientType })
   }
 
   const handleChange = (e) => {
@@ -34,11 +38,30 @@ function UserLogin() {
     setErr([])
     const validated = loginSchema.safeParse(userCredentials)
     if (!validated?.success) { setErr(validated?.error?.errors); return }
-    mutate({ data: userCredentials, router, client: searchKey })
+    mutate({ data: userCredentials, router, client: clientType })
   }
 
   return (
     <div className="flex flex-col gap-4 w-full">
+
+      {/* Account type toggle */}
+      <div className="grid grid-cols-2 gap-2 p-1 rounded-xl" style={{ background: '#1a1919', border: '1px solid rgba(73,72,71,0.4)' }}>
+        {['user', 'vendor'].map(type => (
+          <button
+            key={type}
+            type="button"
+            onClick={() => setClientType(type)}
+            className="py-2 rounded-lg text-sm font-semibold transition-all"
+            style={
+              clientType === type
+                ? { background: 'linear-gradient(135deg, #FF89AC 0%, #EA73FB 100%)', color: '#000' }
+                : { background: 'transparent', color: '#adaaaa' }
+            }
+          >
+            {type === 'user' ? 'I’m a User' : 'I’m a Vendor'}
+          </button>
+        ))}
+      </div>
 
       {/* Username/email input */}
       <div>
@@ -92,13 +115,13 @@ function UserLogin() {
       {/* Sign up link */}
       <p className="text-center text-sm" style={{ color: '#adaaaa' }}>
         Don&apos;t have an account?{' '}
-        <Link href="/authPage/user" className="font-semibold hover:opacity-80 transition-opacity" style={{ color: '#FF89AC' }}>
+        <Link href={`/authPage/${clientType}`} className="font-semibold hover:opacity-80 transition-opacity" style={{ color: '#FF89AC' }}>
           Sign Up
         </Link>
       </p>
 
       {/* Google — only for non-vendor */}
-      {searchKey !== 'vendor' && (
+      {clientType !== 'vendor' && (
         <>
           <div className="relative my-1">
             <hr style={{ borderColor: 'rgba(73,72,71,0.4)' }} />

@@ -49,7 +49,7 @@ function Userdetailspage1({ userDetails, setDetails, prev, next, error, setError
   // advances once (and survives React StrictMode's double-invoke in dev).
   const advancedRef = useRef(false)
   useEffect(() => {
-    if (!advancedRef.current && (signupData?.status === 201 || signupData?.status === 200)) {
+    if (!advancedRef.current && (signupData?.statusCode === 201 || signupData?.statusCode === 200)) {
       advancedRef.current = true
       setPreferences()
     }
@@ -88,19 +88,21 @@ function Userdetailspage1({ userDetails, setDetails, prev, next, error, setError
         </div>
       ))}
 
-      {/* Status messages */}
-      {(signupData?.data?.message || signupCheckError?.response?.data?.message) && (
-        <p className="text-sm text-center" style={{ color: '#adaaaa' }}>
-          {signupData?.data?.message || signupCheckError?.response?.data?.message}
+      {/* Status / error message (e.g. "User already exists…") */}
+      {signupIsError && (
+        <p className="text-sm text-center" style={{ color: '#FF89AC' }}>
+          {signupCheckError?.response?.data?.message || 'Something went wrong. Please try again.'}
         </p>
       )}
 
-      {/* CTA button */}
-      {signupData?.status === 201 || signupCheckError?.status === 409
+      {/* CTA button — only a successful sign-up unlocks "Set Preferences".
+          A duplicate (409) or any other error keeps the Sign Up button so the
+          user can correct their details and retry, or use the Sign In link below. */}
+      {signupData?.statusCode === 201
         ? <button onClick={setPreferences} className="w-full py-3 rounded-xl font-semibold text-black mt-3 transition-opacity hover:opacity-90" style={{ background: GRADIENT }}>
             Set Preferences
           </button>
-        : <button disabled={signupIsError} onClick={handleSubmit} className="w-full py-3 rounded-xl font-semibold text-black mt-3 transition-opacity hover:opacity-90 disabled:opacity-50" style={{ background: GRADIENT }}>
+        : <button disabled={signupPending} onClick={handleSubmit} className="w-full py-3 rounded-xl font-semibold text-black mt-3 transition-opacity hover:opacity-90 disabled:opacity-50" style={{ background: GRADIENT }}>
             {signupPending ? 'Signing up…' : 'Sign Up'}
           </button>
       }
@@ -118,7 +120,7 @@ function Userdetailspage1({ userDetails, setDetails, prev, next, error, setError
 
       {/* Google */}
       <button
-        disabled={signupData || signupIsError}
+        disabled={signupData?.statusCode === 201 || signupPending}
         onClick={loginViaGoole}
         className="w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 border transition-colors hover:border-white/30 disabled:opacity-50"
         style={{ background: '#1a1919', border: '1px solid rgba(73,72,71,0.4)', color: '#fff', fontFamily: 'var(--font-inter), sans-serif' }}
