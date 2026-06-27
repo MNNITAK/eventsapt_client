@@ -6,7 +6,9 @@ const signup=async({cred})=>{
     try {
         
         let response = await signupUser(cred);
-        await create(response);
+        // The API body is { statusCode, data: { ...profile, refreshToken, accessToken }, message }.
+        // Tokens live on response.data, so persist that — not the whole body.
+        await create(response?.data);
         return response;
     } catch (error) {
         //console.log(error);

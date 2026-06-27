@@ -135,9 +135,10 @@ function VendorSignup({ vendorDetails, setvendorDetails }) {
         </div>
 
         {/* API error */}
-        {isError && error?.status > 400 && (
-          <p className="text-sm text-center" style={{ color: '#adaaaa' }}>
-            {error?.response?.data?.message || 'Something went wrong'}. Redirecting to login…
+        {isError && (
+          <p className="text-sm text-center" style={{ color: '#FF89AC' }}>
+            {error?.response?.data?.message || 'Something went wrong'}
+            {error?.response?.status === 409 ? '. Redirecting to login…' : '. Please try again.'}
           </p>
         )}
 

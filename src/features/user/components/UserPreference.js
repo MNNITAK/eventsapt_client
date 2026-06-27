@@ -66,8 +66,8 @@ function Userpreference({ prev, next, userDetails, setDetails, index, queryParam
         ))}
       </div>
 
-      {prefData?.status === 401 && (
-        <p className="text-sm text-center" style={{ color: '#adaaaa' }}>Your account already exists — please login.</p>
+      {prefData && prefData.statusCode !== 200 && (
+        <p className="text-sm text-center" style={{ color: '#adaaaa' }}>Couldn&apos;t save your preferences right now — you can set them later.</p>
       )}
 
       {/* Navigation */}
