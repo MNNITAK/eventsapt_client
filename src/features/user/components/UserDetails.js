@@ -88,10 +88,14 @@ function Userdetailspage1({ userDetails, setDetails, prev, next, error, setError
         </div>
       ))}
 
-      {/* Status / error message (e.g. "User already exists…") */}
+      {/* Status / error message. A 409 means the email/username/phone is already
+          taken (the username-available tick only checks the username, so email or
+          phone can still collide here) — guide the user to sign in with it. */}
       {signupIsError && (
         <p className="text-sm text-center" style={{ color: '#FF89AC' }}>
-          {signupCheckError?.response?.data?.message || 'Something went wrong. Please try again.'}
+          {signupCheckError?.response?.status === 409
+            ? 'An account with this email, username, or phone already exists — please sign in below (use that email/phone).'
+            : (signupCheckError?.response?.data?.message || 'Something went wrong. Please try again.')}
         </p>
       )}
 
